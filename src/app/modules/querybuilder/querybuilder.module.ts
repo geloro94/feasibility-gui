@@ -50,6 +50,7 @@ import { SaveTemplateComponent } from './components/querybuilder-editor/save/sav
 import { ResultantQueryComponent } from './components/querybuilder-editor/save/save-dialog/resultant-query/resultant-query.component';
 import { MyQueriesComponent } from './components/my-queries/my-queries.component';
 
+import { SnackBarComponent } from 'src/app/core/components/snack-bar/snack-bar.component';
 export const FORMATS_GERMAN = {
   parse: {
     dateInput: 'LL',
@@ -110,6 +111,7 @@ export const FORMATS_GERMAN = {
     MatProgressSpinnerModule,
     MatTooltipModule,
     FileSaverModule,
+    SnackBarComponent,
   ],
   exports: [
     SearchInputComponent,
