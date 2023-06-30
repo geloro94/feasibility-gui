@@ -121,7 +121,7 @@ export class QuerybuilderEditorComponent implements OnInit, OnDestroy, AfterView
       (result) => {
         this.result = result;
         this.storeQueryResult(this.result);
-        if (result['issues'].some((issue) => issue.code === 'FEAS-10004')) {
+        if (result['issues'].some((issue) => issue === 'FEAS-10004')) {
         } else {
           this.resultsLargeEnough = false;
           this.result = result;
