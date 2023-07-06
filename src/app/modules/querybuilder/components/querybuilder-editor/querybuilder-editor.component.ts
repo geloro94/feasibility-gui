@@ -119,13 +119,8 @@ export class QuerybuilderEditorComponent implements OnInit, OnDestroy, AfterView
     );
     this.subscriptionPolling = this.resultObservable$.subscribe(
       (result) => {
+        this.resultsLargeEnough = false;
         this.result = result;
-        this.storeQueryResult(this.result);
-        if (result['issues'].some((issue) => issue === 'FEAS-10004')) {
-        } else {
-          this.resultsLargeEnough = false;
-          this.result = result;
-        }
         if (result.queryId !== undefined) {
           this.hasQuerySend = result.queryId;
         } else {
@@ -142,7 +137,7 @@ export class QuerybuilderEditorComponent implements OnInit, OnDestroy, AfterView
       () => {
         console.log('done');
         if (this.resultsLargeEnough === false) {
-          this.snackbar.displayErrorMessage(this.snackbar.errorCodes['FEAS-10002']);
+          this.snackbar.displayErrorMessage(this.snackbar.errorCodes['FEAS-10004']);
         } else {
           this.loadedResult = true;
         }
