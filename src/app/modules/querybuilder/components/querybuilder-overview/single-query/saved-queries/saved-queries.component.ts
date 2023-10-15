@@ -1,17 +1,17 @@
-import { Component, Input, OnInit, Output } from '@angular/core';
-import { Query } from '../../../model/api/query/query';
-import { QueryProviderService } from '../../../service/query-provider.service';
-import { Router } from '@angular/router';
-import { BackendService } from '../../../service/backend.service';
-import { FeatureProviderService } from '../../../service/feature-provider.service';
-import { ApiTranslator } from '../../../controller/ApiTranslator';
+import { Component, Input, Output } from '@angular/core';
 import { EventEmitter } from '@angular/core';
+import { Router } from '@angular/router';
+import { ApiTranslator } from 'src/app/modules/querybuilder/controller/ApiTranslator';
+import { BackendService } from 'src/app/modules/querybuilder/service/backend.service';
+import { FeatureProviderService } from 'src/app/modules/querybuilder/service/feature-provider.service';
+import { QueryProviderService } from 'src/app/modules/querybuilder/service/query-provider.service';
+import { Query } from 'src/app/modules/querybuilder/model/api/query/query';
 @Component({
-  selector: 'num-single-query',
-  templateUrl: './single-query.component.html',
-  styleUrls: ['./single-query.component.scss'],
+  selector: 'num-saved-queries',
+  templateUrl: './saved-queries.component.html',
+  styleUrls: ['./saved-queries.component.scss'],
 })
-export class SingleQueryComponent implements OnInit {
+export class SavedQueriesComponent {
   @Input()
   index: number;
 
@@ -53,12 +53,6 @@ export class SingleQueryComponent implements OnInit {
     public featureProviderService: FeatureProviderService,
     private apiTranslator: ApiTranslator
   ) {}
-
-  ngOnInit(): void {
-    if (this.isValid === false) {
-      this.isInvalid = true;
-    }
-  }
 
   loadQuery(): void {
     this.backend.loadQuery(this.id).subscribe((query) => {

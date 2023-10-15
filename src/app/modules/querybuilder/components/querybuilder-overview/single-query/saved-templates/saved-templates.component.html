@@ -1,0 +1,13 @@
+<div class="query-box" fxLayout="row">
+  <div fxLayout="row" fxLayoutAlign="center" class="text-part" (click)="loadTemplate()">
+    <img
+      *ngIf="isInvalid"
+      src="assets/img/alert.png"
+      alt="Validation Alert"
+      class="invalid-Criterion"
+    />
+    <div fxFlexAlign="center" class="query-box-title">{{ singleLabel }}</div>
+    <div fxFlexAlign="center" class="query-box-comment">{{ singleComment }}</div>
+    <div fxFlexAlign="center" class="query-box-date">{{ singleDate | date : 'dd.MM.yyyy' }}</div>
+  </div>
+</div>
