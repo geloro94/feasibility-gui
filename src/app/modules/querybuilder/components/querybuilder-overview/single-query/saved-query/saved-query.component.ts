@@ -8,10 +8,10 @@ import { QueryProviderService } from 'src/app/modules/querybuilder/service/query
 import { Query } from 'src/app/modules/querybuilder/model/api/query/query';
 @Component({
   selector: 'num-saved-queries',
-  templateUrl: './saved-queries.component.html',
-  styleUrls: ['./saved-queries.component.scss'],
+  templateUrl: './saved-query.component.html',
+  styleUrls: ['./saved-query.component.scss'],
 })
-export class SavedQueriesComponent {
+export class SavedQueryComponent {
   @Input()
   index: number;
 

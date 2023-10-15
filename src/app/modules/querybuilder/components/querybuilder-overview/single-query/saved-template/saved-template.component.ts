@@ -11,10 +11,10 @@ import { IAppConfig } from 'src/app/config/app-config.model';
 
 @Component({
   selector: 'num-saved-templates',
-  templateUrl: './saved-templates.component.html',
-  styleUrls: ['./saved-templates.component.scss'],
+  templateUrl: './saved-template.component.html',
+  styleUrls: ['./saved-template.component.scss'],
 })
-export class SavedTemplatesComponent implements OnInit, OnDestroy {
+export class SavedTemplateComponent implements OnInit, OnDestroy {
   @Input()
   singleTemplate;
 

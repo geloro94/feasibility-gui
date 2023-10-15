@@ -1,17 +1,17 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { SavedQueriesComponent } from './saved-queries.component';
+import { SavedQueryComponent } from './saved-query.component';
 
-describe('SavedQueriesComponent', () => {
-  let component: SavedQueriesComponent;
-  let fixture: ComponentFixture<SavedQueriesComponent>;
+describe('SavedQueryComponent', () => {
+  let component: SavedQueryComponent;
+  let fixture: ComponentFixture<SavedQueryComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [SavedQueriesComponent],
+      declarations: [SavedQueryComponent],
     }).compileComponents();
 
-    fixture = TestBed.createComponent(SavedQueriesComponent);
+    fixture = TestBed.createComponent(SavedQueryComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
