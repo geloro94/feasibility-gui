@@ -15,7 +15,7 @@ import { IAppConfig } from '../../../../config/app-config.model';
   templateUrl: './querybuilder-overview.component.html',
   styleUrls: ['./querybuilder-overview.component.scss'],
 })
-export class QuerybuilderOverviewComponent implements OnInit, OnDestroy, AfterViewChecked {
+export class QuerybuilderOverviewComponent implements OnInit, AfterViewChecked {
   private features: IAppConfig;
   queryVersion: string;
   importQuery: Query;
@@ -32,20 +32,11 @@ export class QuerybuilderOverviewComponent implements OnInit, OnDestroy, AfterVi
     private apiTranslator: ApiTranslator
   ) {}
 
-  private savedQueriesSubscription: Subscription;
   private savedTemplatesSubscription: Subscription;
-  private singleQuerySubscription: Subscription;
-  private singleTemplateSubscription: Subscription;
 
   query: Query;
   title = '';
   comment = '';
-
-  savedQueries: Array<{
-    id: number
-    label: string
-    created_at: Date
-  }> = [];
 
   savedTemplates: Array<{
     id?: number
@@ -61,23 +52,8 @@ export class QuerybuilderOverviewComponent implements OnInit, OnDestroy, AfterVi
 
   ngOnInit(): void {
     this.query = this.queryProviderService.query();
-    this.savedQueriesSubscription?.unsubscribe();
-    this.savedTemplatesSubscription?.unsubscribe();
-    this.singleQuerySubscription?.unsubscribe();
-    this.singleTemplateSubscription?.unsubscribe();
-    this.loadSavedQueries();
-    this.savedTemplatesSubscription = this.backend.loadSavedTemplates().subscribe((templates) => {
-      this.savedTemplates = templates;
-    });
     this.features = this.featureProviderService.getFeatures();
     this.queryVersion = this.features.queryVersion;
-  }
-
-  ngOnDestroy(): void {
-    this.singleTemplateSubscription?.unsubscribe();
-    this.savedQueriesSubscription?.unsubscribe();
-    this.savedTemplatesSubscription?.unsubscribe();
-    this.singleQuerySubscription?.unsubscribe();
   }
 
   ngAfterViewChecked(): void {
@@ -89,12 +65,6 @@ export class QuerybuilderOverviewComponent implements OnInit, OnDestroy, AfterVi
     this.changeDetector.detectChanges();
   }
 
-  loadSavedQueries(): void {
-    this.savedQueriesSubscription = this.backend.loadSavedQueries().subscribe((queries) => {
-      this.savedQueries = queries;
-    });
-  }
-
   doImportFromFile(event: Event): void {
     const file: File = (event.target as HTMLInputElement).files[0];
     const reader = new FileReader();
@@ -102,9 +72,11 @@ export class QuerybuilderOverviewComponent implements OnInit, OnDestroy, AfterVi
     reader.readAsText(file);
     this.fileName = file.name;
   }
+
   onReaderLoad(event): void {
     this.importQuery = JSON.parse(event.target.result);
   }
+
   doImport(): void {
     this.query = this.apiTranslator.translateImportedSQtoUIQuery(
       QueryProviderService.createDefaultQuery(),
@@ -112,35 +84,6 @@ export class QuerybuilderOverviewComponent implements OnInit, OnDestroy, AfterVi
     );
     this.queryProviderService.store(this.query);
     this.router.navigate(['/querybuilder/editor'], { state: { preventReset: true } });
-  }
-  loadTemplate(id: number, singleQuery: Query): void {
-    if (this.feature.mockLoadnSave()) {
-      this.query = singleQuery;
-      this.queryProviderService.store(this.query);
-      this.router.navigate(['/querybuilder/editor'], { state: { preventReset: true } });
-    } else {
-      this.singleTemplateSubscription = this.backend.loadTemplate(id).subscribe((query) => {
-        this.query = this.apiTranslator.translateSQtoUIQuery(
-          QueryProviderService.createDefaultQuery(),
-          query
-        );
-        this.queryProviderService.store(this.query);
-        this.router.navigate(['/querybuilder/editor'], { state: { preventReset: true } });
-      });
-    }
-  }
-
-  loadQuery(id: number): void {
-    this.singleQuerySubscription = this.backend.loadQuery(id).subscribe((query) => {
-      this.query = this.apiTranslator.translateSQtoUIQuery(
-        QueryProviderService.createDefaultQuery(),
-        query
-      );
-      this.queryProviderService.store(this.query);
-      this.router.navigate(['/querybuilder/editor'], {
-        state: { preventReset: true, loadedResult: query.results },
-      });
-    });
   }
 
   doValidate(): void {
