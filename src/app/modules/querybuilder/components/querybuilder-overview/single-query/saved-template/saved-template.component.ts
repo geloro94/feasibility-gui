@@ -10,7 +10,7 @@ import { Subscription } from 'rxjs';
 import { IAppConfig } from 'src/app/config/app-config.model';
 
 @Component({
-  selector: 'num-saved-templates',
+  selector: 'num-saved-template',
   templateUrl: './saved-template.component.html',
   styleUrls: ['./saved-template.component.scss'],
 })
