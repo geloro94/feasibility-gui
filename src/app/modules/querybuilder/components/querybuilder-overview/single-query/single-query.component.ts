@@ -1,17 +1,16 @@
-import { Component, Input, OnInit, Output } from '@angular/core';
+import { Component, Input, OnDestroy, OnInit, Output } from '@angular/core';
 import { Query } from '../../../model/api/query/query';
 import { QueryProviderService } from '../../../service/query-provider.service';
-import { Router } from '@angular/router';
 import { BackendService } from '../../../service/backend.service';
 import { FeatureProviderService } from '../../../service/feature-provider.service';
-import { ApiTranslator } from '../../../controller/ApiTranslator';
 import { EventEmitter } from '@angular/core';
+import { Subscription } from 'rxjs';
 @Component({
   selector: 'num-single-query',
   templateUrl: './single-query.component.html',
   styleUrls: ['./single-query.component.scss'],
 })
-export class SingleQueryComponent implements OnInit {
+export class SingleQueryComponent implements OnInit, OnDestroy {
   @Input()
   index: number;
 
@@ -19,22 +18,7 @@ export class SingleQueryComponent implements OnInit {
   content: Query;
 
   @Input()
-  id: number;
-
-  @Input()
   isValid: boolean;
-
-  @Input()
-  singleLabel: string;
-
-  @Input()
-  singleComment: string;
-
-  @Input()
-  singleDate: Date;
-
-  @Input()
-  createdBy: string;
 
   @Output()
   reloadSavedQueries = new EventEmitter<boolean>();
@@ -48,34 +32,51 @@ export class SingleQueryComponent implements OnInit {
   query: Query;
   constructor(
     public queryProviderService: QueryProviderService,
-    private router: Router,
     private backend: BackendService,
-    public featureProviderService: FeatureProviderService,
-    private apiTranslator: ApiTranslator
+    public featureProviderService: FeatureProviderService
   ) {}
 
+  private savedQueriesSubscription: Subscription;
+  private savedTemplatesSubscription: Subscription;
+
+  savedQueries: Array<{
+    id: number
+    label: string
+    created_at: Date
+  }> = [];
+
+  savedTemplates: Array<{
+    id?: number
+    content?: Query
+    label: string
+    comment: string
+    lastModified: Date
+    createdBy?: string
+    isValid?: boolean
+  }> = [];
+
   ngOnInit(): void {
+    this.getSavedQueries();
+    this.getSavedTemplates();
     if (this.isValid === false) {
       this.isInvalid = true;
     }
   }
 
-  loadQuery(): void {
-    this.backend.loadQuery(this.id).subscribe((query) => {
-      this.query = this.apiTranslator.translateSQtoUIQuery(
-        QueryProviderService.createDefaultQuery(),
-        query
-      );
-      this.queryProviderService.store(this.query);
-      this.router.navigate(['/querybuilder/editor'], {
-        state: { preventReset: true, loadedResult: query.results },
-      });
+  ngOnDestroy(): void {
+    this.savedQueriesSubscription?.unsubscribe();
+    this.savedTemplatesSubscription?.unsubscribe();
+  }
+
+  getSavedTemplates() {
+    this.savedTemplatesSubscription = this.backend.loadSavedTemplates().subscribe((templates) => {
+      this.savedTemplates = templates;
     });
   }
 
-  deleteQuery(): void {
-    this.backend.deleteSavedQuery(this.id).subscribe(() => {
-      this.reloadSavedQueries.emit();
+  getSavedQueries(): void {
+    this.savedQueriesSubscription = this.backend.loadSavedQueries().subscribe((queries) => {
+      this.savedQueries = queries;
     });
   }
 }
