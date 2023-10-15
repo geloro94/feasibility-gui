@@ -19,22 +19,10 @@ export class SavedQueriesComponent {
   content: Query;
 
   @Input()
-  id: number;
-
-  @Input()
   isValid: boolean;
 
   @Input()
-  singleLabel: string;
-
-  @Input()
-  singleComment: string;
-
-  @Input()
-  singleDate: Date;
-
-  @Input()
-  createdBy: string;
+  singleQuery;
 
   @Output()
   reloadSavedQueries = new EventEmitter<boolean>();
@@ -55,7 +43,7 @@ export class SavedQueriesComponent {
   ) {}
 
   loadQuery(): void {
-    this.backend.loadQuery(this.id).subscribe((query) => {
+    this.backend.loadQuery(this.singleQuery.id).subscribe((query) => {
       this.query = this.apiTranslator.translateSQtoUIQuery(
         QueryProviderService.createDefaultQuery(),
         query
@@ -68,7 +56,7 @@ export class SavedQueriesComponent {
   }
 
   deleteQuery(): void {
-    this.backend.deleteSavedQuery(this.id).subscribe(() => {
+    this.backend.deleteSavedQuery(this.singleQuery.id).subscribe(() => {
       this.reloadSavedQueries.emit();
     });
   }

@@ -16,13 +16,7 @@ import { IAppConfig } from 'src/app/config/app-config.model';
 })
 export class SavedTemplatesComponent implements OnInit, OnDestroy {
   @Input()
-  singleLabel: string;
-
-  @Input()
-  singleComment: string;
-
-  @Input()
-  singleDate: Date;
+  singleTemplate;
 
   query: Query;
   queryVersion: string;
@@ -41,22 +35,8 @@ export class SavedTemplatesComponent implements OnInit, OnDestroy {
   private singleTemplateSubscription: Subscription;
   private features: IAppConfig;
 
-  savedTemplates: Array<{
-    id?: number
-    content?: Query
-    label: string
-    comment: string
-    lastModified: Date
-    createdBy?: string
-    isValid?: boolean
-  }> = [];
-
   ngOnInit(): void {
     this.query = this.queryProviderService.query();
-    this.savedTemplatesSubscription?.unsubscribe();
-    this.savedTemplatesSubscription = this.backend.loadSavedTemplates().subscribe((templates) => {
-      this.savedTemplates = templates;
-    });
     this.features = this.featureProviderService.getFeatures();
     this.queryVersion = this.features.queryVersion;
   }
@@ -66,21 +46,24 @@ export class SavedTemplatesComponent implements OnInit, OnDestroy {
     this.savedTemplatesSubscription?.unsubscribe();
   }
 
-  loadTemplate(): void {
+  getSingleTemplate(): void {
     if (this.feature.mockLoadnSave()) {
-      this.queryProviderService.store(this.query);
-      this.router.navigate(['/querybuilder/editor'], { state: { preventReset: true } });
+      this.navigateToEditor();
     } else {
       this.singleTemplateSubscription = this.backend
-        .loadTemplate(this.savedTemplates.id)
+        .loadTemplate(this.singleTemplate.id)
         .subscribe((query) => {
           this.query = this.apiTranslator.translateSQtoUIQuery(
             QueryProviderService.createDefaultQuery(),
             query
           );
-          this.queryProviderService.store(this.query);
-          this.router.navigate(['/querybuilder/editor'], { state: { preventReset: true } });
+          this.navigateToEditor();
         });
     }
+  }
+
+  navigateToEditor() {
+    this.queryProviderService.store(this.query);
+    this.router.navigate(['/querybuilder/editor'], { state: { preventReset: true } });
   }
 }
