@@ -47,6 +47,9 @@ import { DisplayLinkedCriterionComponent } from './components/querybuilder-edito
 import { SavedTemplateComponent } from './components/querybuilder-overview/single-query/saved-template/saved-template.component';
 import { SavedQueryComponent } from './components/querybuilder-overview/single-query/saved-query/saved-query.component';
 import { ImportQueryComponent } from './components/querybuilder-overview/import-query/import-query.component';
+import { DownloadQueryComponent } from './components/querybuilder-editor/save/save-dialog/download-query/download-query.component';
+import { SaveTemplateComponent } from './components/querybuilder-editor/save/save-dialog/save-template/save-template.component';
+import { ResultantQueryComponent } from './components/querybuilder-editor/save/save-dialog/resultant-query/resultant-query.component';
 
 export const FORMATS_GERMAN = {
   parse: {
@@ -96,6 +99,9 @@ export const FORMATS_GERMAN = {
     SavedTemplateComponent,
     SavedQueryComponent,
     ImportQueryComponent,
+    DownloadQueryComponent,
+    SaveTemplateComponent,
+    ResultantQueryComponent,
   ],
   imports: [
     CommonModule,

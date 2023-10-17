@@ -1,0 +1,17 @@
+<div fxLayout="column">
+  <mat-form-field class="input-field">
+    <mat-label>{{ 'QUERYBUILDER.OVERVIEW.TITLE_LABEL' | translate }}</mat-label>
+    <!--suppress HtmlFormInputWithoutLabel -->
+    <input matInput type="text" [(ngModel)]="title" />
+  </mat-form-field>
+  <mat-form-field class="input-field" appearance="fill">
+    <mat-label>{{ 'QUERYBUILDER.OVERVIEW.COMMENT_LABEL' | translate }}</mat-label>
+    <textarea
+      matInput
+      cdkTextareaAutosize
+      cdkAutosizeMinRows="3"
+      cdkAutosizeMaxRows="5"
+      [(ngModel)]="comment"
+    ></textarea>
+  </mat-form-field>
+</div>
