@@ -1,30 +1,37 @@
-<div fxLayout="column" class="padding-top-2-em">
+<h4 class="padding-top-2-em margin-left-1em">
+  Hierfür muss der Datenutzungsantrag erst ausgeführt worden sein
+</h4>
+<div fxLayout="column">
   <mat-form-field class="input-field">
     <mat-label>{{ 'QUERYBUILDER.OVERVIEW.TITLE_LABEL' | translate }}</mat-label>
-    <!--suppress HtmlFormInputWithoutLabel -->
-    <input matInput type="text" [(ngModel)]="title" />
+    <input
+      matInput
+      type="text"
+      (ngModelChange)="querySaveComparison()"
+      [(ngModel)]="title"
+      required
+      [disabled]="!letQuerySave"
+    />
   </mat-form-field>
   <mat-form-field class="input-field" appearance="fill">
     <mat-label>{{ 'QUERYBUILDER.OVERVIEW.COMMENT_LABEL' | translate }}</mat-label>
     <textarea
       matInput
       cdkTextareaAutosize
-      cdkAutosizeMinRows="3"
+      cdkAutosizeMinRows="1"
       cdkAutosizeMaxRows="5"
       [(ngModel)]="comment"
+      [disabled]="!letQuerySave"
     ></textarea>
   </mat-form-field>
 </div>
 <div fxLayout="row" fxLayoutAlign="end">
   <num-button
     [type]="'primary'"
-    [isDisabled]="title.length <= 0"
+    [isDisabled]="saveButtonDisabled"
     (click)="doSaveQuery()"
     class="button-save"
   >
     {{ 'BUTTON.SAVE' | translate }}
-  </num-button>
-  <num-button class="margin-right-1em" [type]="'primary'" (click)="doDiscard()">
-    {{ 'BUTTON.CANCEL' | translate }}
   </num-button>
 </div>
