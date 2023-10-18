@@ -152,9 +152,9 @@
       "SAVE_HEADER": "Abspeichern der aktuellen Suchanfrage",
       "LOAD_HEADER": "Bisherige Suchanfragen",
       "IMPORT_HEADER": "Suchanfragen importieren",
-      "SAVE_WITH_QUERY": "für Datennutzungsantrag speichern (muss vorher ausgeführt worden sein)",
-      "SAVE_TEMPLATE": "als Vorlage speichern",
-      "DOWNLOAD_SQ": "als Datei speichern",
+      "SAVE_WITH_QUERY": "Für Datennutzungsantrag speichern",
+      "SAVE_TEMPLATE": "Als Vorlage speichern",
+      "DOWNLOAD_SQ": "Als Datei speichern",
       "FILENAME": "Dateiname",
       "SAVED_QUERIES": "Gespeicherte Abfragen (mit Ergebnis)",
       "SAVED_TEMPLATES": "Gespeicherte Vorlagen"
