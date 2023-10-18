@@ -1,0 +1,21 @@
+<num-import-query></num-import-query>
+<h2 class="loading-header">{{ 'QUERYBUILDER.OVERVIEW.LOAD_HEADER' | translate }}</h2>
+<div class="saved-queries">
+  <div fxLayout="row" fxLayoutAlign="end center">
+    <num-button [type]="'primary'" (click)="doValidate()" class="button-validate">
+      {{ 'BUTTON.VALIDATE' | translate }}
+    </num-button>
+  </div>
+  <h3>{{ 'QUERYBUILDER.OVERVIEW.SAVED_QUERIES' | translate }}</h3>
+  <div *ngFor="let singleQuery of savedQueries">
+    <num-saved-query
+      [singleQuery]="singleQuery"
+      (reloadSavedQueries)="getSavedQueries()"
+    ></num-saved-query>
+  </div>
+  <div class="trenner"></div>
+  <h3>{{ 'QUERYBUILDER.OVERVIEW.SAVED_TEMPLATES' | translate }}</h3>
+  <div *ngFor="let singleTemplate of savedTemplates" class="template-box">
+    <num-saved-template [singleTemplate]="singleTemplate"></num-saved-template>
+  </div>
+</div>
