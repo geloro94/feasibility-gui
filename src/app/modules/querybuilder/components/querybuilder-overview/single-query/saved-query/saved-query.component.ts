@@ -7,7 +7,7 @@ import { FeatureProviderService } from 'src/app/modules/querybuilder/service/fea
 import { QueryProviderService } from 'src/app/modules/querybuilder/service/query-provider.service';
 import { Query } from 'src/app/modules/querybuilder/model/api/query/query';
 @Component({
-  selector: 'num-saved-queries',
+  selector: 'num-saved-query',
   templateUrl: './saved-query.component.html',
   styleUrls: ['./saved-query.component.scss'],
 })
@@ -50,7 +50,7 @@ export class SavedQueryComponent {
       );
       this.queryProviderService.store(this.query);
       this.router.navigate(['/querybuilder/editor'], {
-        state: { preventReset: true, loadedResult: query.results },
+        state: { preventReset: true, loadedResult: this.singleQuery },
       });
     });
   }
