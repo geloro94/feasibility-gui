@@ -1,8 +1,8 @@
-<div fxLayout="column">
+<div fxLayout="column" class="padding-top-2-em">
   <mat-form-field class="input-field">
     <mat-label>{{ 'QUERYBUILDER.OVERVIEW.TITLE_LABEL' | translate }}</mat-label>
     <!--suppress HtmlFormInputWithoutLabel -->
-    <input matInput type="text" [(ngModel)]="title" />
+    <input matInput type="text" [(ngModel)]="title" required />
   </mat-form-field>
   <mat-form-field class="input-field" appearance="fill">
     <mat-label>{{ 'QUERYBUILDER.OVERVIEW.COMMENT_LABEL' | translate }}</mat-label>
@@ -14,4 +14,14 @@
       [(ngModel)]="comment"
     ></textarea>
   </mat-form-field>
+</div>
+<div fxLayout="row" fxLayoutAlign="end">
+  <num-button
+    [type]="'primary'"
+    [isDisabled]="title.length <= 0"
+    (click)="doSaveTemplate()"
+    class="button-save"
+  >
+    {{ 'BUTTON.SAVE' | translate }}
+  </num-button>
 </div>
