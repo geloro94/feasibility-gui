@@ -6,5 +6,16 @@
       {{ 'BUTTON.VALIDATE' | translate }}
     </num-button>
   </div>
-  <num-single-query></num-single-query>
+  <h3>{{ 'QUERYBUILDER.OVERVIEW.SAVED_QUERIES' | translate }}</h3>
+  <div *ngFor="let singleQuery of savedQueries">
+    <num-saved-query
+      [singleQuery]="singleQuery"
+      (reloadSavedQueries)="getSavedQueries()"
+    ></num-saved-query>
+  </div>
+  <div class="trenner"></div>
+  <h3>{{ 'QUERYBUILDER.OVERVIEW.SAVED_TEMPLATES' | translate }}</h3>
+  <div *ngFor="let singleTemplate of savedTemplates" class="template-box">
+    <num-saved-template [singleTemplate]="singleTemplate"></num-saved-template>
+  </div>
 </div>
