@@ -1,4 +1,4 @@
-<div fxLayout="column" class="padding-top-2-em" FlexFill>
+<div fxLayout="column" class="padding-top-2-em height-85" FlexFill>
   <mat-form-field class="input-field">
     <mat-label>{{ 'QUERYBUILDER.OVERVIEW.TITLE_LABEL' | translate }}</mat-label>
     <!--suppress HtmlFormInputWithoutLabel -->
@@ -9,7 +9,7 @@
     <textarea
       matInput
       cdkTextareaAutosize
-      cdkAutosizeMinRows="3"
+      cdkAutosizeMinRows="1"
       cdkAutosizeMaxRows="5"
       [(ngModel)]="comment"
     ></textarea>
