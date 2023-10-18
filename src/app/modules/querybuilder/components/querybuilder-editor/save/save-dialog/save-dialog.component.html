@@ -7,7 +7,7 @@
           <num-save-template [query]="query"> </num-save-template>
         </mat-tab>
         <mat-tab label="{{ 'QUERYBUILDER.OVERVIEW.DOWNLOAD_SQ' | translate }}">
-          <num-download-query></num-download-query>
+          <num-download-query [query]="query"></num-download-query>
         </mat-tab>
         <mat-tab
           label="{{ 'QUERYBUILDER.OVERVIEW.SAVE_WITH_QUERY' | translate }}"
