@@ -20,7 +20,7 @@ export const mainNavItems: INavItem[] = [
     translationKey: 'NAVIGATION.DATASELECTION_EDITOR',
   },
   {
-    routeTo: 'querybuilder/overview',
+    routeTo: 'querybuilder/my-queries',
     roles: ['main'],
     icon: 'bars',
     translationKey: 'NAVIGATION.QUERYBUILDER_OVERVIEW',
