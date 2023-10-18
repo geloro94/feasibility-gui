@@ -2,13 +2,13 @@
 <div class="save-query-box">
   <mat-tab-group mat-stretch-tabs animationDuration="0ms">
     <mat-tab label="{{ 'QUERYBUILDER.OVERVIEW.SAVE_TEMPLATE' | translate }}">
-      <num-download-query></num-download-query>
+      <num-save-template> </num-save-template>
     </mat-tab>
     <mat-tab label="{{ 'QUERYBUILDER.OVERVIEW.SAVE_WITH_QUERY' | translate }}">
-      <num-resultant-query></num-resultant-query>
+      <num-resultant-query [letQuerySave]="letQuerySave"> </num-resultant-query>
     </mat-tab>
     <mat-tab label="{{ 'QUERYBUILDER.OVERVIEW.DOWNLOAD_SQ' | translate }}">
-      <num-save-template></num-save-template>
+      <num-download-query></num-download-query>
     </mat-tab>
   </mat-tab-group>
 </div>
