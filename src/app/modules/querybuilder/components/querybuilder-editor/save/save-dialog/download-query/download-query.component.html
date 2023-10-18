@@ -1,5 +1,17 @@
-<mat-form-field class="input-field">
-  <mat-label>{{ 'QUERYBUILDER.OVERVIEW.FILENAME' | translate }}</mat-label>
-  <!--suppress HtmlFormInputWithoutLabel -->
-  <input matInput type="text" [(ngModel)]="filename" />
-</mat-form-field>
+<div fxLayout="column" class="padding-top-2-em">
+  <mat-form-field class="input-field">
+    <mat-label>{{ 'QUERYBUILDER.OVERVIEW.FILENAME' | translate }}</mat-label>
+    <!--suppress HtmlFormInputWithoutLabel -->
+    <input matInput type="text" [(ngModel)]="filename" />
+  </mat-form-field>
+  <div fxLayout="row" fxLayoutAlign="end">
+    <num-button
+      [type]="'primary'"
+      [isDisabled]="filename.length <= 0"
+      (click)="doDownloadQuery()"
+      class="button-save"
+    >
+      {{ 'BUTTON.SAVE' | translate }}
+    </num-button>
+  </div>
+</div>
