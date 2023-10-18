@@ -38,7 +38,6 @@ import { EditGroupConnectionComponent } from './components/querybuilder-editor/e
 import { ResultSimpleComponent } from './components/querybuilder-editor/result/result-simple/result-simple.component';
 import { ResultDetailsDialogComponent } from './components/querybuilder-editor/result/result-details-dialog/result-details-dialog.component';
 import { DisplayEntitiesComponent } from './components/querybuilder-editor/display/display-entities/display-entities.component';
-import { SingleQueryComponent } from './components/querybuilder-overview/single-query/single-query.component';
 import { SaveDialogComponent } from './components/querybuilder-editor/save/save-dialog/save-dialog.component';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatTooltipModule } from '@angular/material/tooltip';
@@ -93,7 +92,6 @@ export const FORMATS_GERMAN = {
     ResultSimpleComponent,
     ResultDetailsDialogComponent,
     DisplayEntitiesComponent,
-    SingleQueryComponent,
     SaveDialogComponent,
     DisplayLinkedCriterionComponent,
     SavedTemplateComponent,
