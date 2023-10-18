@@ -1,12 +1,11 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { QuerybuilderEditorComponent } from './components/querybuilder-editor/querybuilder-editor.component';
-import { QuerybuilderOverviewComponent } from './components/querybuilder-overview/querybuilder-overview.component';
-
+import { MyQueriesComponent } from './components/my-queries/my-queries.component';
 const routes: Routes = [
   { path: '', redirectTo: 'editor', pathMatch: 'full' },
   { path: 'editor', component: QuerybuilderEditorComponent },
-  { path: 'overview', component: QuerybuilderOverviewComponent },
+  { path: 'my-queries', component: MyQueriesComponent },
 ];
 
 @NgModule({
