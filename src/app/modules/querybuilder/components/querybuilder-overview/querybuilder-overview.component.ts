@@ -15,10 +15,25 @@ import { IAppConfig } from '../../../../config/app-config.model';
   templateUrl: './querybuilder-overview.component.html',
   styleUrls: ['./querybuilder-overview.component.scss'],
 })
-export class QuerybuilderOverviewComponent implements OnInit {
-  constructor(public queryProviderService: QueryProviderService, private backend: BackendService) {}
-
+export class QuerybuilderOverviewComponent implements OnInit, OnDestroy {
+  constructor(
+    public queryProviderService: QueryProviderService,
+    private backend: BackendService,
+    public featureProviderService: FeatureProviderService
+  ) {}
   private savedTemplatesSubscription: Subscription;
+
+  private savedQueriesSubscription: Subscription;
+
+  isInvalid: boolean;
+
+  isValid: boolean;
+
+  savedQueries: Array<{
+    id: number
+    label: string
+    created_at: Date
+  }> = [];
 
   savedTemplates: Array<{
     id?: number
@@ -30,7 +45,30 @@ export class QuerybuilderOverviewComponent implements OnInit {
     isValid?: boolean
   }> = [];
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    this.getSavedQueries();
+    this.getSavedTemplates();
+    if (this.isValid === false) {
+      this.isInvalid = true;
+    }
+  }
+
+  ngOnDestroy(): void {
+    this.savedQueriesSubscription?.unsubscribe();
+    this.savedTemplatesSubscription?.unsubscribe();
+  }
+
+  getSavedTemplates() {
+    this.savedTemplatesSubscription = this.backend.loadSavedTemplates().subscribe((templates) => {
+      this.savedTemplates = templates;
+    });
+  }
+
+  getSavedQueries(): void {
+    this.savedQueriesSubscription = this.backend.loadSavedQueries().subscribe((queries) => {
+      this.savedQueries = queries;
+    });
+  }
 
   doValidate(): void {
     this.savedTemplatesSubscription = this.backend.loadSavedTemplates(true).subscribe((queries) => {
