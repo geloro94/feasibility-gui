@@ -3,7 +3,6 @@ import { CommonModule } from '@angular/common';
 
 import { QuerybuilderRoutingModule } from './querybuilder-routing.module';
 import { QuerybuilderEditorComponent } from './components/querybuilder-editor/querybuilder-editor.component';
-import { QuerybuilderOverviewComponent } from './components/querybuilder-overview/querybuilder-overview.component';
 import { SharedModule } from 'src/app/shared/shared.module';
 import { LayoutModule } from 'src/app/layout/layout.module';
 import { DisplayQueryComponent } from './components/querybuilder-editor/display/display-query/display-query.component';
@@ -43,12 +42,13 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { FileSaverModule } from 'ngx-filesaver';
 import { DisplayLinkedCriterionComponent } from './components/querybuilder-editor/display/display-linked-criterion/display-linked-criterion.component';
-import { SavedTemplateComponent } from './components/querybuilder-overview/single-query/saved-template/saved-template.component';
-import { SavedQueryComponent } from './components/querybuilder-overview/single-query/saved-query/saved-query.component';
-import { ImportQueryComponent } from './components/querybuilder-overview/import-query/import-query.component';
+import { SavedTemplateComponent } from './components/my-queries/single-query/saved-template/saved-template.component';
+import { SavedQueryComponent } from './components/my-queries/single-query/saved-query/saved-query.component';
+import { ImportQueryComponent } from './components/my-queries/import-query/import-query.component';
 import { DownloadQueryComponent } from './components/querybuilder-editor/save/save-dialog/download-query/download-query.component';
 import { SaveTemplateComponent } from './components/querybuilder-editor/save/save-dialog/save-template/save-template.component';
 import { ResultantQueryComponent } from './components/querybuilder-editor/save/save-dialog/resultant-query/resultant-query.component';
+import { MyQueriesComponent } from './components/my-queries/my-queries.component';
 
 export const FORMATS_GERMAN = {
   parse: {
@@ -65,7 +65,7 @@ export const FORMATS_GERMAN = {
 @NgModule({
   declarations: [
     QuerybuilderEditorComponent,
-    QuerybuilderOverviewComponent,
+    MyQueriesComponent,
     DisplayQueryComponent,
     DisplayGroupComponent,
     DisplayCritGroupComponent,
