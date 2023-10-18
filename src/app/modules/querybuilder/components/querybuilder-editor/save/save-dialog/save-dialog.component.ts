@@ -1,5 +1,12 @@
 /* eslint-disable */
-import { Component, Inject, OnDestroy, OnInit } from '@angular/core'
+import {
+  AfterViewChecked,
+  AfterViewInit,
+  Component,
+  Inject,
+  OnDestroy,
+  OnInit,
+} from '@angular/core'
 import { Query } from '../../../../model/api/query/query'
 import { QueryProviderService } from '../../../../service/query-provider.service'
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog'
@@ -18,8 +25,10 @@ export class SaveDialogComponentData {
   templateUrl: './save-dialog.component.html',
   styleUrls: ['./save-dialog.component.scss'],
 })
-export class SaveDialogComponent implements OnInit, OnDestroy {
+export class SaveDialogComponent implements OnInit, OnDestroy, AfterViewChecked {
   private subscriptionResult: Subscription
+  private querySlotCountSubscription: Subscription
+
   hasQuerySend: boolean | string
 
   constructor(
@@ -38,59 +47,49 @@ export class SaveDialogComponent implements OnInit, OnDestroy {
   comment = ''
   filename = ''
   saveWithQuery: boolean | string = false
-  letQuerySave: boolean
+  letQuerySave: boolean = false
   saveButtonDisabled: boolean = true
   downloadQuery: boolean = false
+  querySlotAvailable: boolean = false
 
   ngOnInit(): void {
     this.query = this.queryProviderService.query()
-    this.hasQuerySend === false ? (this.letQuerySave = true) : (this.letQuerySave = false)
     this.saveWithQuery = this.hasQuerySend
+    this.isQuerySlotAvailable()
+    this.querySaveComparison()
   }
+
+  ngAfterViewChecked() {
+    this.dialogRef.afterOpened().subscribe(() => {
+      this.querySentStatus()
+    })
+  }
+
   ngOnDestroy(): void {
     this.subscriptionResult?.unsubscribe()
+    this.querySlotCountSubscription.unsubscribe()
   }
-  doSave(): void {
-    if (this.downloadQuery) {
-      this.doDownloadQuery()
+
+  querySentStatus(): void {
+    if (typeof this.data.hasQuerySend === 'number') {
+      this.hasQuerySend = true
+      this.querySaveComparison()
     } else {
-      this.subscriptionResult?.unsubscribe()
-      this.subscriptionResult = this.backend
-        .saveQuery(this.query, this.title, this.comment, this.saveWithQuery)
-        .subscribe((response) => {})
+      this.hasQuerySend = false
     }
-    this.dialogRef.close()
+  }
+  querySaveComparison() {
+    this.isQuerySlotAvailable()
+    if (this.hasQuerySend && this.querySlotAvailable) {
+      this.letQuerySave = true
+    }
   }
 
-  doDownloadQuery() {
-    const queryString = JSON.stringify(this.apiTranslator.translateToV2(this.query))
-    const fileData = new Blob([queryString], { type: 'text/plain;charset=utf-8' })
-    this.fileSaverService.save(fileData, this.filename + '.json')
-  }
-
-  doDiscard(): void {
-    this.dialogRef.close()
-  }
-
-  setQuerySaving(mode: MatRadioChange): void {
-    if (mode.value === 'template') {
-      this.saveWithQuery = false
-      this.downloadQuery = false
-    }
-    if (mode.value === 'saveQuery') {
-      this.saveWithQuery = this.hasQuerySend
-      this.downloadQuery = false
-    }
-    if (mode.value === 'download') {
-      this.downloadQuery = true
-    }
-    this.isEmpty()
-  }
-
-  isEmpty(): void {
-    this.saveButtonDisabled = !(
-      (this.downloadQuery && this.filename !== '') ||
-      (!this.downloadQuery && this.title !== '')
-    )
+  isQuerySlotAvailable(): void {
+    this.querySlotCountSubscription = this.backend
+      .getSavedQuerySlotCount()
+      .subscribe((querySlotCount) => {
+        this.querySlotAvailable = querySlotCount.total > querySlotCount.used ? true : false
+      })
   }
 }
