@@ -3,7 +3,6 @@ import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { Subscription } from 'rxjs';
 import { Query } from 'src/app/modules/querybuilder/model/api/query/query';
 import { BackendService } from 'src/app/modules/querybuilder/service/backend.service';
-import { SaveDialogComponent, SaveDialogComponentData } from '../save-dialog.component';
 
 @Component({
   selector: 'num-resultant-query',
