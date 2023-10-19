@@ -4,6 +4,6 @@
     (selectedTabChange)="fireSwitchCategory($event)"
     fitInkBarToContent
   >
-    <mat-tab class="test" *ngFor="let category of categories" [label]="category.display"> </mat-tab>
+    <mat-tab *ngFor="let category of categories" [label]="category.display"> </mat-tab>
   </mat-tab-group>
 </div>
