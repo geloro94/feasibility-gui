@@ -1,4 +1,10 @@
 <div class="query-box border-radius-5" fxLayout="row">
+  <img
+    *ngIf="singleQuery.isValid"
+    src="assets/img/alert.png"
+    alt="Validation Alert"
+    class="invalid-Criterion"
+  />
   <div fxLayout="row" fxLayoutAlign="center" class="text-part" (click)="loadQuery()">
     <div fxFlexAlign="center" class="query-box-title">{{ singleQuery.label }}</div>
     <div fxFlexAlign="center" class="query-box-comment">{{ singleQuery.comment }}</div>

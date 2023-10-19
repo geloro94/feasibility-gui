@@ -1,9 +1,9 @@
 import { AfterViewChecked, ChangeDetectorRef, Component } from '@angular/core';
-import { Query } from '../../../model/api/query/query';
-import { QueryProviderService } from '../../../service/query-provider.service';
 import { Router } from '@angular/router';
+import { QueryProviderService } from '../../../service/query-provider.service';
 import { FeatureProviderService } from '../../../service/feature-provider.service';
 import { ApiTranslator } from '../../../controller/ApiTranslator';
+import { Query } from '../../../model/api/query/query';
 
 @Component({
   selector: 'num-import-query',

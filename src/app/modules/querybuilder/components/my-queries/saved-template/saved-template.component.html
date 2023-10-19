@@ -1,7 +1,7 @@
 <div class="query-box border-radius-5" fxLayout="row">
   <div fxLayout="row" fxLayoutAlign="center" class="text-part" (click)="getSingleTemplate()">
     <img
-      *ngIf="isInvalid"
+      *ngIf="singleTemplate.isValid"
       src="assets/img/alert.png"
       alt="Validation Alert"
       class="invalid-Criterion"
