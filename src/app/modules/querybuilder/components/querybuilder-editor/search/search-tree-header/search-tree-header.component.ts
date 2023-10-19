@@ -20,7 +20,12 @@ export class SearchTreeHeaderComponent implements OnInit {
 
   ngOnInit(): void {}
 
-  fireSwitchCategory(catId: string): void {
-    this.switchCategory.emit(catId);
+  fireSwitchCategory(event): void {
+    this.categories.forEach((category) => {
+      if (category.display === event.tab.textLabel) {
+        console.log('it works');
+        this.switchCategory.emit(category.catId);
+      }
+    });
   }
 }

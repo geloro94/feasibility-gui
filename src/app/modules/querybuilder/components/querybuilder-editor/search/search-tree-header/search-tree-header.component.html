@@ -1,16 +1,9 @@
-<div *ngIf="categories" fxLayout="row" fxLayoutAlign="start" class="container">
-  <div class="display-label-box"></div>
-  <div
-    *ngFor="let category of categories"
-    fxLayout="row"
-    (click)="fireSwitchCategory(category.catId)"
-    class="category-box"
+<div *ngIf="categories" fxLayout="row" fxLayoutAlign="start" class="container mat-elevation-z3">
+  <mat-tab-group
+    class="padding-left-bottom"
+    (selectedTabChange)="fireSwitchCategory($event)"
+    fitInkBarToContent
   >
-    <!--<div class="short-box">
-      {{ category.shortDisplay }}
-    </div>-->
-    <div class="display-box" [ngClass]="{ 'selected-category': category.catId === selectedId }">
-      {{ category.display }}
-    </div>
-  </div>
+    <mat-tab class="test" *ngFor="let category of categories" [label]="category.display"> </mat-tab>
+  </mat-tab-group>
 </div>
