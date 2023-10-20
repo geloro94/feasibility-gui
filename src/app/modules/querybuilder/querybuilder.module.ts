@@ -45,6 +45,9 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { FileSaverModule } from 'ngx-filesaver';
 import { SnackBarComponent } from 'src/app/core/components/snack-bar/snack-bar.component';
 import { DisplayLinkedCriterionComponent } from './components/querybuilder-editor/display/display-linked-criterion/display-linked-criterion.component';
+import { ConceptComponent } from './components/querybuilder-editor/display/display-value-filter/concept/concept.component';
+import { QuantityRangeComponent } from './components/querybuilder-editor/display/display-value-filter/quantity-range/quantity-range.component';
+import { QuantityCompareComponent } from './components/querybuilder-editor/display/display-value-filter/quantity-compare/quantity-compare.component';
 
 export const FORMATS_GERMAN = {
   parse: {
@@ -91,6 +94,9 @@ export const FORMATS_GERMAN = {
     SingleQueryComponent,
     SaveDialogComponent,
     DisplayLinkedCriterionComponent,
+    ConceptComponent,
+    QuantityRangeComponent,
+    QuantityCompareComponent,
   ],
   imports: [
     CommonModule,
