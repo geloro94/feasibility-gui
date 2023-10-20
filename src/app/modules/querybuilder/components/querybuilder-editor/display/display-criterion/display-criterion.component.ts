@@ -4,9 +4,11 @@ import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 import { EditSingleCriterionComponent } from '../../edit/edit-single-criterion/edit-single-criterion.component';
 import { Query } from '../../../../model/api/query/query';
 import { Subscription } from 'rxjs';
-import { ValueFilter } from '../../../../model/api/query/valueFilter';
+import { OperatorOptions, ValueFilter } from '../../../../model/api/query/valueFilter';
 import { FeatureService } from '../../../../../../service/feature.service';
 import { CritGroupPosition } from '../../../../controller/CritGroupArranger';
+import { ValueType } from 'src/app/modules/querybuilder/model/api/terminology/valuedefinition';
+import { TerminologyCode } from 'src/app/modules/querybuilder/model/api/terminology/terminology';
 
 @Component({
   selector: 'num-display-criterion',
@@ -14,6 +16,10 @@ import { CritGroupPosition } from '../../../../controller/CritGroupArranger';
   styleUrls: ['./display-criterion.component.scss'],
 })
 export class DisplayCriterionComponent implements OnInit, OnDestroy {
+  valueType: OperatorOptions;
+
+  attributeDefinitionConcepts: Array<TerminologyCode>;
+
   @Input()
   searchType: string;
 
@@ -43,6 +49,8 @@ export class DisplayCriterionComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.criterion.position = this.position;
     this.isinvalid = this.criterion.isinvalid === true;
+    console.log('hey');
+    this.getAttributeTypeConcept();
   }
 
   ngOnDestroy(): void {
@@ -62,9 +70,10 @@ export class DisplayCriterionComponent implements OnInit, OnDestroy {
     };
     const dialogRef = this.dialog.open(EditSingleCriterionComponent, dialogConfig);
     this.subscriptionDialog?.unsubscribe();
-    this.subscriptionDialog = dialogRef
-      .afterClosed()
-      .subscribe((query) => this.storeQuery.emit(query));
+    this.subscriptionDialog = dialogRef.afterClosed().subscribe((query) => {
+      this.storeQuery.emit(query);
+      this.getAttributeTypeConcept();
+    });
   }
 
   doDelete(): void {
@@ -89,10 +98,20 @@ export class DisplayCriterionComponent implements OnInit, OnDestroy {
           ? []
           : [this.criterion.attributeFilters[0]];
       }
-
       return this.criterion.attributeFilters;
     } else {
       return [];
+    }
+  }
+
+  getAttributeTypeConcept(): void {
+    if (this.criterion.attributeFilters) {
+      this.criterion.attributeFilters.forEach((attribute) => {
+        if (attribute.type === OperatorOptions.CONCEPT) {
+          console.log('Hey' + attribute);
+          this.attributeDefinitionConcepts = attribute.selectedConcepts;
+        }
+      });
     }
   }
 }
