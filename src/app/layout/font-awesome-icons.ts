@@ -42,6 +42,8 @@ import { faFileUpload } from '@fortawesome/free-solid-svg-icons';
 import { faQuestionCircle } from '@fortawesome/free-solid-svg-icons';
 import { faExclamationCircle } from '@fortawesome/free-solid-svg-icons';
 import { faStar } from '@fortawesome/free-solid-svg-icons';
+import { faClock } from '@fortawesome/free-solid-svg-icons';
+import { faEdit } from '@fortawesome/free-solid-svg-icons';
 
 export const FONT_AWESOME_ICONS = [
   faQuestionCircle,
@@ -88,4 +90,6 @@ export const FONT_AWESOME_ICONS = [
   faAngleDoubleRight,
   faFileUpload,
   faStar,
+  faClock,
+  faEdit,
 ];

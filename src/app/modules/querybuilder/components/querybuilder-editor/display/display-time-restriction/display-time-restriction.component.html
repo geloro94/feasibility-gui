@@ -1,5 +1,6 @@
 <div *ngIf="timeRestriction">
   <div *ngIf="timeRestriction.minDate || timeRestriction.maxDate" class="container">
+    <fa-icon size="sm" icon="clock"></fa-icon>
     <span *ngIf="timeRestriction.tvpe !== timeRestrictionType.BETWEEN">
       {{ 'QUERYBUILDER.EDIT.TIMERESTRICTION.' + timeRestriction.tvpe | translate }}
       {{ getDateFormatted(timeRestriction.minDate) }}
