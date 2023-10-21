@@ -34,15 +34,12 @@
     </div>
     <num-concept
       *ngIf="attributeDefinitionConcepts"
-      [attributeDefinitionConcepts]="attributeDefinitionConcepts"
+      [selectedConcepts]="attributeDefinitionConcepts"
     ></num-concept>
-    <div
-      fxLayout="column"
-      *ngFor="let filter of getValueFilters()"
-      class="mat-elevation-z1 font-time-reestriction border-design-filter time-restriction-container"
-    >
-      <num-display-value-filter [filter]="filter"> </num-display-value-filter>
-    </div>
+    <num-concept
+      *ngIf="valueDefinitionConcepts"
+      [selectedConcepts]="valueDefinitionConcepts"
+    ></num-concept>
     <ng-container *ngIf="searchType === 'querybuilder'">
       <div
         *ngIf="criterion.linkedCriteria.length > 0"
