@@ -4,33 +4,23 @@
   #trigger="cdkOverlayOrigin"
   [ngClass]="{ 'show-above-overlay': isOverlayOpen }"
 >
-  <div *ngIf="searchType === 'querybuilder'" class="header-label">
-    {{ 'QUERYBUILDER.SEARCH.' + getHeaderLabelKey() | translate }}
-  </div>
   <div *ngIf="searchType === 'dataselection'" class="header-label-dataselection">
     {{ 'DATASELECTION.SEARCH.CRITERIA' | translate }}
   </div>
   <div fxLayout="row" fxLayoutAlign="space-evenly start">
-    <div fxLayoutAlign="center">
-      <button class="button-tree-view" type="button" mat-icon-button (click)="switchSearchMode()">
-        <fa-icon size="2x" icon="folder"></fa-icon>
-      </button>
-    </div>
-    <mat-form-field class="input-field" fxFlex="85">
+    <mat-form-field class="input-field" fxFill>
       <mat-label>{{ 'QUERYBUILDER.SEARCH.LABEL' | translate }}</mat-label>
-      <fa-icon matPrefix size="2x" icon="search"></fa-icon>
+      <fa-icon matIconPrefix size="2x" icon="search"></fa-icon>
       <!--suppress HtmlFormInputWithoutLabel -->
       <input matInput type="text" [(ngModel)]="search" />
-      <button
-        mat-button
-        *ngIf="search"
-        matSuffix
-        mat-icon-button
-        aria-label="Clear"
-        (click)="search = ''"
-      >
+      <button mat-button matSuffix (click)="switchSearchMode(); $event.stopPropagation()">
+        <fa-icon *ngIf="isOverlayOpen" matIconSuffix size="2x" icon="chevron-up"></fa-icon>
+        <fa-icon *ngIf="!isOverlayOpen" matIconSuffix size="2x" icon="chevron-down"></fa-icon>
+      </button>
+      <button mat-button *ngIf="search" matSuffix aria-label="Clear" (click)="search = ''">
         <fa-icon size="2x" icon="times"></fa-icon>
       </button>
+      <mat-divider [vertical]="true" class="display-inline-divider"></mat-divider>
     </mat-form-field>
   </div>
 </div>
@@ -38,7 +28,6 @@
 <ng-template
   cdkConnectedOverlay
   cdkConnectedOverlayHasBackdrop
-  cdkConnectedOverlayHeight="12em"
   [cdkConnectedOverlayPositions]="positions"
   [cdkConnectedOverlayOrigin]="trigger"
   [cdkConnectedOverlayOpen]="isOverlayOpen"
