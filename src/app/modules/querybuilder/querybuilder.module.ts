@@ -41,6 +41,7 @@ import { SaveDialogComponent } from './components/querybuilder-editor/save/save-
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { FileSaverModule } from 'ngx-filesaver';
+import { SnackBarComponent } from 'src/app/core/components/snack-bar/snack-bar.component';
 import { DisplayLinkedCriterionComponent } from './components/querybuilder-editor/display/display-linked-criterion/display-linked-criterion.component';
 import { SavedTemplateComponent } from './components/my-queries/saved-template/saved-template.component';
 import { SavedQueryComponent } from './components/my-queries/saved-query/saved-query.component';
