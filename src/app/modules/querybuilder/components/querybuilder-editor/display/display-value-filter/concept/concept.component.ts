@@ -9,7 +9,7 @@ import { TerminologyCode } from 'src/app/modules/querybuilder/model/api/terminol
 })
 export class ConceptComponent implements OnInit {
   @Input()
-  attributeDefinitionConcepts: Array<TerminologyCode>;
+  selectedConcepts: Array<TerminologyCode>;
 
   ngOnInit() {}
 }
