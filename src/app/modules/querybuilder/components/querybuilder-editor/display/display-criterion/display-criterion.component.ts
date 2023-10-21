@@ -20,11 +20,18 @@ export class DisplayCriterionComponent implements OnInit, OnDestroy {
 
   attributeDefinitionConcepts: Array<TerminologyCode>;
 
+  valueDefinitionConcepts: Array<TerminologyCode>;
+
+  linkedCriterias: Array<Criterion>;
+
   @Input()
   searchType: string;
 
   @Input()
   criterion: Criterion;
+
+  @Input()
+  linkedCriterion: Criterion;
 
   @Input()
   query: Query;
@@ -49,8 +56,10 @@ export class DisplayCriterionComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.criterion.position = this.position;
     this.isinvalid = this.criterion.isinvalid === true;
-    console.log('hey');
-    this.getAttributeTypeConcept();
+    this.getAttributeFilters();
+    this.getTypeConceptValues();
+    this.getTypeConceptAttributes();
+    this.getTypeReferenceAttributes();
   }
 
   ngOnDestroy(): void {
@@ -72,7 +81,10 @@ export class DisplayCriterionComponent implements OnInit, OnDestroy {
     this.subscriptionDialog?.unsubscribe();
     this.subscriptionDialog = dialogRef.afterClosed().subscribe((query) => {
       this.storeQuery.emit(query);
-      this.getAttributeTypeConcept();
+      this.getAttributeFilters();
+      this.getTypeConceptValues();
+      this.getTypeConceptAttributes();
+      this.getTypeReferenceAttributes();
     });
   }
 
@@ -104,12 +116,39 @@ export class DisplayCriterionComponent implements OnInit, OnDestroy {
     }
   }
 
-  getAttributeTypeConcept(): void {
+  getTypeConceptAttributes(): void {
     if (this.criterion.attributeFilters) {
-      this.criterion.attributeFilters.forEach((attribute) => {
-        if (attribute.type === OperatorOptions.CONCEPT) {
-          console.log('Hey' + attribute);
-          this.attributeDefinitionConcepts = attribute.selectedConcepts;
+      this.criterion.attributeFilters.forEach((attributeFilter) => {
+        if (attributeFilter.type === OperatorOptions.CONCEPT) {
+          this.attributeDefinitionConcepts = attributeFilter.selectedConcepts;
+        }
+      });
+    }
+  }
+
+  getTypeReferenceAttributes(): void {
+    if (this.criterion.attributeFilters) {
+      this.criterion.attributeFilters.forEach((attributeFilter) => {
+        if (attributeFilter.type === OperatorOptions.REFERENCE) {
+          this.getLinkedCriterias(this.criterion.linkedCriteria);
+          console.log(this.criterion);
+        }
+      });
+    }
+  }
+
+  getLinkedCriterias(linkedCriterias: Array<Criterion>) {
+    linkedCriterias.forEach((linkedCriteria) => {
+      this.linkedCriterias = [linkedCriteria];
+      console.log(this.linkedCriterias);
+    });
+  }
+
+  getTypeConceptValues(): void {
+    if (this.criterion.valueFilters) {
+      this.criterion.valueFilters.forEach((valueFilter) => {
+        if (valueFilter.type === OperatorOptions.CONCEPT) {
+          this.valueDefinitionConcepts = valueFilter.selectedConcepts;
         }
       });
     }
