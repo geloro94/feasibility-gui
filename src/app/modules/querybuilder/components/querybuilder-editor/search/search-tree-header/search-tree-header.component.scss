@@ -1,7 +1,5 @@
 .container {
-  border-top: 2px solid var(--num-color--accent-200);
-  border-bottom: 2px solid var(--num-color--accent-200);
-
+  padding-left: 2em;
   overflow-x: auto;
 }
 
@@ -32,4 +30,40 @@
 .selected-category {
   background-color: var(--num-color--accent-100);
   color: var(--num-color--primary-100);
+}
+
+.padding-left-bottom {
+  padding: 0px 15px 10px 0px;
+}
+
+::ng-deep
+  .mat-mdc-tab-group.mat-mdc-tab-group-stretch-tabs
+  > .mat-mdc-tab-header
+  .mat-mdc-tab
+  > .mdc-tab__content:hover {
+  background-color: rgb(245, 245, 245);
+  border-bottom: 2px solid #979797;
+  border-radius: 2px;
+  cursor: pointer;
+  padding: 0px 6px 0px 6px;
+}
+
+::ng-deep .mat-mdc-tab-header {
+  border-bottom: 1px solid #e9e9e9;
+}
+
+::ng-deep
+  .mat-mdc-tab-group.mat-mdc-tab-group-stretch-tabs
+  > .mat-mdc-tab-header
+  .mat-mdc-tab
+  > .mdc-tab__content {
+  padding: 0px 6px 0px 6px;
+}
+
+::ng-deep .mat-mdc-tab-labels {
+  padding-top: 5px;
+}
+
+::ng-deep .mdc-tab-indicator .mdc-tab-indicator__content--underline {
+  color: #3f51b5;
 }
