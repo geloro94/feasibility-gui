@@ -51,9 +51,8 @@ num-button {
   text-align: right;
 }
 
-.search-input-spacer {
-  background-color: var(--num-color--accent-600);
-  border-radius: 4px;
+::ng-deep .mat-divider.mat-divider-vertical {
+  color: rgba(0, 0, 0, 0.12);
 }
 
 .consent-header-tooltip {
@@ -73,9 +72,7 @@ num-button {
 ::ng-deep .mat-mdc-dialog-container .mdc-dialog__surface {
   padding: 24px;
 }
-::ng-deep .querybuilder-container .mat-mdc-card-header {
-  padding: 0 16px;
-}
+
 ::ng-deep
   .mat-mdc-checkbox
   .mdc-checkbox
@@ -131,4 +128,17 @@ num-button {
 
 .margin-top-2 {
   margin-top: 2em;
+}
+
+.header-label {
+  align-items: center;
+  background-color: var(--num-color--accent-600);
+  color: var(--num-color--accent-contrast);
+  text-align: center;
+  font-size: 16px;
+  padding: 2px 0px;
+  border-radius: 1em solid var(--num-color--accent-600);
+  display: block;
+  padding: 0.5em 0em 0.5em 0em;
+  font-size: large;
 }
