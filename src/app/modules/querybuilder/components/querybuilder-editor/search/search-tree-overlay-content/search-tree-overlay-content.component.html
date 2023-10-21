@@ -1,12 +1,27 @@
 <div class="container" fxLayout="column">
   <mat-card>
-    <mat-card-header>
+    <mat-card-header class="padding-0">
       <num-search-tree-header
         fxFill
         [categories]="categories"
         [selectedId]="catId"
         (switchCategory)="readTreeData($event)"
       ></num-search-tree-header>
+    </mat-card-header>
+    <mat-card-header>
+      <mat-chip-listbox aria-label="Fish selection">
+        <mat-chip-option
+          [selected]="critType === 'inclusion'"
+          class="chip-design"
+          (selectionChange)="critType = 'inclusion'"
+          >inclusion</mat-chip-option
+        >
+        <mat-chip-option
+          [selected]="critType === 'exclusion'"
+          (selectionChange)="critType = 'exclusion'"
+          >exclusion</mat-chip-option
+        >
+      </mat-chip-listbox>
     </mat-card-header>
     <mat-card-content>
       <mat-tree [dataSource]="dataSource" [treeControl]="treeControl" class="ontology-tree">
