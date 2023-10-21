@@ -102,34 +102,38 @@
     </mat-accordion>
   </div>
 
-  <div fxLayout="row" fxLayoutAlign="space-between" class="container">
-    <num-search-input
-      [searchType]="'querybuilder'"
-      [critType]="'inclusion'"
-      [query]="query"
-      fxFlex="48.5"
-      class="search-input-inclusion"
-    ></num-search-input>
-    <div fxFlex="1" class="search-input-spacer"></div>
-    <num-search-input
-      [searchType]="'querybuilder'"
-      [critType]="'exclusion'"
-      [query]="query"
-      fxFlex="48.5"
-      class="search-input-exclusion"
-    ></num-search-input>
-  </div>
-</div>
-<div class="querybuilder-container">
-  <num-display-query
-    [searchType]="'querybuilder'"
-    [query]="query"
-    (storeQuery)="storeQuery($event)"
-  ></num-display-query>
-</div>
-<div *ngIf="featureService.useFeatureMultipleGroups()">
-  <button class="button-add-group" type="button" mat-icon-button (click)="addGroup()">
-    <fa-icon icon="plus" size="lg"></fa-icon>
-  </button>
-  {{ 'QUERYBUILDER.DISPLAY.GROUPS.NEW_GROUP' | translate }}
+  <mat-card class="mat-elevation-z3 margin-top-2">
+    <mat-card-content>
+      <div fxLayout="row" fxLayoutAlign="space-between" class="container">
+        <num-search-input
+          [searchType]="'querybuilder'"
+          [critType]="'inclusion'"
+          [query]="query"
+          fxFlex="48.5"
+          class="search-input-inclusion"
+        ></num-search-input>
+        <div fxFlex="1" class="search-input-spacer"></div>
+        <num-search-input
+          [searchType]="'querybuilder'"
+          [critType]="'exclusion'"
+          [query]="query"
+          fxFlex="48.5"
+          class="search-input-exclusion"
+        ></num-search-input>
+      </div>
+      <div class="querybuilder-container">
+        <num-display-query
+          [searchType]="'querybuilder'"
+          [query]="query"
+          (storeQuery)="storeQuery($event)"
+        ></num-display-query>
+      </div>
+      <div *ngIf="featureService.useFeatureMultipleGroups()">
+        <button class="button-add-group" type="button" mat-icon-button (click)="addGroup()">
+          <fa-icon icon="plus" size="lg"></fa-icon>
+        </button>
+        {{ 'QUERYBUILDER.DISPLAY.GROUPS.NEW_GROUP' | translate }}
+      </div>
+    </mat-card-content>
+  </mat-card>
 </div>
