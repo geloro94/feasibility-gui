@@ -4,7 +4,22 @@
       <mat-expansion-panel [expanded]="true" class="mat-elevation-z3">
         <mat-expansion-panel-header>
           <mat-panel-title>
-            <h3 class="consent-header">{{ 'RESULT.PATIENT_NUMBER' | translate }}:</h3>
+            <div fxFill fxLayout="row" fxLayoutAlign="space-between center">
+              <div fxLayout="row" fxLayoutAlign="space-between center" class="result-header-line">
+                <num-result-simple
+                  class="result-simple-box"
+                  [resultObservable]="resultObservable$"
+                  [result]="result"
+                  [showSpinner]="showSpinningIcon"
+                  [isResultLoaded]="loadedResult"
+                  [gottenDetailedResult]="gottenDetailedResult"
+                  [resultUrl]="resultUrl"
+                  [callsRemaining]="callsRemaining"
+                  [callsLimit]="callsLimit"
+                  (resultGotten)="updateResultGotten($event)"
+                ></num-result-simple>
+              </div>
+            </div>
           </mat-panel-title>
           <mat-panel-title style="width: 50%">
             <div
@@ -48,22 +63,6 @@
             </div>
           </mat-panel-title>
         </mat-expansion-panel-header>
-        <div fxLayout="row" fxLayoutAlign="space-between center">
-          <div fxLayout="row" fxLayoutAlign="space-between center" class="result-header-line">
-            <num-result-simple
-              class="result-simple-box"
-              [resultObservable]="resultObservable$"
-              [result]="result"
-              [showSpinner]="showSpinningIcon"
-              [isResultLoaded]="loadedResult"
-              [gottenDetailedResult]="gottenDetailedResult"
-              [resultUrl]="resultUrl"
-              [callsRemaining]="callsRemaining"
-              [callsLimit]="callsLimit"
-              (resultGotten)="updateResultGotten($event)"
-            ></num-result-simple>
-          </div>
-        </div>
       </mat-expansion-panel>
     </mat-accordion>
   </div>
