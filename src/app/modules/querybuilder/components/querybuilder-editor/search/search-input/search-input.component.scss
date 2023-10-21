@@ -1,8 +1,6 @@
 .container-search-input {
   position: relative;
   min-height: 6em;
-  border: 1px solid var(--num-color--primary);
-  border-radius: 5px;
 }
 
 .input-field {
@@ -12,6 +10,10 @@
 
 .show-above-overlay {
   z-index: 2000;
+}
+
+.display-inline-divider {
+  display: inline;
 }
 
 ::ng-deep .input-field .mat-mdc-text-field-wrapper .mat-mdc-form-field-flex {
@@ -41,14 +43,7 @@
   color: #0000008a;
   top: 45%;
 }
-::ng-deep
-  .input-field
-  .mat-mdc-text-field-wrapper
-  .mat-mdc-form-field-flex
-  .mat-mdc-form-field-infix
-  input {
-  padding-top: 7px;
-}
+
 ::ng-deep
   .input-field
   .mat-mdc-text-field-wrapper
@@ -66,14 +61,15 @@
   .mat-mdc-form-field-icon-suffix {
   width: 48px;
 }
+
 .header-label {
-  /*width: 36%;*/
   min-width: min-content;
   background-color: var(--num-color--accent-600);
   color: var(--num-color--accent-contrast);
   text-align: center;
   font-size: 16px;
   padding: 2px 0px;
+  border-radius: 1em solid var(--num-color--accent-600);
 }
 
 .header-label-dataselection {

@@ -147,6 +147,7 @@
       }
     },
     "OVERVIEW": {
+      "HEADER": "Create a feasibility assessment",
       "TITLE_LABEL": "Title",
       "COMMENT_LABEL": "Comment",
       "SAVE_HEADER": "Save the current query",
