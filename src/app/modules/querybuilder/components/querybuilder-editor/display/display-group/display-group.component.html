@@ -111,6 +111,7 @@
     </mat-card-header>
     <mat-card-content fxFill>
       <num-display-crit-group
+        fxfill
         *ngIf="searchType === 'querybuilder'"
         [searchType]="searchType"
         [critGroup]="group.exclusionCriteria"
@@ -121,7 +122,6 @@
         (storeQuery)="doStoreQuery($event)"
         (dropped)="doDrop($event)"
         (delete)="doDelete($event, 'exclusion')"
-        fxFlex="49.5"
       ></num-display-crit-group>
     </mat-card-content>
   </mat-card>
