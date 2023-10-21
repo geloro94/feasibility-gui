@@ -46,51 +46,51 @@
     </div>
   </div>
 </div>
-
-<mat-card appearance="outlined" class="query-group">
-  <mat-card-header>
-    <div fxLayout="row" fxLayoutAlign="space-between" class="header-wrapper">
-      <div fxLayout="row">
-        <div
-          *ngIf="featureService.useFeatureMultipleGroups()"
-          class="button-space"
-          (click)="doMoveDown()"
-        >
-          <fa-icon *ngIf="!isLinked()" icon="arrow-down" size="lg"></fa-icon>
-        </div>
-        <div
-          *ngIf="featureService.useFeatureMultipleGroups()"
-          class="button-space"
-          (click)="doMoveUp()"
-        >
-          <fa-icon *ngIf="!isLinked()" icon="arrow-up" size="lg"></fa-icon>
-        </div>
-        <div class="button-space" *ngIf="isLinked()"></div>
-        <div class="button-space" *ngIf="isLinked()"></div>
-        <div fxLayout="column" fxLayoutAlign="space-around">
-          <div>
-            {{ 'QUERYBUILDER.DISPLAY.LABEL' | translate }}
-            <em *ngIf="featureService.useFeatureMultipleGroups()"> ({{ group.id }})</em>
-          </div>
-        </div>
-      </div>
-      <div
-        fxLayout="column"
-        fxLayoutAlign="space-around"
-        *ngIf="featureService.useFeatureMultipleGroups()"
-      >
-        <div fxLayout="row">
-          <div (click)="deleteGroup(group.id)" class="header-cancel-button button-space">
-            <fa-icon *ngIf="query.groups.length > 1" icon="times" size="lg"></fa-icon>
-          </div>
-          <div class="button-space"></div>
-        </div>
+<div fxLayout="row" fxLayoutAlign="space-between" class="header-wrapper">
+  <div fxLayout="row">
+    <div
+      *ngIf="featureService.useFeatureMultipleGroups()"
+      class="button-space"
+      (click)="doMoveDown()"
+    >
+      <fa-icon *ngIf="!isLinked()" icon="arrow-down" size="lg"></fa-icon>
+    </div>
+    <div
+      *ngIf="featureService.useFeatureMultipleGroups()"
+      class="button-space"
+      (click)="doMoveUp()"
+    >
+      <fa-icon *ngIf="!isLinked()" icon="arrow-up" size="lg"></fa-icon>
+    </div>
+    <div class="button-space" *ngIf="isLinked()"></div>
+    <div class="button-space" *ngIf="isLinked()"></div>
+    <div fxLayout="column" fxLayoutAlign="space-around">
+      <div>
+        <em *ngIf="featureService.useFeatureMultipleGroups()"> ({{ group.id }})</em>
       </div>
     </div>
-  </mat-card-header>
-  <mat-card-content>
-    <div fxLayout="row" fxLayoutAlign="space-between stretch">
+  </div>
+  <div
+    fxLayout="column"
+    fxLayoutAlign="space-around"
+    *ngIf="featureService.useFeatureMultipleGroups()"
+  >
+    <div fxLayout="row">
+      <div (click)="deleteGroup(group.id)" class="header-cancel-button button-space">
+        <fa-icon *ngIf="query.groups.length > 1" icon="times" size="lg"></fa-icon>
+      </div>
+      <div class="button-space"></div>
+    </div>
+  </div>
+</div>
+<div fyLayout="row" fxLayoutAlign="space-between">
+  <mat-card fxFlex="48" class="mat-elevation-z3">
+    <mat-card-header *ngIf="searchType === 'querybuilder'" class="header-label">
+      {{ 'QUERYBUILDER.SEARCH.INCLUSION' | translate }}
+    </mat-card-header>
+    <mat-card-content fxFill>
       <num-display-crit-group
+        fxFill
         [ngClass]="{ dataselectionClass: searchType === 'dataselection' }"
         [searchType]="searchType"
         [query]="query"
@@ -101,9 +101,15 @@
         (storeQuery)="doStoreQuery($event)"
         (dropped)="doDrop($event)"
         (delete)="doDelete($event, 'inclusion')"
-        [fxFlex]="searchType === 'dataselection' ? 100 : 49.5"
       ></num-display-crit-group>
-      <div *ngIf="searchType === 'querybuilder'" fxFlex="1" class="crit-group-spacer"></div>
+    </mat-card-content>
+  </mat-card>
+  <mat-divider class="display-inline-divider" [vertical]="true"></mat-divider>
+  <mat-card fxFlex="48" class="mat-elevation-z3">
+    <mat-card-header *ngIf="searchType === 'querybuilder'" class="header-label">
+      {{ 'QUERYBUILDER.SEARCH.EXCLUSION' | translate }}
+    </mat-card-header>
+    <mat-card-content fxFill>
       <num-display-crit-group
         *ngIf="searchType === 'querybuilder'"
         [searchType]="searchType"
@@ -117,6 +123,6 @@
         (delete)="doDelete($event, 'exclusion')"
         fxFlex="49.5"
       ></num-display-crit-group>
-    </div>
-  </mat-card-content>
-</mat-card>
+    </mat-card-content>
+  </mat-card>
+</div>
