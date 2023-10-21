@@ -34,7 +34,6 @@ num-button {
   background-color: white;
   border: 1px solid var(--num-color--primary);
   border-radius: 5px;
-  width: 40%;
 }
 
 .query-buttons-box {
@@ -68,6 +67,7 @@ num-button {
 .consent-header {
   font-weight: 500;
   color: var(--num-color--accent-600);
+  padding-top: 2em;
 }
 
 ::ng-deep .mat-mdc-dialog-container .mdc-dialog__surface {
