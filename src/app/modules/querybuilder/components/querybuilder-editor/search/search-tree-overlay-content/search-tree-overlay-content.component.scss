@@ -42,7 +42,31 @@
 }
 
 .chip-design {
-  background-color: rgb(245 245 245);
-  width: 10em;
+  background-color: rgb(245, 245, 245);
   font-size: medium;
+  width: 20%;
+  border-radius: 16px;
+  margin-left: 1em;
+}
+
+.chip-design:hover {
+  background-color: rgb(245, 245, 245);
+  border: 2px solid rgb(245, 245, 245);
+  border-radius: 16px 16px 16px 16px;
+  cursor: pointer;
+  padding: 0px 6px 0px 6px;
+}
+
+::ng-deep .mat-mdc-standard-chip {
+  cursor: pointer;
+  border-radius: 1em;
+  border: 1px solid black;
+  padding: 1px 4px;
+  vertical-align: middle;
+  background-color: rgb(245, 245, 245);
+  user-select: none;
+}
+
+::ng-deep .mat-divider.mat-divider-vertical {
+  color: rgba(245, 245, 245);
 }
