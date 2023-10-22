@@ -13,9 +13,6 @@ export class DisplayLinkedCriterionComponent implements OnInit {
   @Input()
   criterion: Criterion;
 
-  @Input()
-  query: Query;
-
   isinvalid: boolean;
 
   constructor(public featureService: FeatureService) {}

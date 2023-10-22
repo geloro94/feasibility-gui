@@ -15,12 +15,12 @@
       </mat-panel-title>
       <div class="padding-top-2" *ngIf="showCancelButton">
         <button type="button" mat-icon-button (click)="doDelete()">
-          <fa-icon icon="trash"></fa-icon>
+          <fa-icon size="sm" icon="trash"></fa-icon>
         </button>
       </div>
       <div class="padding-top-2" *ngIf="showCancelButton">
         <button type="button" mat-icon-button (click)="openDetailsPopUp()">
-          <fa-icon icon="edit"></fa-icon>
+          <fa-icon size="sm" icon="edit"></fa-icon>
         </button>
       </div>
     </mat-expansion-panel-header>
@@ -51,7 +51,6 @@
         <num-display-linked-criterion
           *ngFor="let linkedCrit of criterion.linkedCriteria"
           [criterion]="linkedCrit"
-          [query]="query"
         ></num-display-linked-criterion>
       </div>
     </ng-container>
