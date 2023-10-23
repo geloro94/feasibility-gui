@@ -19,13 +19,12 @@
       </mat-panel-description>
     </mat-expansion-panel-header>
     <hr />
-    <div *ngIf="criterion.timeRestriction?.minDate" class="margin-bottom-1">
-      <num-display-time-restriction
-        *ngIf="featureService.useFeatureTimeRestriction()"
-        [timeRestriction]="criterion.timeRestriction"
-      >
-      </num-display-time-restriction>
-    </div>
+    <num-display-time-restriction
+      *ngIf="featureService.useFeatureTimeRestriction() && criterion.timeRestriction?.minDate"
+      [timeRestriction]="criterion.timeRestriction"
+    >
+    </num-display-time-restriction>
+    <mat-divider *ngIf="criterion.timeRestriction?.minDate"></mat-divider>
     <num-concept
       *ngIf="attributeDefinitionConcepts"
       [selectedConcepts]="attributeDefinitionConcepts"

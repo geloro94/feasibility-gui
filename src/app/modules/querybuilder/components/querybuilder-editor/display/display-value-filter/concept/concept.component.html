@@ -1,18 +1,22 @@
 <mat-accordion>
-  <mat-expansion-panel fxFill class="mat-elevation-z4 padding-top-2 border-design-concept">
-    <mat-expansion-panel-header class="padding-top-2 height-3 padding-left-0">
-      <mat-panel-title> Ausgewählte Attribute: {{ selectedConcepts?.length }} </mat-panel-title>
+  <mat-expansion-panel class="mat-elevation-z2 border-design-concept">
+    <mat-expansion-panel-header>
+      <mat-panel-description>
+        Ausgewählte Attribute: {{ selectedConcepts?.length }}
+      </mat-panel-description>
     </mat-expansion-panel-header>
     <hr />
-    <div fxLayout="column">
-      <div *ngFor="let selectedConcept of selectedConcepts" fxLayout="row" fxFill>
-        <div style="width: 100%" class="mat-elevation-z1 selected-concept-layout">
-          {{ selectedConcept.display }}
-        </div>
-        <button fxLayoutAlign="end" class="selected-concept-layout" type="button" mat-icon-button>
-          <fa-icon icon="times"></fa-icon>
-        </button>
-      </div>
-    </div>
+    <mat-list>
+      <ng-container *ngFor="let selectedConcept of selectedConcepts">
+        <mat-list-item>
+          <span fxFlex="90" class="text-wrap-pretty">
+            {{ selectedConcept.display }}
+          </span>
+          <button mat-list-icon fxLayoutAlign="end" type="button" mat-icon-button>
+            <fa-icon icon="times"></fa-icon>
+          </button>
+        </mat-list-item>
+      </ng-container>
+    </mat-list>
   </mat-expansion-panel>
 </mat-accordion>
