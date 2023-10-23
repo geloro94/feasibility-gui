@@ -1,4 +1,4 @@
-<div class="container" [ngClass]="{ dataselectionClass: searchType === 'dataselection' }">
+<div fxFill [ngClass]="{ dataselectionClass: searchType === 'dataselection' }">
   <div fxLayout="row" fxLayoutAlign="space-between">
     <h3>{{ 'QUERYBUILDER.EDIT.HEADER' | translate }}</h3>
     <div fxLayout="row" fxLayoutAlign="space-between top">
@@ -18,8 +18,9 @@
     <span class="mandatory-star">*</span
     ><span> - {{ 'QUERYBUILDER.EDIT.MANDATORY_HINT' | translate }}</span>
   </div>
-  <div *ngIf="criterionList" class="crit-list">
+  <div fxFill *ngIf="criterionList" class="crit-list">
     <num-edit-criterion
+      fxFill
       *ngFor="let criterion of criterionList"
       [criterion]="criterion"
       [searchType]="searchType"
