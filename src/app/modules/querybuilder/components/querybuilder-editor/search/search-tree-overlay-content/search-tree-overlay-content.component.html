@@ -1,25 +1,19 @@
 <div class="container" fxLayout="column">
   <mat-card>
     <mat-card-header>
-      <mat-chip-listbox fxFill fxLayout="row" fxLayouAlign="space-between">
-        <div fxFlex="20" class="chip-design">
-          <mat-chip-option
-            fxFill
-            [selected]="critType === 'inclusion'"
-            (selectionChange)="critType = 'inclusion'"
-          >
-            {{ 'QUERYBUILDER.SEARCH.INCLUSION' | translate }}
-          </mat-chip-option>
-        </div>
-        <div fxFlex="20" class="chip-design">
-          <mat-chip-option
-            fxFill
-            [selected]="critType === 'exclusion'"
-            (selectionChange)="critType = 'exclusion'"
-          >
-            {{ 'QUERYBUILDER.SEARCH.EXCLUSION' | translate }}
-          </mat-chip-option>
-        </div>
+      <mat-chip-listbox fxLayouAlign="space-between">
+        <mat-chip-option
+          [selected]="critType === 'inclusion'"
+          (selectionChange)="critType = 'inclusion'"
+        >
+          {{ 'QUERYBUILDER.SEARCH.INCLUSION' | translate }}
+        </mat-chip-option>
+        <mat-chip-option
+          [selected]="critType === 'exclusion'"
+          (selectionChange)="critType = 'exclusion'"
+        >
+          {{ 'QUERYBUILDER.SEARCH.EXCLUSION' | translate }}
+        </mat-chip-option>
       </mat-chip-listbox>
     </mat-card-header>
     <mat-card-header class="padding-0">
@@ -59,7 +53,6 @@
           </li>
         </mat-nested-tree-node>
       </mat-tree>
-      <mat-divider></mat-divider>
       <mat-card-footer>
         <div fxFlex="grow"></div>
         <num-search-tree-footer (addEvent)="openDetailsPopUp($event)"></num-search-tree-footer>

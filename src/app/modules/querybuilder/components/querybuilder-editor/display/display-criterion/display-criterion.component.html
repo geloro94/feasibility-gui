@@ -1,28 +1,22 @@
 <mat-accordion>
   <mat-expansion-panel fxFill class="mat-elevation-z4 border-design">
-    <mat-expansion-panel-header class="padding-top-2 height-3 padding-left-0">
-      <mat-panel-title class="mat-expansion-panel-content">
-        <div class="align-items-center" fxFill fxLayout="row">
-          <div *ngIf="isinvalid">
-            <div class="invalid-Criterion">
-              <img src="assets/img/alert.png" alt="Validation Alert" />
-            </div>
-          </div>
-          <div class="padding-top-2 padding-left-2 criterion-font-zize">
-            {{ criterion.display }}
+    <mat-expansion-panel-header>
+      <mat-panel-title fxFlex="60">
+        <div *ngIf="isinvalid">
+          <div class="invalid-Criterion">
+            <img src="assets/img/alert.png" alt="Validation Alert" />
           </div>
         </div>
+        {{ criterion.display }}
       </mat-panel-title>
-      <div class="padding-top-2" *ngIf="showCancelButton">
-        <button type="button" mat-icon-button (click)="doDelete()">
+      <mat-panel-description fxLayoutAlign="end">
+        <button *ngIf="showCancelButton" type="button" mat-icon-button (click)="doDelete()">
           <fa-icon size="sm" icon="trash"></fa-icon>
         </button>
-      </div>
-      <div class="padding-top-2" *ngIf="showCancelButton">
-        <button type="button" mat-icon-button (click)="openDetailsPopUp()">
+        <button *ngIf="showCancelButton" type="button" mat-icon-button (click)="openDetailsPopUp()">
           <fa-icon size="sm" icon="edit"></fa-icon>
         </button>
-      </div>
+      </mat-panel-description>
     </mat-expansion-panel-header>
     <hr />
     <div *ngIf="criterion.timeRestriction?.minDate" class="margin-bottom-1">
