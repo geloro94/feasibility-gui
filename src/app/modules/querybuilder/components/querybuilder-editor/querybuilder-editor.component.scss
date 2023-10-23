@@ -30,8 +30,6 @@ num-button {
   background-color: var(--num-color--background);
 }
 .result-header-line {
-  height: 3.5em;
-  background-color: white;
   border: 1px solid var(--num-color--primary);
   border-radius: 5px;
 }
@@ -66,7 +64,7 @@ num-button {
 .consent-header {
   font-weight: 500;
   color: var(--num-color--accent-600);
-  padding-top: 2em;
+  padding-top: 1em;
 }
 
 ::ng-deep .mat-mdc-dialog-container .mdc-dialog__surface {
@@ -116,12 +114,7 @@ num-button {
   color: var(--num-color--accent-600) !important;
   font-size: 14px !important;
 }
-.consent-radio-group {
-  display: flex;
-  flex-direction: column;
-  margin: 5px 0;
-  align-items: flex-start;
-}
+
 ::ng-deep .cdk-overlay-connected-position-bounding-box {
   overflow: auto;
 }
