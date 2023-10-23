@@ -3,6 +3,7 @@ import {
   ChangeDetectorRef,
   Component,
   EventEmitter,
+  Inject,
   Input,
   OnDestroy,
   OnInit,
@@ -23,6 +24,7 @@ import { TimeRestriction, TimeRestrictionType } from '../../../../model/api/quer
 import { TermEntry2CriterionTranslator } from 'src/app/modules/querybuilder/controller/TermEntry2CriterionTranslator';
 import { TerminologyCode } from '../../../../model/api/terminology/terminology';
 import { QueryProviderService } from '../../../../service/query-provider.service';
+import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 
 @Component({
   selector: 'num-edit-criterion',
@@ -72,8 +74,11 @@ export class EditCriterionComponent implements OnInit, OnDestroy, AfterViewCheck
     public featureService: FeatureService,
     private changeDetector: ChangeDetectorRef,
     public provider: QueryProviderService,
+    @Inject(MAT_DIALOG_DATA) public data: EditCriterionComponent,
+    private dialogRef: MatDialogRef<EditCriterionComponent, void>,
     private backend: BackendService
   ) {
+    this.dialogRef.updateSize('80%', '70%');
     this.translator = new TermEntry2CriterionTranslator(
       this.featureService.useFeatureTimeRestriction(),
       this.featureService.getQueryVersion()
