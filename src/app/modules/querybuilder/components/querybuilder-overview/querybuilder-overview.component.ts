@@ -1,14 +1,14 @@
-import { AfterViewChecked, ChangeDetectorRef, Component, OnInit, OnDestroy } from '@angular/core';
-import { QueryProviderService } from '../../service/query-provider.service';
-import { HttpClient } from '@angular/common/http';
-import { Query } from '../../model/api/query/query';
-import { Router } from '@angular/router';
+import { AfterViewChecked, ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
 import { BackendService } from '../../service/backend.service';
-import { Subscription } from 'rxjs';
-import { FeatureService } from '../../../../service/feature.service';
-import { ApiTranslator } from '../../controller/ApiTranslator';
 import { FeatureProviderService } from '../../service/feature-provider.service';
+import { FeatureService } from '../../../../service/Feature.service';
 import { IAppConfig } from '../../../../config/app-config.model';
+import { Query } from 'src/app/model/FeasibilityQuery/Query';
+import { QueryProviderService } from '../../service/query-provider.service';
+import { Router } from '@angular/router';
+import { StructuredQuery } from '../../../../model/StructuredQuery/StructuredQuery';
+import { StructuredQuery2UIQueryTranslatorService } from '../../../../service/StructuredQuery2UIQueryTranslator.service';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'num-querybuilder-overview',
@@ -18,18 +18,17 @@ import { IAppConfig } from '../../../../config/app-config.model';
 export class QuerybuilderOverviewComponent implements OnInit, OnDestroy, AfterViewChecked {
   private features: IAppConfig;
   queryVersion: string;
-  importQuery: Query;
+  importQuery: StructuredQuery;
   actionDisabled: boolean;
 
   constructor(
     public queryProviderService: QueryProviderService,
-    private httpClient: HttpClient,
     private router: Router,
     private backend: BackendService,
     private feature: FeatureService,
     public featureProviderService: FeatureProviderService,
     private changeDetector: ChangeDetectorRef,
-    private apiTranslator: ApiTranslator
+    private newTranslator: StructuredQuery2UIQueryTranslatorService
   ) {}
 
   private savedQueriesSubscription: Subscription;
@@ -60,7 +59,7 @@ export class QuerybuilderOverviewComponent implements OnInit, OnDestroy, AfterVi
   fileName: string;
 
   ngOnInit(): void {
-    this.query = this.queryProviderService.query();
+    this.query = this.queryProviderService.query() as unknown as Query;
     this.savedQueriesSubscription?.unsubscribe();
     this.savedTemplatesSubscription?.unsubscribe();
     this.singleQuerySubscription?.unsubscribe();
@@ -101,12 +100,17 @@ export class QuerybuilderOverviewComponent implements OnInit, OnDestroy, AfterVi
     this.importQuery = JSON.parse(event.target.result);
   }
   doImport(): void {
-    this.query = this.apiTranslator.translateImportedSQtoUIQuery(
+    /*this.query = this.apiTranslator.translateImportedSQtoUIQuery(
       QueryProviderService.createDefaultQuery(),
       this.importQuery
-    );
-    this.queryProviderService.store(this.query);
-    this.router.navigate(['/querybuilder/editor'], { state: { preventReset: true } });
+    );*/
+    this.newTranslator
+      .translateImportedSQtoUIQuery(QueryProviderService.createDefaultQuery(), this.importQuery)
+      .subscribe((query) => {
+        this.query = query;
+        this.queryProviderService.store(this.query);
+        this.router.navigate(['/querybuilder/editor'], { state: { preventReset: true } });
+      });
   }
   loadTemplate(id: number, singleQuery: Query): void {
     if (this.feature.mockLoadnSave()) {
@@ -115,22 +119,27 @@ export class QuerybuilderOverviewComponent implements OnInit, OnDestroy, AfterVi
       this.router.navigate(['/querybuilder/editor'], { state: { preventReset: true } });
     } else {
       this.singleTemplateSubscription = this.backend.loadTemplate(id).subscribe((query) => {
-        this.query = this.apiTranslator.translateSQtoUIQuery(
+        /*   this.query = this.apiTranslator.translateSQtoUIQuery(
           QueryProviderService.createDefaultQuery(),
           query
-        );
-        this.queryProviderService.store(this.query);
-        this.router.navigate(['/querybuilder/editor'], { state: { preventReset: true } });
+        );*/
+        this.newTranslator
+          .translateSQtoUIQuery(QueryProviderService.createDefaultQuery(), query)
+          .subscribe((newQuery) => {
+            this.query = newQuery;
+            this.queryProviderService.store(this.query);
+            this.router.navigate(['/querybuilder/editor'], { state: { preventReset: true } });
+          });
       });
     }
   }
 
   loadQuery(id: number): void {
     this.singleQuerySubscription = this.backend.loadQuery(id).subscribe((query) => {
-      this.query = this.apiTranslator.translateSQtoUIQuery(
+      /* this.query = this.apiTranslator.translateSQtoUIQuery(
         QueryProviderService.createDefaultQuery(),
         query
-      );
+      );*/
       this.queryProviderService.store(this.query);
       this.router.navigate(['/querybuilder/editor'], {
         state: { preventReset: true, loadedResult: query.results },
@@ -138,6 +147,9 @@ export class QuerybuilderOverviewComponent implements OnInit, OnDestroy, AfterVi
     });
   }
 
+  /**
+   * @todo set isInvalid attribute of criterion based on request response
+   */
   doValidate(): void {
     this.savedTemplatesSubscription = this.backend.loadSavedTemplates(true).subscribe((queries) => {
       this.savedTemplates = queries;

@@ -1,11 +1,10 @@
-/* eslint-disable @typescript-eslint/member-ordering */
-import { Inject, Injectable } from '@angular/core';
-import { Query } from '../model/api/query/query';
-import { Comparator, OperatorOptions } from '../model/api/query/valueFilter';
-import { LOCAL_STORAGE, StorageService } from 'ngx-webstorage-service';
 import { environment } from '../../../../environments/environment';
 import { GroupFactory } from '../controller/GroupFactory';
-
+import { Inject, Injectable } from '@angular/core';
+import { LOCAL_STORAGE, StorageService } from 'ngx-webstorage-service';
+import { Comparator } from 'src/app/model/FeasibilityQuery/Criterion/AttributeFilter/AbstractAttributeFilters';
+import { Query } from 'src/app/model/FeasibilityQuery/Query';
+import { FilterTypes } from 'src/app/model/FilterTypes';
 @Injectable({
   providedIn: 'root',
 })
@@ -63,7 +62,7 @@ export class QueryProviderService {
                 isLinked: false,
                 valueFilters: [
                   {
-                    type: OperatorOptions.CONCEPT,
+                    type: FilterTypes.CONCEPT,
                     selectedConcepts: [
                       {
                         code: 'F',
@@ -80,6 +79,9 @@ export class QueryProviderService {
                         version: '',
                       },
                     ],
+                    display: '',
+                    optional: true,
+                    valueDefinition: null,
                   },
                 ],
               },
@@ -97,13 +99,16 @@ export class QueryProviderService {
                 isLinked: false,
                 valueFilters: [
                   {
-                    type: OperatorOptions.QUANTITY_COMPARATOR,
+                    type: FilterTypes.QUANTITY_COMPARATOR,
                     comparator: Comparator.GREATER_THAN,
                     unit: {
                       code: 'a',
                       display: 'Jahr',
                     },
                     value: 18,
+                    display: '',
+                    optional: true,
+                    valueDefinition: null,
                   },
                 ],
               },
@@ -149,7 +154,7 @@ export class QueryProviderService {
                 isLinked: false,
                 valueFilters: [
                   {
-                    type: OperatorOptions.CONCEPT,
+                    type: FilterTypes.CONCEPT,
                     selectedConcepts: [
                       {
                         code: 'male',
@@ -158,6 +163,9 @@ export class QueryProviderService {
                         version: '',
                       },
                     ],
+                    display: '',
+                    optional: true,
+                    valueDefinition: null,
                   },
                 ],
               },
@@ -175,13 +183,16 @@ export class QueryProviderService {
                 isLinked: false,
                 valueFilters: [
                   {
-                    type: OperatorOptions.QUANTITY_COMPARATOR,
+                    type: FilterTypes.QUANTITY_COMPARATOR,
                     comparator: Comparator.GREATER_THAN,
                     unit: {
                       code: 'year',
                       display: 'Jahr',
                     },
                     value: 65,
+                    display: '',
+                    optional: true,
+                    valueDefinition: null,
                   },
                 ],
               },
@@ -211,13 +222,16 @@ export class QueryProviderService {
                 isLinked: false,
                 valueFilters: [
                   {
-                    type: OperatorOptions.QUANTITY_RANGE,
+                    type: FilterTypes.QUANTITY_RANGE,
                     unit: {
                       code: 'Cel',
                       display: '°C',
                     },
                     minValue: 35,
                     maxValue: 39,
+                    display: '',
+                    optional: true,
+                    valueDefinition: null,
                   },
                 ],
               },
