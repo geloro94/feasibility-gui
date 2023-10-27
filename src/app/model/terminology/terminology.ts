@@ -1,4 +1,5 @@
-import { AttributeDefinition, AttributeDefinitions } from './attributeDefinitions';
+import { AttributeDefinition } from './attributeDefinition';
+import { AttributeDefinitions } from './attributeDefinitions';
 
 // 1.) Example of terminology tree
 //
