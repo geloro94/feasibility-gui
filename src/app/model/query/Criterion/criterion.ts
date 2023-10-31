@@ -1,8 +1,8 @@
-import { TerminologyCode, TerminologyEntry } from '../terminology/terminology';
+import { TerminologyCode, TerminologyEntry } from '../../terminology/terminology';
 import { ValueFilter } from './valueFilter';
-import { TimeRestriction } from './timeRestriction';
+import { TimeRestriction } from '../timeRestriction';
 import { AttributeFilter } from './attributeFilter';
-import { CritGroupPosition } from '../../modules/querybuilder/controller/CritGroupArranger';
+import { CritGroupPosition } from '../../../modules/querybuilder/controller/CritGroupArranger';
 
 // A Criterion is an atomic building block of a query. However, a Criterion itself is defined by
 // a terminology code (system + version + code), operators and values.

@@ -1,5 +1,5 @@
 import { Group } from './group';
-import { CriterionSQ } from './criterion';
+import { CriterionSQ } from './Criterion/criterion';
 
 // The atomic building block of a query is a Criterion (e.g. "Geschlecht: weiblich")
 //

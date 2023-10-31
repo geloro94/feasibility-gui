@@ -1,4 +1,4 @@
-import { TerminologyCode } from '../terminology/terminology';
+import { TerminologyCode } from '../../terminology/terminology';
 
 export abstract class AttributeFilters {
   type: OperatorOptions;
