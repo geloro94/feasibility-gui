@@ -1,13 +1,14 @@
 import { Injectable } from '@angular/core';
-import { TerminologyCode, TerminologyEntry } from '../model/terminology/terminology';
-import { Criterion } from '../model/query/criterion';
+import { TerminologyEntry } from '../model/terminology/terminology';
+import { Criterion } from '../model/query/Criterion/criterion';
 import { TimeRestriction } from '../model/query/timeRestriction';
-import { AttributeFilter } from '../model/query/attributeFilter';
-import { ValueFilter } from '../model/query/valueFilter';
+import { AttributeFilter } from '../model/query/Criterion/attributeFilter';
+import { ValueFilter } from '../model/query/Criterion/valueFilter';
 import { BackendService } from '../modules/querybuilder/service/backend.service';
 import { v3 as uuidv3 } from 'uuid';
 import { v4 as uuidv4 } from 'uuid';
 import { FeatureService } from './feature.service';
+import { LoadUIProfilesService } from './LoadUIProfilesService';
 @Injectable({
   providedIn: 'root',
 })
@@ -16,22 +17,30 @@ export class TermEntry2CriterionTranslatorService {
 
   private termEntry: TerminologyEntry;
 
+  private loadUiProfileService: LoadUIProfilesService;
+
   criterion: Criterion;
 
   attributeFilters: AttributeFilter[];
 
   valueFilters: ValueFilter[];
 
+  /**
+   *
+   * LoadUiProfiles need to be define further and created as a separate dat model
+   * Further anaylize of the backend ist needed
+   */
   constructor(private featureService: FeatureService) {
     this.useFeatureTimeRestrictions = this.featureService.useFeatureTimeRestriction();
+
     this.criterion = new Criterion();
     this.attributeFilters = new Array<AttributeFilter>();
     this.valueFilters = new Array<ValueFilter>();
-    this.translate();
   }
 
   public getCriterion(termEntry: TerminologyEntry): Criterion {
     this.termEntry = termEntry;
+    this.translate();
     return this.criterion;
   }
 
@@ -52,6 +61,12 @@ export class TermEntry2CriterionTranslatorService {
       this.criterion.uniqueID = uuidv4();
     }
     return this.criterion;
+  }
+
+  private setUiProfiles() {
+    const uiProfiles = this.loadUiProfileService
+      .getUIProfiles(this.criterion)
+      .subscribe((profile) => {});
   }
 
   private getCriterionHash(): string {
