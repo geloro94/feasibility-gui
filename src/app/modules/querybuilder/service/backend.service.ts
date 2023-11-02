@@ -14,6 +14,7 @@ import { OAuthStorage } from 'angular-oauth2-oidc';
 import { QueryResultRateLimit } from '../model/api/result/QueryResultRateLimit';
 import { v3 as uuidv3 } from 'uuid';
 import { Criterion } from '../model/api/query/criterion';
+import { UIProfile } from 'src/app/model/terminology/UIProfile';
 
 @Injectable({
   providedIn: 'root',
@@ -79,7 +80,7 @@ export class BackendService {
     );
   }
 
-  public getTerminologyProfile(criterion: Criterion): Observable<any> {
+  public getTerminologyProfile(criterion: Criterion): Observable<UIProfile> {
     const context = criterion.context;
     const termcode = criterion.termCodes[0];
     let contextVersion = '';
@@ -100,6 +101,7 @@ export class BackendService {
       termcode.system +
       termcode.code +
       termcodeVersion;
+    /*ToDo contextTermcodeHash is equal to criterion.criterionHash --> uuivd3 does not work*/
     const contextTermcodeHash = uuidv3(
       contextTermcodeHashInput,
       BackendService.BACKEND_UUID_NAMESPACE
