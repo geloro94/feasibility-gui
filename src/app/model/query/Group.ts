@@ -1,4 +1,4 @@
-import { Criterion } from './Criterion/criterion';
+import { Criterion } from './Criterion/Criterion';
 
 // Example
 //     {

@@ -1,5 +1,5 @@
-import { AttributeDefinition } from './attributeDefinition';
-import { AttributeDefinitions } from './attributeDefinitions';
+import { AbstractAttributeDefinitions } from './AttributeDefinitions/AbstractAttributeDefinitions';
+import { AttributeDefinition } from './AttributeDefinitions/AttributeDefinition';
 
 // 1.) Example of terminology tree
 //
@@ -62,8 +62,8 @@ export class TerminologyEntry {
   children: TerminologyEntry[] = [];
   optional?: boolean = false;
 
-  valueDefinition?: AttributeDefinitions;
-  valueDefinitions?: Array<AttributeDefinitions> = [];
+  valueDefinition?: AbstractAttributeDefinitions;
+  valueDefinitions?: Array<AbstractAttributeDefinitions> = [];
   attributeDefinitions?: Array<AttributeDefinition> = [];
 }
 
