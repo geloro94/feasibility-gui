@@ -80,33 +80,7 @@ export class BackendService {
     );
   }
 
-  public getTerminologyProfile(criterion: Criterion): Observable<UIProfile> {
-    const context = criterion.context;
-    const termcode = criterion.termCodes[0];
-    let contextVersion = '';
-    let termcodeVersion = '';
-
-    if (context.version) {
-      contextVersion = criterion.context.version;
-    }
-
-    if (termcode.version) {
-      termcodeVersion = termcode.version;
-    }
-
-    const contextTermcodeHashInput =
-      context.system +
-      context.code +
-      contextVersion +
-      termcode.system +
-      termcode.code +
-      termcodeVersion;
-    /*ToDo contextTermcodeHash is equal to criterion.criterionHash --> uuivd3 does not work*/
-    const contextTermcodeHash = uuidv3(
-      contextTermcodeHashInput,
-      BackendService.BACKEND_UUID_NAMESPACE
-    );
-
+  public getTerminologyProfile(contextTermcodeHash: string): Observable<UIProfile> {
     return this.http.get<any>(
       this.createUrl(BackendService.PATH_TERMINOLOGY + contextTermcodeHash + '/ui_profile')
     );

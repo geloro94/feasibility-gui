@@ -142,7 +142,7 @@ export class EditCriterionComponent implements OnInit, OnDestroy, AfterViewCheck
 
   loadUIProfile(): void {
     this.subscriptionCritProfile = this.backend
-      .getTerminologyProfile(this.criterion)
+      .getTerminologyProfile(this.criterion.criterionHash)
       .subscribe((profile) => {
         if (
           this.criterion.valueFilters.length === 0 &&
