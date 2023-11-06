@@ -13,6 +13,8 @@ export abstract class AbstractAttributeFilters {
 
   max: number = null;
 
+  optional = false;
+
   // QUANTITY_COMPARATOR
   value: number = null;
   comparator: Comparator = Comparator.NONE;

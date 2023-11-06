@@ -23,13 +23,3 @@ export class Criterion {
   uniqueID?: string;
   timeRestriction?: TimeRestriction;
 }
-
-export class CriterionSQ {
-  termCodes: Array<TerminologyCode> = [];
-  context?: TerminologyCode;
-  valueFilter?: ValueFilter;
-  attributeFilters?: Array<AttributeFilter> = [];
-  timeRestriction?: TimeRestriction;
-  children?: Array<TerminologyEntry> = [];
-  linkedCriteria?: Criterion[] = [];
-}

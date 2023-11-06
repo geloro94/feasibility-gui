@@ -1,5 +1,5 @@
+import { CriterionSQ } from '../StructuredQuery/CriterionSQ/CriterionSQ';
 import { Group } from './Group';
-import { CriterionSQ } from './Criterion/Criterion';
 
 // The atomic building block of a query is a Criterion (e.g. "Geschlecht: weiblich")
 //
@@ -29,16 +29,6 @@ export class Query {
   display: string;
   consent = false;
   groups: Group[] = [new Group()];
-}
-
-export class StructuredQuery {
-  version = 'http://to_be_decided.com/draft-1/schema#';
-  display: string;
-
-  // conjunctive normal form (without negation)
-  inclusionCriteria: CriterionSQ[][] = [];
-  // disjunctive normal form (without negation)
-  exclusionCriteria: CriterionSQ[][] = [];
 }
 
 export class DataSelectionOnly {

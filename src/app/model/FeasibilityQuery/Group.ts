@@ -39,7 +39,6 @@ export class Group {
 
   selectedCriteria?: Criterion[][] = [];
 
-  @V2()
   dependencyInfo?: GroupDependencyInfo;
 }
 
