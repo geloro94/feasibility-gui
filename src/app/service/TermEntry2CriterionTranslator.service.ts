@@ -8,99 +8,117 @@ import { v4 as uuidv4 } from 'uuid';
 import { FeatureService } from './feature.service';
 import { LoadUIProfileService } from './LoadUIProfileService';
 import { UIProfile } from '../model/terminology/UIProfile';
-import { ValueDefinition } from '../model/terminology/AttributeDefinitions/AttributeDefinition';
-import { AttributeDefinition } from '../modules/querybuilder/model/api/terminology/valuedefinition';
+import {
+  AttributeDefinition,
+  ValueDefinition,
+} from '../model/terminology/AttributeDefinitions/AttributeDefinition';
+import { ValueFilter } from '../model/query/Criterion/AttributeFilter/ValueFilter';
+import { AttributeFilter } from '../model/query/Criterion/AttributeFilter/AttributeFilter';
 @Injectable({
   providedIn: 'root',
 })
 export class TermEntry2CriterionTranslatorService {
-  private useFeatureTimeRestrictions = false;
-
   private termEntry: TerminologyEntry;
-
-  private UiProfileService: LoadUIProfileService;
 
   criterion: Criterion;
 
-  constructor(private featureService: FeatureService) {
-    this.useFeatureTimeRestrictions = this.featureService.useFeatureTimeRestriction();
+  constructor(
+    private featureService: FeatureService,
+    private UiProfileService: LoadUIProfileService
+  ) {
     this.criterion = new Criterion();
   }
 
-  public getCriterion(termEntry: TerminologyEntry): Criterion {
+  public translateTermEntry(termEntry: TerminologyEntry): Criterion {
     this.termEntry = termEntry;
-    this.createCriterion();
+    this.doTranslateTermEntry();
     return this.criterion;
   }
 
-  private createCriterion() {
+  private doTranslateTermEntry(): void {
     this.createCriterionFromTermEntry();
-    this.extendCriterionFromUIProfile();
+    this.applyUIProfileToCriterion();
   }
 
-  private createCriterionFromTermEntry() {
+  private createCriterionFromTermEntry(): void {
+    this.criterion.children = this.termEntry.children;
+    this.criterion.context = this.termEntry.context;
     this.criterion.display = this.termEntry.display;
     this.criterion.entity = this.termEntry.entity;
-    this.criterion.children = this.termEntry.children;
     this.criterion.optional = this.termEntry.optional;
-    this.criterion.context = this.termEntry.context;
-    this.termEntry.termCodes?.forEach((termCode) => {
-      this.criterion.termCodes.push(termCode);
-    });
+    this.criterion.termCodes = this.copyTermCodes();
+    this.criterion.uniqueID = this.setuniqueID();
     this.criterion.criterionHash = this.createCriterionHash();
-    if (!this.criterion.uniqueID) {
-      this.criterion.uniqueID = uuidv4();
-    }
   }
 
   private createCriterionHash(): string {
     const termCode = this.criterion.termCodes[0];
-    const context = this.criterion.context;
-    const contextTermcodeHash = this.concatContextTermCode(context, termCode);
-    return uuidv3(contextTermcodeHash, BackendService.BACKEND_UUID_NAMESPACE);
+    const context = this.termEntry.context;
+    const hashCode = this.createHash(context, termCode);
+    return uuidv3(hashCode, BackendService.BACKEND_UUID_NAMESPACE);
   }
 
-  private concatContextTermCode(context: TerminologyCode, termCode: TerminologyCode): string {
+  private createHash(context: TerminologyCode, termCode: TerminologyCode): string {
     const contextVersion = context.version ? context.version : '';
     const termcodeVersion = termCode.version ? termCode.version : '';
-    const contextTermcodeHashInput =
+    const hashCode =
       context.system +
       context.code +
       contextVersion +
       termCode.system +
       termCode.code +
       termcodeVersion;
-    return contextTermcodeHashInput;
+    return hashCode;
   }
 
-  private extendCriterionFromUIProfile() {
-    this.UiProfileService.getUIProfile(this.criterion).subscribe((profile) => {
+  private copyTermCodes(): TerminologyCode[] {
+    const termCodes = new Array<TerminologyCode>();
+    this.termEntry.termCodes?.forEach((termCode) => {
+      termCodes.push(termCode);
+    });
+    return termCodes;
+  }
+
+  private setuniqueID(): string | undefined {
+    if (!this.criterion.uniqueID) {
+      return uuidv4();
+    } else {
+      return undefined;
+    }
+  }
+
+  private applyUIProfileToCriterion(): void {
+    this.UiProfileService.getUIProfile(this.criterion.criterionHash).subscribe((profile) => {
       this.addUIProfileElementsToCriterion(profile);
     });
   }
 
   private addUIProfileElementsToCriterion(profile: UIProfile): void {
-    this.addValueFilters(profile.valueDefinition);
-    this.addAttributeFilters(profile.attributeDefinitions);
-    this.addTimeRestriction();
+    this.criterion.valueFilters[0] = this.getValueFilters(profile.valueDefinition);
+    this.criterion.attributeFilters = this.getAttributeFilters(profile.attributeDefinitions);
+    this.criterion.timeRestriction = this.addTimeRestriction();
   }
 
-  private addValueFilters(valueDefinition: ValueDefinition): void {
-    const valueFilter = this.criterion.valueFilters[0];
-    valueFilter.valueDefinition = this.UiProfileService.getValueDefinition(valueDefinition);
+  private getValueFilters(valueDefinition: ValueDefinition): ValueFilter {
+    const valueFilter = new ValueFilter();
+    valueFilter.maxValue = valueDefinition.max;
+    valueFilter.minValue = valueDefinition.min;
     valueFilter.precision = valueDefinition.precision;
-    this.criterion.valueFilters[0] = valueFilter;
+    valueFilter.optional = valueDefinition.optional;
+    valueFilter.type = this.UiProfileService.setDefinitionType(valueDefinition.type);
+    valueFilter.valueDefinition = this.UiProfileService.extractValueDefinition(valueDefinition);
+    return valueFilter;
   }
 
-  private addAttributeFilters(attributeDefinitions: AttributeDefinition[]): void {
-    this.criterion.attributeFilters =
-      this.UiProfileService.getAttributeFilters(attributeDefinitions);
+  private getAttributeFilters(attributeDefinitions: AttributeDefinition[]): AttributeFilter[] {
+    const attributeFilter = this.UiProfileService.extractAttributeFilters(attributeDefinitions);
+    return attributeFilter;
   }
 
-  private addTimeRestriction(): void {
-    this.criterion.timeRestriction =
-      this.termEntry.timeRestrictionAllowed && this.useFeatureTimeRestrictions
-        ? new TimeRestriction()
-        : undefined;
+  private addTimeRestriction(): TimeRestriction | undefined {
+    const useFeatureTimeRestrictions = this.featureService.useFeatureTimeRestriction();
+    return this.termEntry.timeRestrictionAllowed && useFeatureTimeRestrictions
+      ? new TimeRestriction()
+      : undefined;
   }
 }
