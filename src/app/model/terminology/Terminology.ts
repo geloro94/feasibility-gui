@@ -57,11 +57,14 @@ export class TerminologyEntry {
 
   timeRestrictionAllowed: boolean;
 
-  leaf?: boolean = false;
-  entity?: boolean = false;
+  leaf = false;
+  entity = false;
   children: TerminologyEntry[] = [];
-  optional?: boolean = false;
+  optional = false;
 
+  /**
+   * @todo delete if is unused in future
+   */
   valueDefinition?: AbstractAttributeDefinitions;
   valueDefinitions?: Array<AbstractAttributeDefinitions> = [];
   attributeDefinitions?: Array<AttributeDefinition> = [];
