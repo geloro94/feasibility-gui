@@ -1,5 +1,5 @@
+import { QuantityUnit } from '../../FeasibilityQuery/Criterion/AttributeFilter/AbstractAttributeFilters';
 import { TerminologyCode } from '../Terminology';
-import { QuantityUnit } from '../../query/Criterion/AttributeFilter/AbstractAttributeFilters';
 
 export abstract class AbstractAttributeDefinitions {
   allowedUnits?: QuantityUnit[] = [];
