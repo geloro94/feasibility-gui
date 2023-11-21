@@ -1,4 +1,4 @@
-import { CriterionSQ } from '../StructuredQuery/CriterionSQ/CriterionSQ';
+import { StructuredQueryCriterion } from '../StructuredQuery/CriterionSQ/StructuredQueryCriterion';
 import { Group } from './Group';
 
 // The atomic building block of a query is a Criterion (e.g. "Geschlecht: weiblich")
@@ -35,5 +35,5 @@ export class DataSelectionOnly {
   version = 'http://to_be_decided.com/draft-1/schema#';
   display: string;
 
-  selectedCriteria: CriterionSQ[][] = [];
+  selectedCriteria: StructuredQueryCriterion[][] = [];
 }
