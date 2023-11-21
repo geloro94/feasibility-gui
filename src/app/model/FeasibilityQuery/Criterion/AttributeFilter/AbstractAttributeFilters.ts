@@ -43,10 +43,14 @@ export enum Comparator {
   GREATER_THAN = 'gt',
 }
 
+/**
+ * @todo new OperatorOptions value timerestriction --> needs to be tested
+ */
 export enum OperatorOptions {
-  QUANTITY_COMPARATOR = 'quantity-comparator', // e.g. "< 27.10.2020"
-  QUANTITY_RANGE = 'quantity-range', // e.g. ">= 27 and <= 30"
   CONCEPT = 'concept', // e.g. "weiblich, männlich"
-  REFERENCE = 'reference',
+  QUANTITY_COMPARATOR = 'quantity-comparator', // e.g. "< 27.10.2020"
   QUANTITY_NOT_SET = '',
+  QUANTITY_RANGE = 'quantity-range', // e.g. ">= 27 and <= 30"
+  REFERENCE = 'reference',
+  TIMERESTRICTION = 'time-restriction',
 }
