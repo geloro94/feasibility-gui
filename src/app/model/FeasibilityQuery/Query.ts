@@ -24,16 +24,8 @@ import { Group } from './Group';
 //
 //    Criterion           atomic building block of a query
 //
-
 export class Query {
   display: string;
   consent = false;
   groups: Group[] = [new Group()];
-}
-
-export class DataSelectionOnly {
-  version = 'http://to_be_decided.com/draft-1/schema#';
-  display: string;
-
-  selectedCriteria: StructuredQueryCriterion[][] = [];
 }
