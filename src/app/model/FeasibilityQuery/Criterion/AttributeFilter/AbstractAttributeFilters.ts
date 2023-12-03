@@ -1,7 +1,8 @@
+import { FilterTypes } from 'src/app/model/FilterTypes';
 import { TerminologyCode } from '../../../terminology/Terminology';
 
 export abstract class AbstractAttributeFilters {
-  type: OperatorOptions = OperatorOptions.QUANTITY_NOT_SET;
+  type: FilterTypes = FilterTypes.QUANTITY_NOT_SET;
   display: string;
 
   // QUANTITY_COMPARATOR & QUANTITY_RANGE

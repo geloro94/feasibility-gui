@@ -1,4 +1,5 @@
 import { QuantityUnit } from '../../FeasibilityQuery/Criterion/AttributeFilter/AbstractAttributeFilters';
+import { FilterTypes } from '../../FilterTypes';
 import { TerminologyCode } from '../Terminology';
 
 export abstract class AbstractAttributeDefinitions {
@@ -9,7 +10,7 @@ export abstract class AbstractAttributeDefinitions {
   optional = false;
   precision: number;
   selectableConcepts: TerminologyCode[] = [];
-  type: ValueType;
+  type: FilterTypes;
 }
 
 export enum ValueType {
