@@ -1,19 +1,20 @@
 import { Injectable } from '@angular/core';
 import { TerminologyCode, TerminologyEntry } from '../model/terminology/Terminology';
-import { Criterion } from '../model/query/Criterion/Criterion';
-import { TimeRestriction } from '../model/query/TimeRestriction';
 import { BackendService } from '../modules/querybuilder/service/backend.service';
 import { v3 as uuidv3 } from 'uuid';
 import { v4 as uuidv4 } from 'uuid';
-import { FeatureService } from './feature.service';
-import { LoadUIProfileService } from './LoadUIProfileService';
+import { LoadUIProfileService } from './LoadUIProfile.service';
 import { UIProfile } from '../model/terminology/UIProfile';
 import {
   AttributeDefinition,
   ValueDefinition,
 } from '../model/terminology/AttributeDefinitions/AttributeDefinition';
-import { ValueFilter } from '../model/query/Criterion/AttributeFilter/ValueFilter';
-import { AttributeFilter } from '../model/query/Criterion/AttributeFilter/AttributeFilter';
+import { FeatureService } from './Feature.service';
+import { ValueFilter } from '../model/FeasibilityQuery/Criterion/AttributeFilter/ValueFilter';
+import { AttributeFilter } from '../model/FeasibilityQuery/Criterion/AttributeFilter/AttributeFilter';
+import { TimeRestriction } from '../model/FeasibilityQuery/TimeRestriction';
+import { Criterion } from '../model/FeasibilityQuery/Criterion/Criterion';
+import { CriterionHashService } from './CriterionService/CriterionHash.service';
 @Injectable({
   providedIn: 'root',
 })
@@ -24,7 +25,8 @@ export class TermEntry2CriterionTranslatorService {
 
   constructor(
     private featureService: FeatureService,
-    private UiProfileService: LoadUIProfileService
+    private UiProfileService: LoadUIProfileService,
+    private criterionHashService: CriterionHashService
   ) {
     this.criterion = new Criterion();
   }
@@ -54,21 +56,8 @@ export class TermEntry2CriterionTranslatorService {
   private createCriterionHash(): string {
     const termCode = this.criterion.termCodes[0];
     const context = this.termEntry.context;
-    const hashCode = this.createHash(context, termCode);
+    const hashCode = this.criterionHashService.createHash(context, termCode);
     return uuidv3(hashCode, BackendService.BACKEND_UUID_NAMESPACE);
-  }
-
-  private createHash(context: TerminologyCode, termCode: TerminologyCode): string {
-    const contextVersion = context.version ? context.version : '';
-    const termcodeVersion = termCode.version ? termCode.version : '';
-    const hashCode =
-      context.system +
-      context.code +
-      contextVersion +
-      termCode.system +
-      termCode.code +
-      termcodeVersion;
-    return hashCode;
   }
 
   private copyTermCodes(): TerminologyCode[] {
