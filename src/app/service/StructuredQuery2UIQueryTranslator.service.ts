@@ -4,17 +4,27 @@ import { Query } from '../model/FeasibilityQuery/Query';
 import { StructuredQueryTemplate } from '../model/StructuredQuery/StructuredQueryTemplate';
 import { Criterion } from '../model/FeasibilityQuery/Criterion/Criterion';
 import { TerminologyCode } from '../model/terminology/Terminology';
-import { StructuredQueryCriterion } from '../model/StructuredQuery/CriterionSQ/StructuredQueryCriterion';
 import { TimeRestriction } from '../model/FeasibilityQuery/TimeRestriction';
-import { AbstractTimeRestriction } from '../model/StructuredQuery/CriterionSQ/TimeRestriction/AbstractTimeRestriction';
 import { ValueFilter } from '../model/FeasibilityQuery/Criterion/AttributeFilter/ValueFilter';
 import { AttributeFilter } from '../model/FeasibilityQuery/Criterion/AttributeFilter/AttributeFilter';
+import { StructuredQueryCriterion } from '../model/StructuredQuery/Criterion/StructuredQueryCriterion';
+import { AbstractTimeRestriction } from '../model/StructuredQuery/Criterion/TimeRestriction/AbstractTimeRestriction';
+import { FilterTypes } from '../model/FilterTypes';
+import { FilterTypesService } from './FilterTypes.service';
+import { ConceptValueFilter } from '../model/StructuredQuery/Criterion/ConceptFilter/ConceptValueFilter';
+import { AbstractConceptFilter } from '../model/StructuredQuery/Criterion/ConceptFilter/AbstractConceptFilter';
+import { TermEntry2CriterionTranslatorService } from './TermEntry2CriterionTranslator.service';
+import { CriterionHashService } from './CriterionService/CriterionHash.service';
 
 @Injectable({
   providedIn: 'root',
 })
-export class StructuredQuery2UIQueryTranslator {
-  constructor() {}
+export class StructuredQuery2UIQueryTranslatorService {
+  constructor(
+    private filter: FilterTypesService,
+    private criterionHashService: CriterionHashService,
+    private termEntryService: TermEntry2CriterionTranslatorService
+  ) {}
 
   public translateImportedSQtoUIQuery(uiquery: Query, sqquery: StructuredQuery): Query {
     const invalidCriteria = [];
@@ -50,6 +60,7 @@ export class StructuredQuery2UIQueryTranslator {
         criterionArray.push(this.assignStructuredCriterionToCriterion(structuredCriterion));
       });
     });
+    return resultInexclusion;
   }
 
   private getInvalidCriteriaSet(invalidCriteria: TerminologyCode[]): Set<string> {
@@ -70,6 +81,10 @@ export class StructuredQuery2UIQueryTranslator {
     criterion.context = structuredCriterion.context;
     criterion.timeRestriction = this.addTimeRestriction(structuredCriterion.timeRestriction);
     criterion.valueFilters = this.addValueFilters(structuredCriterion);
+    criterion.criterionHash = this.criterionHashService.createHash(
+      criterion.context,
+      criterion.termCodes[0]
+    );
     return criterion;
   }
 
@@ -81,8 +96,22 @@ export class StructuredQuery2UIQueryTranslator {
     return attributeFilters;
   }
 
+  /**
+   * @todo We keep ValueFilters as an Array despite being only one element inside the array
+   * @todo we need to test if the declaration with 'as' is assigning all requiered fields
+   * @param structuredCriterion
+   * @returns
+   */
   private addValueFilters(structuredCriterion: StructuredQueryCriterion): ValueFilter[] {
     const valueFilters: ValueFilter[] = [];
+    if (structuredCriterion.valueFilters?.length > 0) {
+      structuredCriterion.valueFilters.forEach((valueFilter) => {
+        if (this.filter.isConcept(valueFilter.type)) {
+          const conceptValueFilter: ConceptValueFilter = valueFilter as AbstractConceptFilter;
+          conceptValueFilter.type = FilterTypes.CONCEPT;
+        }
+      });
+    }
     return valueFilters;
   }
 
