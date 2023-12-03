@@ -12,13 +12,15 @@ import {
 } from '../model/terminology/AttributeDefinitions/AbstractAttributeDefinitions';
 import { AttributeFilter } from '../model/FeasibilityQuery/Criterion/AttributeFilter/AttributeFilter';
 import { OperatorOptions } from '../model/FeasibilityQuery/Criterion/AttributeFilter/AbstractAttributeFilters';
+import { FilterTypesService } from './FilterTypes.service';
+import { FilterTypes } from '../model/FilterTypes';
 
 @Injectable({
   providedIn: 'root',
 })
 export class LoadUIProfileService {
   private backend: BackendService;
-  constructor() {}
+  constructor(private filter: FilterTypesService) {}
 
   public getUIProfile(criterionHash: string): Observable<UIProfile> {
     const profilesObservable = this.requestUIProfile(criterionHash);
@@ -70,21 +72,13 @@ export class LoadUIProfileService {
     }
   }
 
-  public setDefinitionType(type: ValueType): OperatorOptions {
-    if (this.isConcept(type)) {
-      return OperatorOptions.CONCEPT;
-    } else if (this.isRefrence(type)) {
-      return OperatorOptions.REFERENCE;
+  public setDefinitionType(type: FilterTypes): FilterTypes {
+    if (this.filter.isConcept(type)) {
+      return FilterTypes.CONCEPT;
+    } else if (this.filter.isReference(type)) {
+      return FilterTypes.REFERENCE;
     } else {
-      return OperatorOptions.QUANTITY_NOT_SET;
+      return FilterTypes.QUANTITY_NOT_SET;
     }
-  }
-
-  private isConcept(type: ValueType): boolean {
-    return type === ValueType.CONCEPT ? true : false;
-  }
-
-  private isRefrence(type: ValueType): boolean {
-    return type === ValueType.REFERENCE ? true : false;
   }
 }
