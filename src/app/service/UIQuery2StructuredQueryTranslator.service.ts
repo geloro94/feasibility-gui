@@ -1,37 +1,37 @@
-import { Injectable } from '@angular/core';
-import { StructuredQuery } from '../model/StructuredQuery/StructuredQuery';
-import { ObjectHelper } from '../modules/querybuilder/controller/ObjectHelper';
-import { TerminologyCode } from '../model/terminology/Terminology';
-import { FeatureService } from './feature.service';
+import { AbstractQuantityFilter } from '../model/StructuredQuery/Criterion/QuantityFilter/AbstractQuantityFilter';
+import { AbstractStructuredQueryFilters } from '../model/StructuredQuery/Criterion/AbstractStructuredQueryFilters';
+import { AbstractTimeRestriction } from '../model/StructuredQuery/Criterion/TimeRestriction/AbstractTimeRestriction';
+import { AfterFilter } from '../model/StructuredQuery/Criterion/TimeRestriction/AfterFilter';
+import { AtFilter } from '../model/StructuredQuery/Criterion/TimeRestriction/AtFilter';
+import { AttributeFilter } from '../model/FeasibilityQuery/Criterion/AttributeFilter/AttributeFilter';
+import { BeforeFilter } from '../model/StructuredQuery/Criterion/TimeRestriction/BeforeFilter';
+import { BetweenFilter } from '../model/StructuredQuery/Criterion/TimeRestriction/BetweenFilter';
+import { ConceptAttributeFilter } from '../model/StructuredQuery/Criterion/ConceptFilter/ConceptAttributeFilter';
+import { ConceptValueFilter } from '../model/StructuredQuery/Criterion/ConceptFilter/ConceptValueFilter';
 import { Criterion } from '../model/FeasibilityQuery/Criterion/Criterion';
+import { FeatureService } from './Feature.service';
+import { Injectable } from '@angular/core';
+import { ObjectHelper } from '../modules/querybuilder/controller/ObjectHelper';
+import { QuantityComparatorFilter } from '../model/StructuredQuery/Criterion/QuantityFilter/QuantityComparatorFilter';
+import { QuantityRangeFilter } from '../model/StructuredQuery/Criterion/QuantityFilter/QuantityRangeFilter';
+import { Query } from '../model/FeasibilityQuery/Query';
+import { ReferenceFilter } from '../model/StructuredQuery/Criterion/ReferenceFilter/ReferenceFilter';
+import { StructuredQuery } from '../model/StructuredQuery/StructuredQuery';
+import { StructuredQueryCriterion } from '../model/StructuredQuery/Criterion/StructuredQueryCriterion';
+import { TerminologyCode } from '../model/terminology/Terminology';
+import { TimeRestrictionType } from '../model/FeasibilityQuery/TimeRestriction';
 import { ValueFilter } from '../model/FeasibilityQuery/Criterion/AttributeFilter/ValueFilter';
 import {
-  AbstractAttributeFilters,
   Comparator,
   OperatorOptions,
 } from '../model/FeasibilityQuery/Criterion/AttributeFilter/AbstractAttributeFilters';
-import { QuantityComparatorFilter } from '../model/StructuredQuery/CriterionSQ/QuantityFilter/QuantityComparatorFilter';
-import { AttributeFilter } from '../model/FeasibilityQuery/Criterion/AttributeFilter/AttributeFilter';
-import { AbstractStructuredQueryFilters } from '../model/StructuredQuery/CriterionSQ/AbstractStructuredQueryFilters';
-import { QuantityRangeFilter } from '../model/StructuredQuery/CriterionSQ/QuantityFilter/QuantityRangeFilter';
-import { Query } from '../model/FeasibilityQuery/Query';
-import { ReferenceFilter } from '../model/StructuredQuery/CriterionSQ/ReferenceFilter/ReferenceFilter';
-import { ConceptAttributeFilter } from '../model/StructuredQuery/CriterionSQ/ConceptFilter/ConceptAttributeFilter';
-import { ConceptValueFilter } from '../model/StructuredQuery/CriterionSQ/ConceptFilter/ConceptValueFilter';
-import { StructuredQueryCriterion } from '../model/StructuredQuery/CriterionSQ/StructuredQueryCriterion';
-import { AbstractQuantityFilter } from '../model/StructuredQuery/CriterionSQ/QuantityFilter/AbstractQuantityFilter';
-import { TimeRestrictionType } from '../model/FeasibilityQuery/TimeRestriction';
-import { AbstractTimeRestriction } from '../model/StructuredQuery/CriterionSQ/TimeRestriction/AbstractTimeRestriction';
-import { AfterFilter } from '../model/StructuredQuery/CriterionSQ/TimeRestriction/AfterFilter';
-import { AtFilter } from '../model/StructuredQuery/CriterionSQ/TimeRestriction/AtFilter';
-import { BeforeFilter } from '../model/StructuredQuery/CriterionSQ/TimeRestriction/BeforeFilter';
-import { BetweenFilter } from '../model/StructuredQuery/CriterionSQ/TimeRestriction/BetweenFilter';
+import { FilterTypesService } from './FilterTypes.service';
 
 @Injectable({
   providedIn: 'root',
 })
-export class UIQuery2StructuredQueryTranslator {
-  constructor(private featureService: FeatureService) {}
+export class UIQuery2StructuredQueryTranslatorService {
+  constructor(private featureService: FeatureService, private filter: FilterTypesService) {}
 
   public translateToSQ(query: Query): StructuredQuery {
     const result = new StructuredQuery();
@@ -93,7 +93,7 @@ export class UIQuery2StructuredQueryTranslator {
     criterionSQ.context = this.addContextToSQ(criterion);
     criterionSQ.termCodes = criterion.termCodes;
     criterionSQ.timeRestriction = this.addTimeRestrictionToSQ(criterion);
-    criterionSQ.valueFilter = this.addValueFiltersToSQ(criterion);
+    criterionSQ.valueFilters = this.addValueFiltersToSQ(criterion);
     return criterionSQ;
   }
 
@@ -106,21 +106,21 @@ export class UIQuery2StructuredQueryTranslator {
   }
 
   //switch einbauen
-  private addValueFiltersToSQ(criterion: Criterion): AbstractStructuredQueryFilters | undefined {
+  private addValueFiltersToSQ(criterion: Criterion): AbstractStructuredQueryFilters[] | undefined {
     const abstractValueFilter: AbstractStructuredQueryFilters[] = [];
     const valueFilterType = criterion.valueFilters[0].type;
     if (criterion.valueFilters?.length > 0) {
-      if (this.isConcept(valueFilterType)) {
+      if (this.filter.isConcept(valueFilterType)) {
         abstractValueFilter.push(this.setConceptValueFilter(criterion.valueFilters[0]));
       }
-      if (this.isQuantity(valueFilterType)) {
-        if (this.isNoneComparator(criterion.valueFilters[0].comparator)) {
+      if (this.filter.isQuantity(valueFilterType)) {
+        if (this.filter.isNoneComparator(criterion.valueFilters[0].comparator)) {
           return undefined;
         } else {
           abstractValueFilter.push(this.setQuantity(criterion.valueFilters[0]));
         }
       }
-      return abstractValueFilter[0];
+      return abstractValueFilter;
     }
   }
 
@@ -130,15 +130,15 @@ export class UIQuery2StructuredQueryTranslator {
     const abstractFilter: AbstractStructuredQueryFilters[] = [];
     if (criterion.attributeFilters.length > 0) {
       criterion.attributeFilters?.forEach((attributeFilter) => {
-        if (this.isConcept(attributeFilter.type)) {
+        if (this.filter.isConcept(attributeFilter.type)) {
           abstractFilter.push(this.setConceptAttributeFilter(attributeFilter));
         }
-        if (this.isQuantity(attributeFilter.type)) {
-          if (!this.isNoneComparator(attributeFilter.comparator)) {
+        if (this.filter.isQuantity(attributeFilter.type)) {
+          if (!this.filter.isNoneComparator(attributeFilter.comparator)) {
             abstractFilter.push(this.setQuantity(attributeFilter));
           }
         }
-        if (this.isReference(attributeFilter.type)) {
+        if (this.filter.isReference(attributeFilter.type)) {
           abstractFilter.push(this.setReferences(criterion.linkedCriteria, attributeFilter));
         }
       });
@@ -155,10 +155,10 @@ export class UIQuery2StructuredQueryTranslator {
    */
   private setQuantity(quantityFilter: AbstractQuantityFilter): AbstractQuantityFilter {
     const type = quantityFilter.type;
-    if (this.isQuantityComparator(type)) {
+    if (this.filter.isQuantityComparator(type)) {
       return this.setQuantityComparatorAttributes(quantityFilter as QuantityComparatorFilter);
     }
-    if (this.isQuantityRange(type)) {
+    if (this.filter.isQuantityRange(type)) {
       return this.setQuantityRangeAttributes(quantityFilter as QuantityRangeFilter);
     }
   }
@@ -249,29 +249,5 @@ export class UIQuery2StructuredQueryTranslator {
     filter.minValue = quantityRangeFilter.minValue;
     filter.unit = quantityRangeFilter.unit;
     return filter;
-  }
-
-  private isQuantity(type: OperatorOptions) {
-    return this.isQuantityComparator(type) || this.isQuantityRange(type) ? true : false;
-  }
-
-  private isConcept(type: OperatorOptions): boolean {
-    return type === OperatorOptions.CONCEPT ? true : false;
-  }
-
-  private isReference(type: OperatorOptions): boolean {
-    return type === OperatorOptions.REFERENCE ? true : false;
-  }
-
-  private isQuantityRange(type: OperatorOptions): boolean {
-    return type === OperatorOptions.QUANTITY_RANGE ? true : false;
-  }
-
-  private isQuantityComparator(type: OperatorOptions): boolean {
-    return type === OperatorOptions.QUANTITY_COMPARATOR ? true : false;
-  }
-
-  private isNoneComparator(type: Comparator): boolean {
-    return type === Comparator.NONE ? true : false;
   }
 }
