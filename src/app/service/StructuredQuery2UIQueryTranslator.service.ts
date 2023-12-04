@@ -9,12 +9,12 @@ import { ValueFilter } from '../model/FeasibilityQuery/Criterion/AttributeFilter
 import { AttributeFilter } from '../model/FeasibilityQuery/Criterion/AttributeFilter/AttributeFilter';
 import { StructuredQueryCriterion } from '../model/StructuredQuery/Criterion/StructuredQueryCriterion';
 import { AbstractTimeRestriction } from '../model/StructuredQuery/Criterion/TimeRestriction/AbstractTimeRestriction';
-import { FilterTypes } from '../model/FilterTypes';
 import { FilterTypesService } from './FilterTypes.service';
 import { ConceptValueFilter } from '../model/StructuredQuery/Criterion/ConceptFilter/ConceptValueFilter';
-import { AbstractConceptFilter } from '../model/StructuredQuery/Criterion/ConceptFilter/AbstractConceptFilter';
-import { TermEntry2CriterionTranslatorService } from './TermEntry2CriterionTranslator.service';
-import { CriterionHashService } from './CriterionService/CriterionHash.service';
+import { CreateCriterionService } from './CriterionService/CreateCriterion.service';
+import { QuantityRangeFilter } from '../model/StructuredQuery/Criterion/QuantityFilter/QuantityRangeFilter';
+import { StructuredQueryAttributeFilters } from '../model/StructuredQuery/StructuredQueryAttributeFilters';
+import { QuantityComparatorFilter } from '../model/StructuredQuery/Criterion/QuantityFilter/QuantityComparatorFilter';
 
 @Injectable({
   providedIn: 'root',
@@ -22,8 +22,7 @@ import { CriterionHashService } from './CriterionService/CriterionHash.service';
 export class StructuredQuery2UIQueryTranslatorService {
   constructor(
     private filter: FilterTypesService,
-    private criterionHashService: CriterionHashService,
-    private termEntryService: TermEntry2CriterionTranslatorService
+    private createCriterionService: CreateCriterionService
   ) {}
 
   public translateImportedSQtoUIQuery(uiquery: Query, sqquery: StructuredQuery): Query {
@@ -53,16 +52,21 @@ export class StructuredQuery2UIQueryTranslatorService {
     invalidCriteria: TerminologyCode[]
   ): Criterion[][] {
     const invalidCriteriaSet = this.getInvalidCriteriaSet(invalidCriteria);
-    const resultInexclusion: Criterion[][] = [];
-    inexclusion.forEach((structuredCriterionArray) => {
-      structuredCriterionArray.forEach((structuredCriterion) => {
+    const resultInExclusion: Criterion[][] = [];
+    inexclusion.forEach((structuredQueryCriterionArray) => {
+      structuredQueryCriterionArray.forEach((structuredQueryCriterion) => {
         const criterionArray: Criterion[] = [];
-        criterionArray.push(this.assignStructuredCriterionToCriterion(structuredCriterion));
+        criterionArray.push(
+          this.createCriterionFromStructuredQueryCriterion(structuredQueryCriterion)
+        );
       });
     });
-    return resultInexclusion;
+    return resultInExclusion;
   }
 
+  /**
+   * @todo Work in progress
+   */
   private getInvalidCriteriaSet(invalidCriteria: TerminologyCode[]): Set<string> {
     const invalidCriteriaSet: Set<string> = new Set();
     invalidCriteria.forEach((invalids) => {
@@ -71,29 +75,45 @@ export class StructuredQuery2UIQueryTranslatorService {
     return invalidCriteriaSet;
   }
 
-  private assignStructuredCriterionToCriterion(
-    structuredCriterion: StructuredQueryCriterion
+  /**
+   * @param structuredCriterion
+   * @todo create function to concatinate criterions attributeFilter and valueFilter created from termCode and UI Profile
+   * with the attributeFilter and Valuefilter from the SQ
+   * e.g concatAttributeFilters(criterion.attributeFilters, addAttributeFilters())
+   */
+  private createCriterionFromStructuredQueryCriterion(
+    structuredQueryCriterion: StructuredQueryCriterion
   ): Criterion {
-    const criterion = new Criterion();
-    criterion.attributeFilters = this.addAttributeFilters(structuredCriterion);
-    criterion.display = structuredCriterion.termCodes[0].display;
-    criterion.termCodes = structuredCriterion.termCodes;
-    criterion.context = structuredCriterion.context;
-    criterion.timeRestriction = this.addTimeRestriction(structuredCriterion.timeRestriction);
-    criterion.valueFilters = this.addValueFilters(structuredCriterion);
-    criterion.criterionHash = this.criterionHashService.createHash(
-      criterion.context,
-      criterion.termCodes[0]
+    const criterion: Criterion = this.createCriterionService.createCriterionFromTermCode(
+      structuredQueryCriterion.termCodes,
+      structuredQueryCriterion.context
     );
+    criterion.attributeFilters = [
+      ...this.getAttributeFilters(structuredQueryCriterion),
+      ...criterion.attributeFilters,
+    ];
+    criterion.timeRestriction = this.addTimeRestriction(structuredQueryCriterion.timeRestriction);
+    criterion.valueFilters = this.addValueFilters(structuredQueryCriterion);
     return criterion;
   }
 
-  private addAttributeFilters(structuredCriterion: StructuredQueryCriterion): AttributeFilter[] {
+  /**
+   * @todo need to add the references
+   */
+  private getAttributeFilters(structuredCriterion: StructuredQueryCriterion): AttributeFilter[] {
     const attributeFilters: AttributeFilter[] = [];
-    structuredCriterion.attributeFilters.forEach((attributeFilter) => {
-      //attributeFilters.push(attributeFilter)
+    structuredCriterion.attributeFilters.forEach((structuredQueryAttributeFilter) => {
+      const attributeFilter = this.createAttributeFilter(structuredQueryAttributeFilter);
+      attributeFilters.push(attributeFilter);
     });
     return attributeFilters;
+  }
+
+  private createAttributeFilter(structuredQueryAttributeFilter: StructuredQueryAttributeFilters) {
+    const attributeFilter: AttributeFilter = new AttributeFilter();
+    attributeFilter.attributeCode = structuredQueryAttributeFilter.attributeCode;
+    attributeFilter.selectedConcepts = structuredQueryAttributeFilter.selectedConcepts;
+    return attributeFilter;
   }
 
   /**
@@ -103,16 +123,35 @@ export class StructuredQuery2UIQueryTranslatorService {
    * @returns
    */
   private addValueFilters(structuredCriterion: StructuredQueryCriterion): ValueFilter[] {
-    const valueFilters: ValueFilter[] = [];
+    const valueFiltersResult: ValueFilter[] = [];
     if (structuredCriterion.valueFilters?.length > 0) {
       structuredCriterion.valueFilters.forEach((valueFilter) => {
         if (this.filter.isConcept(valueFilter.type)) {
-          const conceptValueFilter: ConceptValueFilter = valueFilter as AbstractConceptFilter;
-          conceptValueFilter.type = FilterTypes.CONCEPT;
+          const conceptValueFilter: ConceptValueFilter = valueFilter as ConceptValueFilter;
+          valueFiltersResult.map((valueFilterResult) => {
+            valueFilterResult.selectedConcepts = conceptValueFilter.selectedConcepts;
+          });
+        }
+        if (this.filter.isQuantityComparator(valueFilter.type)) {
+          const valueFilterQuantityComparator = valueFilter as QuantityComparatorFilter;
+          valueFiltersResult.map((valueFilterResult) => {
+            valueFilterResult.type = valueFilter.type;
+            valueFilterResult.value = valueFilterQuantityComparator.value;
+            valueFilterResult.unit = valueFilterQuantityComparator.unit;
+            valueFilterResult.comparator = valueFilterQuantityComparator.comparator;
+          });
+        }
+        if (this.filter.isQuantityRange(valueFilter.type)) {
+          const valueFilterQuantityRange = valueFilter as QuantityRangeFilter;
+          valueFiltersResult.map((valueFilterResult) => {
+            valueFilterResult.type = valueFilter.type;
+            valueFilterResult.max = valueFilterQuantityRange.maxValue;
+            valueFilterResult.min = valueFilterQuantityRange.minValue;
+          });
         }
       });
     }
-    return valueFilters;
+    return valueFiltersResult;
   }
 
   private addTimeRestriction(timeRestriction: AbstractTimeRestriction): TimeRestriction {
