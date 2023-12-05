@@ -13,7 +13,7 @@ export class Criterion {
   context?: TerminologyCode;
   display?: string;
   entity?: boolean = false;
-  isinvalid?: boolean = false;
+  isInvalid?: boolean = false;
   isLinked?: boolean = false;
   linkedCriteria?: Criterion[] = [];
   optional?: boolean = false;
