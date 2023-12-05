@@ -5,7 +5,7 @@ import { Query } from '../../model/api/query/query';
 import { Router } from '@angular/router';
 import { BackendService } from '../../service/backend.service';
 import { Subscription } from 'rxjs';
-import { FeatureService } from '../../../../service/feature.service';
+import { FeatureService } from '../../../../service/Feature.service';
 import { ApiTranslator } from '../../controller/ApiTranslator';
 import { FeatureProviderService } from '../../service/feature-provider.service';
 import { IAppConfig } from '../../../../config/app-config.model';
@@ -138,6 +138,9 @@ export class QuerybuilderOverviewComponent implements OnInit, OnDestroy, AfterVi
     });
   }
 
+  /**
+   * @todo set isInvalid attribute of criterion based on request response
+   */
   doValidate(): void {
     this.savedTemplatesSubscription = this.backend.loadSavedTemplates(true).subscribe((queries) => {
       this.savedTemplates = queries;
