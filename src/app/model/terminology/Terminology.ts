@@ -46,28 +46,17 @@ import { AttributeDefinition } from './AttributeDefinitions/AttributeDefinition'
 //                                                                      |      . . .
 
 export class TerminologyEntry {
-  id: string;
-  termCode?: TerminologyCode;
+  children: TerminologyEntry[] = [];
   context?: TerminologyCode;
-  termCodes?: Array<TerminologyCode> = [];
   display: string;
-
+  entity = false;
+  id: string;
+  leaf = false;
+  optional = false;
   selectable = true;
   selected = false;
-
-  timeRestrictionAllowed: boolean;
-
-  leaf = false;
-  entity = false;
-  children: TerminologyEntry[] = [];
-  optional = false;
-
-  /**
-   * @todo delete if is unused in future
-   */
-  valueDefinition?: AbstractAttributeDefinitions;
-  valueDefinitions?: Array<AbstractAttributeDefinitions> = [];
-  attributeDefinitions?: Array<AttributeDefinition> = [];
+  termCodes: Array<TerminologyCode> = [];
+  timeRestrictionAllowed = true;
 }
 
 export class TerminologyCode {

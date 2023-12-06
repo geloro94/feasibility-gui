@@ -1,4 +1,4 @@
-import { StructuredQueryCriterion } from './CriterionSQ/StructuredQueryCriterion';
+import { StructuredQueryCriterion } from './Criterion/StructuredQueryCriterion';
 
 /**
  * @todo define class for inner array of inclusioncriteria
