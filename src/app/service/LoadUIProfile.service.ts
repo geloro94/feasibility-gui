@@ -6,12 +6,8 @@ import {
   AttributeDefinition,
   ValueDefinition,
 } from '../model/terminology/AttributeDefinitions/AttributeDefinition';
-import {
-  AbstractAttributeDefinitions,
-  ValueType,
-} from '../model/terminology/AttributeDefinitions/AbstractAttributeDefinitions';
+import { AbstractAttributeDefinitions } from '../model/terminology/AttributeDefinitions/AbstractAttributeDefinitions';
 import { AttributeFilter } from '../model/FeasibilityQuery/Criterion/AttributeFilter/AttributeFilter';
-import { OperatorOptions } from '../model/FeasibilityQuery/Criterion/AttributeFilter/AbstractAttributeFilters';
 import { FilterTypesService } from './FilterTypes.service';
 import { FilterTypes } from '../model/FilterTypes';
 
