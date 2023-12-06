@@ -1,31 +1,27 @@
-import { AbstractQuantityFilter } from '../model/StructuredQuery/Criterion/QuantityFilter/AbstractQuantityFilter';
-import { AbstractStructuredQueryFilters } from '../model/StructuredQuery/Criterion/AbstractStructuredQueryFilters';
-import { AbstractTimeRestriction } from '../model/StructuredQuery/Criterion/TimeRestriction/AbstractTimeRestriction';
-import { AfterFilter } from '../model/StructuredQuery/Criterion/TimeRestriction/AfterFilter';
-import { AtFilter } from '../model/StructuredQuery/Criterion/TimeRestriction/AtFilter';
+import { AbstractAttributeFilters } from '../model/FeasibilityQuery/Criterion/AttributeFilter/AbstractAttributeFilters';
+import { AbstractTimeRestriction } from '../model/StructuredQuery/Criterion/AttributeFilters/QueryFilters/TimeRestriction/AbstractTimeRestriction';
+import { AfterFilter } from '../model/StructuredQuery/Criterion/AttributeFilters/QueryFilters/TimeRestriction/AfterFilter';
+import { AtFilter } from '../model/StructuredQuery/Criterion/AttributeFilters/QueryFilters/TimeRestriction/AtFilter';
 import { AttributeFilter } from '../model/FeasibilityQuery/Criterion/AttributeFilter/AttributeFilter';
-import { BeforeFilter } from '../model/StructuredQuery/Criterion/TimeRestriction/BeforeFilter';
-import { BetweenFilter } from '../model/StructuredQuery/Criterion/TimeRestriction/BetweenFilter';
-import { ConceptAttributeFilter } from '../model/StructuredQuery/Criterion/ConceptFilter/ConceptAttributeFilter';
-import { ConceptValueFilter } from '../model/StructuredQuery/Criterion/ConceptFilter/ConceptValueFilter';
+import { BeforeFilter } from '../model/StructuredQuery/Criterion/AttributeFilters/QueryFilters/TimeRestriction/BeforeFilter';
+import { BetweenFilter } from '../model/StructuredQuery/Criterion/AttributeFilters/QueryFilters/TimeRestriction/BetweenFilter';
+import { ConceptAttributeFilter } from '../model/StructuredQuery/Criterion/AttributeFilters/QueryFilters/ConceptFilter/ConceptAttributeFilter';
+import { ConceptValueFilter } from '../model/StructuredQuery/Criterion/AttributeFilters/QueryFilters/ConceptFilter/ConceptValueFilter';
 import { Criterion } from '../model/FeasibilityQuery/Criterion/Criterion';
 import { FeatureService } from './Feature.service';
+import { FilterTypesService } from './FilterTypes.service';
 import { Injectable } from '@angular/core';
 import { ObjectHelper } from '../modules/querybuilder/controller/ObjectHelper';
-import { QuantityComparatorFilter } from '../model/StructuredQuery/Criterion/QuantityFilter/QuantityComparatorFilter';
-import { QuantityRangeFilter } from '../model/StructuredQuery/Criterion/QuantityFilter/QuantityRangeFilter';
+import { QuantityComparatorFilter } from '../model/StructuredQuery/Criterion/AttributeFilters/QueryFilters/QuantityFilter/QuantityComparatorFilter';
+import { QuantityRangeFilter } from '../model/StructuredQuery/Criterion/AttributeFilters/QueryFilters/QuantityFilter/QuantityRangeFilter';
 import { Query } from '../model/FeasibilityQuery/Query';
-import { ReferenceFilter } from '../model/StructuredQuery/Criterion/ReferenceFilter/ReferenceFilter';
 import { StructuredQuery } from '../model/StructuredQuery/StructuredQuery';
+import { StructuredQueryAttributeFilters } from '../model/StructuredQuery/Criterion/AttributeFilters/StructuredQueryAttributeFilters';
 import { StructuredQueryCriterion } from '../model/StructuredQuery/Criterion/StructuredQueryCriterion';
+import { StructuredQueryValueFilters } from '../model/StructuredQuery/Criterion/AttributeFilters/StructuredQueryValueFilters';
 import { TerminologyCode } from '../model/terminology/Terminology';
 import { TimeRestrictionType } from '../model/FeasibilityQuery/TimeRestriction';
 import { ValueFilter } from '../model/FeasibilityQuery/Criterion/AttributeFilter/ValueFilter';
-import {
-  Comparator,
-  OperatorOptions,
-} from '../model/FeasibilityQuery/Criterion/AttributeFilter/AbstractAttributeFilters';
-import { FilterTypesService } from './FilterTypes.service';
 
 @Injectable({
   providedIn: 'root',
@@ -72,28 +68,29 @@ export class UIQuery2StructuredQueryTranslatorService {
   }
 
   private translateCriterionGroup(criterionGroup: Criterion[][]): StructuredQueryCriterion[][] {
-    const criterionSQ: StructuredQueryCriterion[][] = [];
+    const structuredQueryCriterion: StructuredQueryCriterion[][] = [];
     criterionGroup.forEach((criterionArray) => {
-      const innerArraySQ: StructuredQueryCriterion[] = [];
-      criterionArray.forEach((criterion) => {
-        innerArraySQ.push(this.assignCriterionElements(criterion));
-      });
-      criterionSQ.push(innerArraySQ);
+      const innerArraySQ: StructuredQueryCriterion[] = this.translateInnerArray(criterionArray);
+      structuredQueryCriterion.push(innerArraySQ);
     });
-    return criterionSQ;
+    return structuredQueryCriterion;
   }
 
-  /**
-   *
-   * @todo timeRestriction braucht ne Logik also ne Funktion
-   */
+  private translateInnerArray(criterionArray: Criterion[]) {
+    const structuredQueryInnerArray: StructuredQueryCriterion[] = [];
+    criterionArray.forEach((criterion) => {
+      structuredQueryInnerArray.push(this.assignCriterionElements(criterion));
+    });
+    return structuredQueryInnerArray;
+  }
+
   private assignCriterionElements(criterion: Criterion): StructuredQueryCriterion {
     const criterionSQ = new StructuredQueryCriterion();
-    criterionSQ.attributeFilters = this.addAttributeFiltersToSQ(criterion);
+    criterionSQ.attributeFilters = this.addAttributeFilter(criterion);
     criterionSQ.context = this.addContextToSQ(criterion);
     criterionSQ.termCodes = criterion.termCodes;
     criterionSQ.timeRestriction = this.addTimeRestrictionToSQ(criterion);
-    criterionSQ.valueFilters = this.addValueFiltersToSQ(criterion);
+    criterionSQ.valueFilters = this.addValueFilter(criterion);
     return criterionSQ;
   }
 
@@ -104,62 +101,118 @@ export class UIQuery2StructuredQueryTranslatorService {
       return undefined;
     }
   }
-
-  //switch einbauen
-  private addValueFiltersToSQ(criterion: Criterion): AbstractStructuredQueryFilters[] | undefined {
-    const abstractValueFilter: AbstractStructuredQueryFilters[] = [];
-    const valueFilterType = criterion.valueFilters[0].type;
-    if (criterion.valueFilters?.length > 0) {
-      if (this.filter.isConcept(valueFilterType)) {
-        abstractValueFilter.push(this.setConceptValueFilter(criterion.valueFilters[0]));
-      }
-      if (this.filter.isQuantity(valueFilterType)) {
-        if (this.filter.isNoneComparator(criterion.valueFilters[0].comparator)) {
-          return undefined;
-        } else {
-          abstractValueFilter.push(this.setQuantity(criterion.valueFilters[0]));
-        }
-      }
-      return abstractValueFilter;
-    }
-  }
-
-  private addAttributeFiltersToSQ(
-    criterion: Criterion
-  ): AbstractStructuredQueryFilters[] | undefined {
-    const abstractFilter: AbstractStructuredQueryFilters[] = [];
+  private addAttributeFilter(criterion: Criterion): StructuredQueryAttributeFilters[] | undefined {
     if (criterion.attributeFilters.length > 0) {
-      criterion.attributeFilters?.forEach((attributeFilter) => {
-        if (this.filter.isConcept(attributeFilter.type)) {
-          abstractFilter.push(this.setConceptAttributeFilter(attributeFilter));
-        }
-        if (this.filter.isQuantity(attributeFilter.type)) {
-          if (!this.filter.isNoneComparator(attributeFilter.comparator)) {
-            abstractFilter.push(this.setQuantity(attributeFilter));
-          }
-        }
-        if (this.filter.isReference(attributeFilter.type)) {
-          abstractFilter.push(this.setReferences(criterion.linkedCriteria, attributeFilter));
-        }
-      });
-      return abstractFilter;
+      this.addAttributeFiltersToSQ(criterion);
     } else {
       return undefined;
     }
   }
 
-  /**
-   *
-   * @todo check if "quantityFilter as QuantityComparatorFilter" is working
-   * @returns
-   */
-  private setQuantity(quantityFilter: AbstractQuantityFilter): AbstractQuantityFilter {
-    const type = quantityFilter.type;
-    if (this.filter.isQuantityComparator(type)) {
-      return this.setQuantityComparatorAttributes(quantityFilter as QuantityComparatorFilter);
+  private addValueFilter(criterion: Criterion): StructuredQueryValueFilters[] | undefined {
+    if (criterion.valueFilters.length > 0) {
+      this.addValueFiltersToSQ(criterion);
+    } else {
+      return undefined;
     }
-    if (this.filter.isQuantityRange(type)) {
-      return this.setQuantityRangeAttributes(quantityFilter as QuantityRangeFilter);
+  }
+
+  private addAttributeFiltersToSQ(
+    criterion: Criterion
+  ): StructuredQueryAttributeFilters[] | undefined {
+    const structuredQueryAttributeFilters: StructuredQueryAttributeFilters[] = [];
+    criterion.attributeFilters.forEach((attributeFilter) => {
+      const structuredQueryAttributeFilter = this.assignAttributeFilter(attributeFilter);
+      structuredQueryAttributeFilters.push(structuredQueryAttributeFilter);
+      if (this.filter.isReference(attributeFilter.type)) {
+        structuredQueryAttributeFilters.push(
+          this.setReferences(criterion.linkedCriteria, attributeFilter)
+        );
+      }
+    });
+    return structuredQueryAttributeFilters;
+  }
+
+  private addValueFiltersToSQ(criterion: Criterion): StructuredQueryValueFilters[] | undefined {
+    const structuredQueryValueFilters: StructuredQueryValueFilters[] = [];
+    criterion.valueFilters.forEach((valueFilter) => {
+      const structuredQueryValueFilter = this.assignValueFilters(valueFilter);
+      structuredQueryValueFilters.push(structuredQueryValueFilter);
+    });
+    return structuredQueryValueFilters;
+  }
+
+  private assignAttributeFilter(attributeFilter: AttributeFilter): StructuredQueryAttributeFilters {
+    const structuredQueryAttributeFilter: StructuredQueryAttributeFilters =
+      new StructuredQueryAttributeFilters();
+    structuredQueryAttributeFilter.attributeCode = attributeFilter.attributeCode;
+    structuredQueryAttributeFilter.conceptFilter = this.setAttributeConceptFilter(attributeFilter);
+    structuredQueryAttributeFilter.quantityComparatorFilter =
+      this.setQuantityComparatorFilter(attributeFilter);
+    structuredQueryAttributeFilter.quantityRangeFilter =
+      this.setQuantityRangeFilter(attributeFilter);
+    return structuredQueryAttributeFilter;
+  }
+
+  private assignValueFilters(valueFilter: ValueFilter): StructuredQueryValueFilters {
+    const structuredQueryValueFilter: StructuredQueryValueFilters =
+      new StructuredQueryValueFilters();
+    structuredQueryValueFilter.conceptFilter = this.setValueConceptFilter(valueFilter);
+    structuredQueryValueFilter.quantityComparatorFilter =
+      this.setQuantityComparatorFilter(valueFilter);
+    structuredQueryValueFilter.quantityRangeFilter = this.setQuantityRangeFilter(valueFilter);
+    return structuredQueryValueFilter;
+  }
+
+  private setQuantityComparatorFilter(
+    abstractFeasibilityQueryAttributeFilter: AbstractAttributeFilters
+  ): QuantityComparatorFilter | undefined {
+    const type = abstractFeasibilityQueryAttributeFilter.type;
+    if (this.isQuantityFilter(type)) {
+      this.setQuantityComparatorAttributes(abstractFeasibilityQueryAttributeFilter);
+    } else {
+      return undefined;
+    }
+  }
+
+  private setQuantityRangeFilter(
+    abstractFeasibilityQueryAttributeFilter: AbstractAttributeFilters
+  ): QuantityRangeFilter | undefined {
+    const type = abstractFeasibilityQueryAttributeFilter.type;
+    if (this.isQuantityFilter(type)) {
+      this.setQuantityRangeAttributes(abstractFeasibilityQueryAttributeFilter);
+    } else {
+      return undefined;
+    }
+  }
+
+  private setAttributeConceptFilter(
+    abstractFeasibilityQueryAttributeFilter
+  ): ConceptAttributeFilter | undefined {
+    if (this.filter.isConcept(abstractFeasibilityQueryAttributeFilter.type)) {
+      this.setConceptAttributeFilter(abstractFeasibilityQueryAttributeFilter);
+    } else {
+      return undefined;
+    }
+  }
+
+  private setValueConceptFilter(
+    abstractFeasibilityQueryAttributeFilter
+  ): ConceptValueFilter | undefined {
+    if (this.filter.isConcept(abstractFeasibilityQueryAttributeFilter.type)) {
+      this.setConceptValueFilter(abstractFeasibilityQueryAttributeFilter);
+    } else {
+      return undefined;
+    }
+  }
+
+  private isQuantityFilter(abstractFeasibilityQueryAttributeFilter): boolean {
+    if (this.filter.isQuantity(abstractFeasibilityQueryAttributeFilter.type)) {
+      if (!this.filter.isNoneComparator(abstractFeasibilityQueryAttributeFilter.type)) {
+        return true;
+      }
+    } else {
+      return false;
     }
   }
 
@@ -201,26 +254,28 @@ export class UIQuery2StructuredQueryTranslatorService {
   }
 
   private setConceptAttributeFilter(attributeFilter: AttributeFilter): ConceptAttributeFilter {
-    const filter = new ConceptAttributeFilter();
-    filter.attributeCode = attributeFilter.attributeCode;
-    filter.selectedConcepts = attributeFilter.selectedConcepts;
-    return filter;
+    const conceptFilter = new ConceptAttributeFilter();
+    conceptFilter.attributeCode = attributeFilter.attributeCode;
+    conceptFilter.selectedConcepts = attributeFilter.selectedConcepts;
+    return conceptFilter;
   }
 
-  private setConceptValueFilter(valueFilter: ValueFilter): ConceptValueFilter {
-    const filter = new ConceptValueFilter();
-    filter.selectedConcepts = valueFilter.selectedConcepts;
-    return filter;
+  private setConceptValueFilter(valueFilter: ValueFilter): StructuredQueryValueFilters {
+    const structuredQueryValueFilter = new StructuredQueryValueFilters();
+    structuredQueryValueFilter.conceptFilter.selectedConcepts = valueFilter.selectedConcepts;
+    return structuredQueryValueFilter;
   }
 
   private setReferences(
     linkedCriteria: Criterion[],
     attributeFilter: AttributeFilter
-  ): ReferenceFilter {
-    const filter = new ReferenceFilter();
-    filter.attributeCode = attributeFilter.attributeCode;
-    filter.criteria = this.setEachLinkedCriteria(linkedCriteria);
-    return filter;
+  ): StructuredQueryAttributeFilters {
+    const structuredQueryAttributeFilter: StructuredQueryAttributeFilters =
+      new StructuredQueryAttributeFilters();
+    structuredQueryAttributeFilter.referenceFilter.attributeCode = attributeFilter.attributeCode;
+    structuredQueryAttributeFilter.referenceFilter.criteria =
+      this.setEachLinkedCriteria(linkedCriteria);
+    return structuredQueryAttributeFilter;
   }
 
   private setEachLinkedCriteria(linkedCriteria: Criterion[]): StructuredQueryCriterion[] {
@@ -232,22 +287,22 @@ export class UIQuery2StructuredQueryTranslatorService {
   }
 
   private setQuantityComparatorAttributes(
-    quantityComparatorFilter: QuantityComparatorFilter
+    feasibilityQuerytAttributeFilter: AbstractAttributeFilters
   ): QuantityComparatorFilter {
-    const filter = new QuantityComparatorFilter();
-    filter.comparator = quantityComparatorFilter.comparator;
-    filter.unit = quantityComparatorFilter.unit;
-    filter.value = quantityComparatorFilter.value;
-    return filter;
+    const quantityComparatorFilter = new QuantityComparatorFilter();
+    quantityComparatorFilter.comparator = feasibilityQuerytAttributeFilter.comparator;
+    quantityComparatorFilter.unit = feasibilityQuerytAttributeFilter.unit;
+    quantityComparatorFilter.value = feasibilityQuerytAttributeFilter.value;
+    return quantityComparatorFilter;
   }
 
   private setQuantityRangeAttributes(
-    quantityRangeFilter: QuantityRangeFilter
+    feasibilityQuerytAttributeFilter: AbstractAttributeFilters
   ): QuantityRangeFilter {
-    const filter = new QuantityRangeFilter();
-    filter.maxValue = quantityRangeFilter.maxValue;
-    filter.minValue = quantityRangeFilter.minValue;
-    filter.unit = quantityRangeFilter.unit;
-    return filter;
+    const quantityRangeFilter = new QuantityRangeFilter();
+    quantityRangeFilter.maxValue = feasibilityQuerytAttributeFilter.maxValue;
+    quantityRangeFilter.minValue = feasibilityQuerytAttributeFilter.minValue;
+    quantityRangeFilter.unit = feasibilityQuerytAttributeFilter.unit;
+    return quantityRangeFilter;
   }
 }
