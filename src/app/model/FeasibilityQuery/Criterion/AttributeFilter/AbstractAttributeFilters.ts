@@ -30,8 +30,8 @@ export abstract class AbstractAttributeFilters {
 
 export class QuantityUnit {
   // UCUM
-  code: string;
-  display: string;
+  code = '';
+  display = '';
 }
 
 export enum Comparator {
