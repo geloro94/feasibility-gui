@@ -10,7 +10,7 @@ import { EditGroupConnectionComponent } from '../../edit/edit-group-connection/e
 import { GroupFactory } from '../../../../controller/GroupFactory';
 import { Subscription } from 'rxjs';
 import { TranslateService } from '@ngx-translate/core';
-import { FeatureService } from '../../../../../../service/feature.service';
+import { FeatureService } from '../../../../../../service/Feature.service';
 
 @Component({
   selector: 'num-display-group',
@@ -51,12 +51,7 @@ export class DisplayGroupComponent implements OnInit {
   subscriptionTranslation: Subscription;
   subscriptionDialog: Subscription;
 
-  constructor(
-    public snackBar: MatSnackBar,
-    public dialog: MatDialog,
-    private translation: TranslateService,
-    public featureService: FeatureService
-  ) {}
+  constructor(public snackBar: MatSnackBar, public dialog: MatDialog, private translation: TranslateService, public featureService: FeatureService) {}
 
   ngOnInit(): void {}
 
@@ -123,11 +118,9 @@ export class DisplayGroupComponent implements OnInit {
 
   showHintNotDeletedLinkedParentGroup(): void {
     this.subscriptionTranslation?.unsubscribe();
-    this.subscriptionTranslation = this.translation
-      .get('QUERYBUILDER.DISPLAY.GROUPS.HINT_NOT_DELETABLE_LINKED_GROUP')
-      .subscribe((text) => {
-        this.snackBar.open(text, '', { duration: 2000 });
-      });
+    this.subscriptionTranslation = this.translation.get('QUERYBUILDER.DISPLAY.GROUPS.HINT_NOT_DELETABLE_LINKED_GROUP').subscribe((text) => {
+      this.snackBar.open(text, '', { duration: 2000 });
+    });
   }
 
   isLinked(): boolean {
@@ -155,8 +148,6 @@ export class DisplayGroupComponent implements OnInit {
     };
 
     const dialogRef = this.dialog.open(EditGroupConnectionComponent, dialogConfig);
-    this.subscriptionDialog = dialogRef
-      .afterClosed()
-      .subscribe((query) => this.storeQuery.emit(query));
+    this.subscriptionDialog = dialogRef.afterClosed().subscribe((query) => this.storeQuery.emit(query));
   }
 }

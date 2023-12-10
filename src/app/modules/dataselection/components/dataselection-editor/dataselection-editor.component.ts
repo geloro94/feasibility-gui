@@ -4,7 +4,7 @@ import { Query } from 'src/app/modules/querybuilder/model/api/query/query';
 import { QueryResult } from 'src/app/modules/querybuilder/model/api/result/QueryResult';
 import { BackendService } from 'src/app/modules/querybuilder/service/backend.service';
 import { QueryProviderService } from 'src/app/modules/querybuilder/service/query-provider.service';
-import { FeatureService } from 'src/app/service/feature.service';
+import { FeatureService } from 'src/app/service/Feature.service';
 import { SaveDialogComponent } from './save/save-dialog/save-dialog.component';
 
 @Component({
@@ -96,11 +96,7 @@ export class DataselectionEditorComponent implements OnInit, AfterViewChecked {
     }
 
     if (button === 'Reset') {
-      return (
-        !(this.query.groups[0].inclusionCriteria.length > 0) &&
-        !(this.query.groups[0].exclusionCriteria.length > 0) &&
-        !(this.query.groups.length > 1)
-      );
+      return !(this.query.groups[0].inclusionCriteria.length > 0) && !(this.query.groups[0].exclusionCriteria.length > 0) && !(this.query.groups.length > 1);
     }
     return false;
   }

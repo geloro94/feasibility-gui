@@ -6,10 +6,7 @@ import { TermEntry2CriterionTranslator } from '../../../../controller/TermEntry2
 import { CritType } from '../../../../model/api/query/group';
 import { Query } from '../../../../model/api/query/query';
 import { QueryProviderService } from '../../../../service/query-provider.service';
-import { FeatureService } from '../../../../../../service/feature.service';
-import { Subscription } from 'rxjs';
-import { BackendService } from 'src/app/modules/querybuilder/service/backend.service';
-import { CritGroupArranger } from '../../../../controller/CritGroupArranger';
+import { FeatureService } from '../../../../../../service/Feature.service';
 
 export class EnterCriterionListComponentData {
   groupIndex: number;
@@ -44,10 +41,7 @@ export class EnterCriterionListComponent implements OnInit, OnDestroy {
     public provider: QueryProviderService,
     public featureService: FeatureService
   ) {
-    this.translator = new TermEntry2CriterionTranslator(
-      this.featureService.useFeatureTimeRestriction(),
-      this.featureService.getQueryVersion()
-    );
+    this.translator = new TermEntry2CriterionTranslator(this.featureService.useFeatureTimeRestriction(), this.featureService.getQueryVersion());
     this.criterionList = data.termEntryList.map((termEntry) => this.translator.translate(termEntry));
     this.critType = data.critType;
     this.groupIndex = data.groupIndex;
@@ -85,9 +79,7 @@ export class EnterCriterionListComponent implements OnInit, OnDestroy {
   }
 
   registerAllAddible(event: { groupId: number; isaddible: boolean }, criterion: Criterion): void {
-    const element = this.criterionAddibleList.find(
-      (criterionTemp) => criterionTemp.criterion.display === criterion.display
-    );
+    const element = this.criterionAddibleList.find((criterionTemp) => criterionTemp.criterion.display === criterion.display);
     element.isAddible = event.isaddible;
     element.groupID = event.groupId;
 
@@ -109,9 +101,7 @@ export class EnterCriterionListComponent implements OnInit, OnDestroy {
 
   doDiscard(criterion: Criterion): void {
     const index = this.criterionList.findIndex((critrionTemp) => critrionTemp === criterion);
-    const index2 = this.criterionAddibleList.findIndex(
-      (critrionTemp) => critrionTemp.criterion === criterion
-    );
+    const index2 = this.criterionAddibleList.findIndex((critrionTemp) => critrionTemp.criterion === criterion);
 
     this.criterionList.splice(index, 1);
     this.criterionAddibleList.splice(index2, 1);

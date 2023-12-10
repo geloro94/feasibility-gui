@@ -5,12 +5,11 @@ import { QueryResult } from '../../model/api/result/QueryResult';
 import { interval, Observable, Subscription, timer } from 'rxjs';
 import { BackendService } from '../../service/backend.service';
 import { map, share, switchAll, takeUntil } from 'rxjs/operators';
-import { FeatureService } from '../../../../service/feature.service';
+import { FeatureService } from '../../../../service/Feature.service';
 import { GroupFactory } from '../../controller/GroupFactory';
 import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 import { SaveDialogComponent } from './save/save-dialog/save-dialog.component';
 import { MatRadioChange } from '@angular/material/radio';
-import { QueryResultRateLimit } from '../../model/api/result/QueryResultRateLimit';
 import { SnackbarService } from 'src/app/core/components/snack-bar/snack-bar.component';
 @Component({
   selector: 'num-querybuilder',
@@ -90,11 +89,7 @@ export class QuerybuilderEditorComponent implements OnInit, OnDestroy, AfterView
     }
 
     if (button === 'Reset') {
-      return (
-        !(this.query.groups[0].inclusionCriteria.length > 0) &&
-        !(this.query.groups[0].exclusionCriteria.length > 0) &&
-        !(this.query.groups.length > 1)
-      );
+      return !(this.query.groups[0].inclusionCriteria.length > 0) && !(this.query.groups[0].exclusionCriteria.length > 0) && !(this.query.groups.length > 1);
     }
     return false;
   }

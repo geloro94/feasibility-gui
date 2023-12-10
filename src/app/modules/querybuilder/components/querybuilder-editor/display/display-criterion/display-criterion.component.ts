@@ -5,7 +5,7 @@ import { EditSingleCriterionComponent } from '../../edit/edit-single-criterion/e
 import { Query } from '../../../../model/api/query/query';
 import { Subscription } from 'rxjs';
 import { ValueFilter } from '../../../../model/api/query/valueFilter';
-import { FeatureService } from '../../../../../../service/feature.service';
+import { FeatureService } from '../../../../../../service/Feature.service';
 import { CritGroupPosition } from '../../../../controller/CritGroupArranger';
 
 @Component({
@@ -62,9 +62,7 @@ export class DisplayCriterionComponent implements OnInit, OnDestroy {
     };
     const dialogRef = this.dialog.open(EditSingleCriterionComponent, dialogConfig);
     this.subscriptionDialog?.unsubscribe();
-    this.subscriptionDialog = dialogRef
-      .afterClosed()
-      .subscribe((query) => this.storeQuery.emit(query));
+    this.subscriptionDialog = dialogRef.afterClosed().subscribe((query) => this.storeQuery.emit(query));
   }
 
   doDelete(): void {
@@ -85,9 +83,7 @@ export class DisplayCriterionComponent implements OnInit, OnDestroy {
   getAttributeFilters(): ValueFilter[] {
     if (this.criterion.attributeFilters) {
       if (!this.featureService.useFeatureMultipleValueDefinitions()) {
-        return this.criterion.attributeFilters.length === 0
-          ? []
-          : [this.criterion.attributeFilters[0]];
+        return this.criterion.attributeFilters.length === 0 ? [] : [this.criterion.attributeFilters[0]];
       }
 
       return this.criterion.attributeFilters;

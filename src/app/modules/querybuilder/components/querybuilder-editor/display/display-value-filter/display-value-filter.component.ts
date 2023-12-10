@@ -1,6 +1,6 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { Comparator, OperatorOptions, ValueFilter } from '../../../../model/api/query/valueFilter';
-import { FeatureService } from '../../../../../../service/feature.service';
+import { FeatureService } from '../../../../../../service/Feature.service';
 
 class ComperatorIcon {
   icon: string;

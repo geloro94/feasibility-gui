@@ -2,7 +2,7 @@ import { Component, Input, OnInit } from '@angular/core';
 import { Criterion } from '../../../../model/api/query/criterion';
 import { Query } from '../../../../model/api/query/query';
 import { ValueFilter } from '../../../../model/api/query/valueFilter';
-import { FeatureService } from '../../../../../../service/feature.service';
+import { FeatureService } from '../../../../../../service/Feature.service';
 
 @Component({
   selector: 'num-display-linked-criterion',
@@ -38,9 +38,7 @@ export class DisplayLinkedCriterionComponent implements OnInit {
   getAttributeFilters(): ValueFilter[] {
     if (this.criterion.attributeFilters) {
       if (!this.featureService.useFeatureMultipleValueDefinitions()) {
-        return this.criterion.attributeFilters.length === 0
-          ? []
-          : [this.criterion.attributeFilters[0]];
+        return this.criterion.attributeFilters.length === 0 ? [] : [this.criterion.attributeFilters[0]];
       }
 
       return this.criterion.attributeFilters;

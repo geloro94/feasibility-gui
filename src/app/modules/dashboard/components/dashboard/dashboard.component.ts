@@ -2,7 +2,7 @@
 import { Component, OnInit } from '@angular/core';
 import { OAuthService } from 'angular-oauth2-oidc';
 import { AppConfigService } from '../../../../config/app-config.service';
-import { FeatureService } from '../../../../service/feature.service';
+import { FeatureService } from '../../../../service/Feature.service';
 import { TranslateService } from '@ngx-translate/core';
 import { IUserProfile } from '../../../../shared/models/user/user-profile.interface';
 
@@ -12,12 +12,7 @@ import { IUserProfile } from '../../../../shared/models/user/user-profile.interf
   styleUrls: ['./dashboard.component.scss'],
 })
 export class DashboardComponent implements OnInit {
-  constructor(
-    private appConfig: AppConfigService,
-    private oauthService: OAuthService,
-    private featureService: FeatureService,
-    public translate: TranslateService
-  ) {}
+  constructor(private appConfig: AppConfigService, private oauthService: OAuthService, private featureService: FeatureService, public translate: TranslateService) {}
 
   config = this.appConfig.config;
   authTest: string;
