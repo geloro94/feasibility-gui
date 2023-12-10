@@ -3,6 +3,6 @@ import { QuantityUnit } from 'src/app/model/FeasibilityQuery/Criterion/Attribute
 import { AbstractStructuredQueryFilters } from '../AbstractStructuredQueryFilters';
 
 export abstract class AbstractQuantityFilter extends AbstractStructuredQueryFilters {
-  unit: QuantityUnit = null;
+  unit: QuantityUnit = new QuantityUnit();
   type: FilterTypes;
 }
