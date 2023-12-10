@@ -1,4 +1,3 @@
-import { StructuredQueryCriterion } from '../StructuredQuery/CriterionSQ/StructuredQueryCriterion';
 import { Group } from './Group';
 
 // The atomic building block of a query is a Criterion (e.g. "Geschlecht: weiblich")
