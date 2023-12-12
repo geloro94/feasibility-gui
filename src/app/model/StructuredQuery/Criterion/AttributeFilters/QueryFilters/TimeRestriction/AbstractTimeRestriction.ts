@@ -4,6 +4,4 @@ import { AbstractStructuredQueryFilters } from '../AbstractStructuredQueryFilter
 /**
  * @todo make sure that type doesnt appear in timeRestriction in the StructuredQuery
  */
-export abstract class AbstractTimeRestriction extends AbstractStructuredQueryFilters {
-  type: FilterTypes = FilterTypes.TIMERESTRICTION;
-}
+export abstract class AbstractTimeRestriction extends AbstractStructuredQueryFilters {}
