@@ -5,7 +5,7 @@ import { StructuredQueryCriterion } from './Criterion/StructuredQueryCriterion';
  */
 export class StructuredQuery {
   version = 'http://to_be_decided.com/draft-1/schema#';
-  display: string;
+  display = '';
 
   // conjunctive normal form (without negation)
   inclusionCriteria: StructuredQueryCriterion[][] = [];
