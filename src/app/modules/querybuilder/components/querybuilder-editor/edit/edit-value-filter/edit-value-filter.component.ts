@@ -1,10 +1,5 @@
 import { AfterViewInit, Component, Input, OnInit, QueryList, ViewChildren } from '@angular/core';
-import {
-  Comparator,
-  OperatorOptions,
-  QuantityUnit,
-  ValueFilter,
-} from '../../../../model/api/query/valueFilter';
+import { Comparator, OperatorOptions, QuantityUnit, ValueFilter } from '../../../../model/api/query/valueFilter';
 import { TerminologyCode } from '../../../../model/api/terminology/terminology';
 import { ObjectHelper } from '../../../../controller/ObjectHelper';
 import { Query } from '../../../../model/api/query/query';
@@ -146,6 +141,7 @@ export class EditValueFilterComponent implements OnInit, AfterViewInit {
   selectQuantityFilterOption(option: string): void {
     if (option === 'BETWEEN') {
       this.filter.type = OperatorOptions.QUANTITY_RANGE;
+      this.filter.comparator = Comparator.BETWEEN;
     } else {
       this.filter.type = OperatorOptions.QUANTITY_COMPARATOR;
       switch (option) {
@@ -165,9 +161,7 @@ export class EditValueFilterComponent implements OnInit, AfterViewInit {
     }
     if (
       this.filter.comparator !== Comparator.NONE ||
-      (this.filter.type ===
-        (OperatorOptions.QUANTITY_RANGE || OperatorOptions.QUANTITY_COMPARATOR) &&
-        this.filter.valueDefinition.type === ValueType.QUANTITY)
+      (this.filter.type === (OperatorOptions.QUANTITY_RANGE || OperatorOptions.QUANTITY_COMPARATOR) && this.filter.valueDefinition.type === ValueType.QUANTITY)
     ) {
       this.resetQuantityDisabled = false;
     } else {
@@ -186,10 +180,7 @@ export class EditValueFilterComponent implements OnInit, AfterViewInit {
     const conceptAsJson = JSON.stringify(temp);
     const criterionForLinking = this.getSelectedCriterion(temp);
 
-    if (
-      this.filter.attributeDefinition?.type === ValueType.CONCEPT ||
-      this.filter.valueDefinition?.type === ValueType.CONCEPT
-    ) {
+    if (this.filter.attributeDefinition?.type === ValueType.CONCEPT || this.filter.valueDefinition?.type === ValueType.CONCEPT) {
       if (this.selectedConceptsAsJson.has(conceptAsJson)) {
         this.selectedConceptsAsJson.delete(conceptAsJson);
       } else {
@@ -228,12 +219,7 @@ export class EditValueFilterComponent implements OnInit, AfterViewInit {
     for (const inex of ['inclusion', 'exclusion']) {
       this.query.groups[0][inex + 'Criteria'].forEach((disj) => {
         disj.forEach((conj) => {
-          if (
-            conj.termCodes[0].code === termcode.code &&
-            conj.termCodes[0].display === termcode.display &&
-            conj.termCodes[0].system === termcode.system &&
-            conj.termCodes[0].uid === termcode.uid
-          ) {
+          if (conj.termCodes[0].code === termcode.code && conj.termCodes[0].display === termcode.display && conj.termCodes[0].system === termcode.system && conj.termCodes[0].uid === termcode.uid) {
             crit = conj;
           }
         });
@@ -282,10 +268,7 @@ export class EditValueFilterComponent implements OnInit, AfterViewInit {
       if (checkbox.checked) {
         checkbox.checked = false;
         checkbox.checkedControlForm.patchValue(['checkedControl', false]);
-        if (
-          (this.filter.attributeDefinition?.type || this.filter.valueDefinition?.type) ===
-          ValueType.CONCEPT
-        ) {
+        if ((this.filter.attributeDefinition?.type || this.filter.valueDefinition?.type) === ValueType.CONCEPT) {
           this.selectedConceptsAsJson = new Set();
           this.filter.selectedConcepts = [];
         } else {
@@ -296,11 +279,7 @@ export class EditValueFilterComponent implements OnInit, AfterViewInit {
   }
 
   resetQuantity() {
-    if (
-      (this.filter.comparator !== Comparator.NONE ||
-        this.filter.type === OperatorOptions.QUANTITY_RANGE) &&
-      this.filter.valueDefinition.type === ValueType.QUANTITY
-    ) {
+    if ((this.filter.comparator !== Comparator.NONE || this.filter.type === OperatorOptions.QUANTITY_RANGE) && this.filter.valueDefinition.type === ValueType.QUANTITY) {
       this.filter.maxValue = 0;
       this.filter.minValue = 0;
       this.filter.value = 0;
@@ -314,36 +293,23 @@ export class EditValueFilterComponent implements OnInit, AfterViewInit {
       this.filter.type = OperatorOptions.QUANTITY_COMPARATOR;
       this.quantityFilterOption = 'NONE';
     }
-    if (
-      this.selectedConceptsAsJson.size > 0 &&
-      this.filter.valueDefinition.type === ValueType.CONCEPT
-    ) {
+    if (this.selectedConceptsAsJson.size > 0 && this.filter.valueDefinition.type === ValueType.CONCEPT) {
       this.doSelectAllCheckboxes();
     }
   }
 
   resetQuantityButtonDisabled() {
-    if (
-      this.selectedConceptsAsJson.size > 0 &&
-      this.filter.valueDefinition?.type === ValueType.CONCEPT
-    ) {
+    if (this.selectedConceptsAsJson.size > 0 && this.filter.valueDefinition?.type === ValueType.CONCEPT) {
       return false;
     }
-    if (
-      (this.filter.comparator !== Comparator.NONE ||
-        this.filter.type === OperatorOptions.QUANTITY_RANGE) &&
-      this.filter.valueDefinition?.type === ValueType.QUANTITY
-    ) {
+    if ((this.filter.comparator !== Comparator.NONE || this.filter.type === OperatorOptions.QUANTITY_RANGE) && this.filter.valueDefinition?.type === ValueType.QUANTITY) {
       return false;
     }
     return true;
   }
 
   resetButtonDisabled() {
-    if (
-      (this.filter.attributeDefinition?.type || this.filter.valueDefinition?.type) ===
-      ValueType.CONCEPT
-    ) {
+    if ((this.filter.attributeDefinition?.type || this.filter.valueDefinition?.type) === ValueType.CONCEPT) {
       if (this.selectedConceptsAsJson.size > 0) {
         return false;
       } else {
@@ -360,10 +326,7 @@ export class EditValueFilterComponent implements OnInit, AfterViewInit {
   }
 
   public isActionDisabled(): boolean {
-    if (
-      this.filter?.type === OperatorOptions.QUANTITY_COMPARATOR &&
-      this.filter?.comparator !== Comparator.NONE
-    ) {
+    if (this.filter?.type === OperatorOptions.QUANTITY_COMPARATOR && this.filter?.comparator !== Comparator.NONE) {
       return this.valueTooSmall(this.filter.value) || this.valueTooLarge(this.filter.value);
     }
 
@@ -415,10 +378,7 @@ export class EditValueFilterComponent implements OnInit, AfterViewInit {
   }
 
   minimumSmallerMaximum(): boolean {
-    return (
-      this.filter.type === OperatorOptions.QUANTITY_RANGE &&
-      this.filter.minValue >= this.filter.maxValue
-    );
+    return this.filter.type === OperatorOptions.QUANTITY_RANGE && this.filter.minValue >= this.filter.maxValue;
   }
 
   // values come from the for-iteration (unit), option is the selected one ([(value)]="filter.unit")
