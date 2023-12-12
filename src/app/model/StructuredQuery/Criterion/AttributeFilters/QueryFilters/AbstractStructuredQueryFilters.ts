@@ -3,5 +3,5 @@ import { FilterTypes } from '../../../../FilterTypes';
 
 export abstract class AbstractStructuredQueryFilters {
   attributeCode: TerminologyCode;
-  abstract type: FilterTypes;
+  type: FilterTypes;
 }
