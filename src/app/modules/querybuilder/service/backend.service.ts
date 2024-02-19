@@ -5,6 +5,7 @@ import { AppConfigService } from '../../../config/app-config.service';
 import { Observable, of } from 'rxjs';
 import { FeatureService } from '../../../service/Feature.service';
 import { Query } from '../model/api/query/query';
+//import { Query } from 'src/app/model/FeasibilityQuery/Query'
 import { QueryResponse } from '../model/api/result/QueryResponse';
 import { QueryResult } from '../model/api/result/QueryResult';
 import { MockBackendDataProvider } from './MockBackendDataProvider';
@@ -44,7 +45,9 @@ export class BackendService {
   lowerBoundaryPatient: number = this.feature.getPatientResultLowerBoundary();
 
   token = this.authStorage.getItem('access_token');
-  headers = new HttpHeaders().set('Content-Type', 'application/json').set('Authorization', 'Bearer ' + this.token);
+  headers = new HttpHeaders()
+    .set('Content-Type', 'application/json')
+    .set('Authorization', 'Bearer ' + this.token);
 
   public getCategories(): Observable<Array<CategoryEntry>> {
     if (this.feature.mockTerminology()) {
@@ -58,20 +61,33 @@ export class BackendService {
       return of(this.mockBackendDataProvider.getTerminologyEntry(id));
     }
 
-    return this.http.get<TerminologyEntry>(this.createUrl(BackendService.PATH_TERMINOLOGY_SUBTREE + '/' + id));
+    return this.http.get<TerminologyEntry>(
+      this.createUrl(BackendService.PATH_TERMINOLOGY_SUBTREE + '/' + id)
+    );
   }
 
-  public getAllowedReferencedCriteria(criteriaSetUrl: string, contextTermCodeHashes: Array<string>): Observable<any> {
+  public getAllowedReferencedCriteria(
+    criteriaSetUrl: string,
+    contextTermCodeHashes: Array<string>
+  ): Observable<any> {
     const criteriaSetUrlParam = 'criteriaSetUrl=' + encodeURI(criteriaSetUrl);
 
-    return this.http.post<any>(this.createUrl(BackendService.PATH_CRITERIA_SET_INTERSECT, criteriaSetUrlParam), contextTermCodeHashes);
+    return this.http.post<any>(
+      this.createUrl(BackendService.PATH_CRITERIA_SET_INTERSECT, criteriaSetUrlParam),
+      contextTermCodeHashes
+    );
   }
 
   public getTerminologyProfile(contextTermcodeHash: string): Observable<any> {
-    return this.http.get<any>(this.createUrl(BackendService.PATH_TERMINOLOGY + contextTermcodeHash + '/ui_profile'));
+    return this.http.get<any>(
+      this.createUrl(BackendService.PATH_TERMINOLOGY + contextTermcodeHash + '/ui_profile')
+    );
   }
 
-  public getTerminolgyEntrySearchResult(catId: string, search: string): Observable<Array<TerminologyEntry>> {
+  public getTerminolgyEntrySearchResult(
+    catId: string,
+    search: string
+  ): Observable<Array<TerminologyEntry>> {
     if (this.feature.mockTerminology()) {
       return of(this.mockBackendDataProvider.getTerminolgyEntrySearchResult(catId, search));
     }
@@ -113,7 +129,10 @@ export class BackendService {
     return this.http.get<QueryResult>(resultUrl);
   }
 
-  public getDetailedResult(resultUrl: string, gottenDetailedResult: boolean): Observable<QueryResult> {
+  public getDetailedResult(
+    resultUrl: string,
+    gottenDetailedResult: boolean
+  ): Observable<QueryResult> {
     if (this.feature.mockResult()) {
       const mockResult = {
         totalNumberOfPatients: Math.floor(Math.random() * 10000000),
@@ -158,10 +177,17 @@ export class BackendService {
   }
 
   public getDetailedResultRateLimit(): Observable<QueryResultRateLimit> {
-    return this.http.get<QueryResultRateLimit>(this.createUrl(BackendService.PATH_QUERY_RESULT_LIMIT));
+    return this.http.get<QueryResultRateLimit>(
+      this.createUrl(BackendService.PATH_QUERY_RESULT_LIMIT)
+    );
   }
 
-  public saveQuery(query: Query, title: string, comment: string, saveWithQuery: boolean | string): Observable<any> {
+  public saveQuery(
+    query: Query,
+    title: string,
+    comment: string,
+    saveWithQuery: boolean | string
+  ): Observable<any> {
     if (this.feature.mockLoadnSave()) {
       let savedQueries: Array<{
         content: Query
@@ -209,10 +235,14 @@ export class BackendService {
             label: title,
             comment,
           };
-          return this.http.post<any>(this.createUrl(BackendService.PATH_RUN_QUERY) + '/' + saveWithQuery + '/saved', savedQuery, {
-            headers,
-            observe: 'response',
-          });
+          return this.http.post<any>(
+            this.createUrl(BackendService.PATH_RUN_QUERY) + '/' + saveWithQuery + '/saved',
+            savedQuery,
+            {
+              headers,
+              observe: 'response',
+            }
+          );
         }
       }
     }
@@ -220,9 +250,12 @@ export class BackendService {
 
   public loadSavedQueries(): Observable<any> {
     const headers = this.headers;
-    return this.http.get<Array<any>>(this.createUrl(BackendService.PATH_RUN_QUERY, 'filter=saved'), {
-      headers,
-    });
+    return this.http.get<Array<any>>(
+      this.createUrl(BackendService.PATH_RUN_QUERY, 'filter=saved'),
+      {
+        headers,
+      }
+    );
   }
 
   public loadSavedTemplates(validate?: boolean): Observable<any> {
@@ -246,7 +279,10 @@ export class BackendService {
 
   public loadTemplate(id: number): Observable<any> {
     const headers = this.headers;
-    return this.http.get<any>(this.createUrl(BackendService.PATH_STORED_QUERY + '/' + id.toString()), { headers });
+    return this.http.get<any>(
+      this.createUrl(BackendService.PATH_STORED_QUERY + '/' + id.toString()),
+      { headers }
+    );
   }
   createUrl(pathToResource: string, paramString?: string): string {
     let url = this.config.getConfig().uiBackendApi.baseUrl;

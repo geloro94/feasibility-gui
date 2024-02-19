@@ -30,7 +30,6 @@ export class SafePipe implements PipeTransform {
 })
 export class OptionsComponent implements OnInit {
   public features: IAppConfig;
-  doQueryCopy = true;
   includeContext: boolean;
   query: Query;
   stylesheet: string;
@@ -56,7 +55,7 @@ export class OptionsComponent implements OnInit {
   ngOnInit(): void {
     this.features = this.featureProviderService.getFeatures();
     this.stylesheet = this.features.stylesheet;
-    this.query = this.queryProviderService.query();
+    this.query = this.queryProviderService.query() as unknown as Query;
     this.pollingTime = this.features.options.pollingtimeinseconds;
     this.pollingIntervall = this.features.options.pollingintervallinseconds;
     this.fhirport = this.features.fhirport;
@@ -68,7 +67,11 @@ export class OptionsComponent implements OnInit {
     this.postQuery('translate').subscribe(
       (response) => {
         this.postmanTranslate = response;
-        this.getResponse = 'http://localhost:' + this.fhirport + '/fhir/' + this.postmanTranslate[0][0][0].replace(/\|/g, '%7c');
+        this.getResponse =
+          'http://localhost:' +
+          this.fhirport +
+          '/fhir/' +
+          this.postmanTranslate[0][0][0].replace(/\|/g, '%7c');
       },
       (error) => {
         console.log(error);
@@ -149,10 +152,11 @@ export class OptionsComponent implements OnInit {
 
   translateQueryVersion() {
     if (this.queryVersion === 'v1') {
-      this.translatedQueryv1 = this.apiTranslator.translateToV1(this.query);
+      //this.translatedQueryv1 = this.apiTranslator.translateToV1(this.query);
     }
     if (this.queryVersion === 'v2') {
       //this.translatedQueryv2 = this.apiTranslator.translateToV2(this.query);
+      this.translatedQueryv2 = this.newTranslator.translateToStructuredQuery(this.query);
     }
   }
   postQuery(modus: string): Observable<any> {

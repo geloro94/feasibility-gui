@@ -13,6 +13,7 @@ import { AttributeFilter } from 'src/app/model/FeasibilityQuery/Criterion/Attrib
 import { TimeRestriction } from 'src/app/model/FeasibilityQuery/TimeRestriction';
 import { FeatureService } from '../Feature.service';
 import { LoadUIProfileService } from '../LoadUIProfile.service';
+import { Observable, of, Subject } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
@@ -27,14 +28,28 @@ export class CreateCriterionService {
   public createCriterionFromTermCode(
     termCodes: TerminologyCode[],
     context: TerminologyCode
-  ): Criterion {
+  ): Observable<Criterion> {
     const criterion: Criterion = new Criterion();
-    criterion.context = context;
-    criterion.criterionHash = this.criterionHashService.createHash(context, termCodes[0]);
-    criterion.display = termCodes[0].display;
-    criterion.termCodes = this.copyTermCodes(termCodes);
-    criterion.uniqueID = uuidv4();
-    return Object.assign(criterion, this.applyUIProfileToCriterion(criterion.criterionHash));
+    const hash = this.criterionHashService.createHash(context, termCodes[0]);
+    const subject = new Subject<Criterion>();
+
+    this.applyUIProfileToCriterion(hash).subscribe((critFromProfile) => {
+      console.log('assign');
+      console.log(critFromProfile);
+      console.log(Object.assign(criterion, critFromProfile));
+
+      Object.assign(criterion, critFromProfile);
+      criterion.context = context;
+      criterion.criterionHash = hash;
+      criterion.display = termCodes[0].display;
+      criterion.termCodes = this.copyTermCodes(termCodes);
+      criterion.uniqueID = uuidv4();
+      console.log('final');
+      console.log(criterion);
+      subject.next(criterion);
+    });
+    //return of(criterion);
+    return subject.asObservable();
   }
 
   public createCriterionFromTermEntry(termEntry: TerminologyEntry): Criterion {
@@ -61,12 +76,15 @@ export class CreateCriterionService {
     return termCodeResult;
   }
 
-  private applyUIProfileToCriterion(hash: string): void {
+  private applyUIProfileToCriterion(hash: string): Observable<Criterion> {
+    let criterion: Criterion;
+    const subject = new Subject<Criterion>();
     this.UiProfileService.getUIProfile(hash).subscribe((profile) => {
-      this.addUIProfileElementsToCriterion(profile);
+      criterion = this.addUIProfileElementsToCriterion(profile);
+      subject.next(criterion);
     });
+    return subject.asObservable();
   }
-
   private addUIProfileElementsToCriterion(profile: UIProfile): Criterion {
     const criterion: Criterion = new Criterion();
     criterion.attributeFilters = this.getAttributeFilters(profile.attributeDefinitions);
@@ -77,12 +95,14 @@ export class CreateCriterionService {
 
   private getValueFilters(valueDefinition: ValueDefinition): ValueFilter {
     const valueFilter = new ValueFilter();
-    valueFilter.maxValue = valueDefinition.max;
-    valueFilter.minValue = valueDefinition.min;
-    valueFilter.precision = valueDefinition.precision;
-    valueFilter.optional = valueDefinition.optional;
-    valueFilter.type = this.UiProfileService.setDefinitionType(valueDefinition.type);
-    valueFilter.valueDefinition = this.UiProfileService.extractValueDefinition(valueDefinition);
+    if (valueDefinition !== null) {
+      valueFilter.maxValue = valueDefinition.max;
+      valueFilter.minValue = valueDefinition.min;
+      valueFilter.precision = valueDefinition.precision;
+      valueFilter.optional = valueDefinition.optional;
+      valueFilter.type = this.UiProfileService.setDefinitionType(valueDefinition.type);
+      valueFilter.valueDefinition = this.UiProfileService.extractValueDefinition(valueDefinition);
+    }
     return valueFilter;
   }
 

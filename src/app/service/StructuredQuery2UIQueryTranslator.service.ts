@@ -17,36 +17,55 @@ import { StructuredQueryTemplate } from '../model/StructuredQuery/StructuredQuer
 import { TerminologyCode } from '../model/terminology/Terminology';
 import { TimeRestriction } from '../model/FeasibilityQuery/TimeRestriction';
 import { ValueFilter } from '../model/FeasibilityQuery/Criterion/AttributeFilter/ValueFilter';
+import { Observable, of, Subject, forkJoin, combineLatest, merge, mergeAll, first } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
 })
 export class StructuredQuery2UIQueryTranslatorService {
-  constructor(private filter: FilterTypesService, private createCriterionService: CreateCriterionService) {}
+  constructor(
+    private filter: FilterTypesService,
+    private createCriterionService: CreateCriterionService
+  ) {}
 
-  public translateImportedSQtoUIQuery(uiquery: Query, sqquery: StructuredQuery): Query {
+  public translateImportedSQtoUIQuery(uiquery: Query, sqquery: StructuredQuery): Observable<Query> {
     const invalidCriteria = [];
-    const inclusion = sqquery.inclusionCriteria;
-    uiquery.groups[0].inclusionCriteria = this.translateSQtoUICriteria(inclusion, invalidCriteria);
-    const exclusion = sqquery.exclusionCriteria;
-    uiquery.groups[0].exclusionCriteria = this.translateSQtoUICriteria(exclusion, invalidCriteria);
+    const subject = new Subject<Query>();
+    const inclusion = sqquery.inclusionCriteria ? sqquery.inclusionCriteria : [];
+    this.translateSQtoUICriteria(inclusion, invalidCriteria).subscribe((inclusionQuery) => {
+      console.log('ImportedQuery');
+      console.log(inclusionQuery);
+      uiquery.groups[0].inclusionCriteria = inclusionQuery;
+      subject.next(uiquery);
+      subject.complete();
+    });
+    const exclusion = sqquery.exclusionCriteria ? sqquery.exclusionCriteria : [];
+    //uiquery.groups[0].exclusionCriteria = this.translateSQtoUICriteria(exclusion, invalidCriteria);
     //uiquery.consent = this.hasConsentAndIfSoDeleteIt(sqquery);
     //uiquery = this.rePosition(uiquery);
-    return uiquery;
+    return subject.asObservable();
   }
 
-  public translateSQtoUIQuery(uiquery: Query, sqquery: StructuredQueryTemplate): Query {
+  public translateSQtoUIQuery(uiquery: Query, sqquery: StructuredQueryTemplate): Observable<Query> {
     const invalidCriteria = sqquery.invalidTerms;
-    const inclusion = sqquery.content.inclusionCriteria;
-    uiquery.groups[0].inclusionCriteria = this.translateSQtoUICriteria(inclusion, invalidCriteria);
-    const exclusion = sqquery.content.exclusionCriteria;
-    uiquery.groups[0].exclusionCriteria = this.translateSQtoUICriteria(exclusion, invalidCriteria);
+    const subject = new Subject<Query>();
+    const inclusion = sqquery.content.inclusionCriteria ? sqquery.content.inclusionCriteria : [];
+    this.translateSQtoUICriteria(inclusion, invalidCriteria).subscribe((inclusionQuery) => {
+      console.log('LoadedQuery');
+      console.log(inclusionQuery);
+      uiquery.groups[0].inclusionCriteria = inclusionQuery;
+      subject.next(uiquery);
+      subject.complete();
+    });
+
+    const exclusion = sqquery.content.exclusionCriteria ? sqquery.content.exclusionCriteria : [];
+    //uiquery.groups[0].exclusionCriteria = this.translateSQtoUICriteria(exclusion, invalidCriteria);
     //uiquery.consent = this.hasConsentAndIfSoDeleteIt(sqquery.content);
     //uiquery = this.rePosition(uiquery);
-    return uiquery;
+    return subject.asObservable();
   }
 
-  private translateSQtoUICriteria(inexclusion: StructuredQueryCriterion[][], invalidCriteria: TerminologyCode[]): Criterion[][] {
+  /*private translateSQtoUICriteria(inexclusion: StructuredQueryCriterion[][], invalidCriteria: TerminologyCode[]): Criterion[][] {
     const invalidCriteriaSet = this.getInvalidCriteriaSet(invalidCriteria);
     const resultInExclusion: Criterion[][] = [];
     inexclusion.forEach((structuredQueryCriterionArray) => {
@@ -61,8 +80,49 @@ export class StructuredQuery2UIQueryTranslatorService {
       resultInExclusion.push(criterionArray);
     });
     return resultInExclusion;
+  }*/
+  private translateSQtoUICriteria(
+    inexclusion: StructuredQueryCriterion[][],
+    invalidCriteria: TerminologyCode[]
+  ): Observable<Criterion[][]> {
+    const invalidCriteriaSet = this.getInvalidCriteriaSet(invalidCriteria);
+    const resultInExclusion: Criterion[][] = [];
+    const observableBatch = [];
+
+    inexclusion.forEach((structuredQueryCriterionArray) => {
+      const criterionArray: Criterion[] = [];
+      observableBatch.push(this.innerCriterion(structuredQueryCriterionArray));
+
+      /*
+      structuredQueryCriterionArray.forEach((structuredQueryCriterion) => {
+        observableBatch.push(this.createCriterionFromStructuredQueryCriterion(structuredQueryCriterion));
+        /*criterionArray.push(criterion);
+        if (criterion.linkedCriteria.length > 0) {
+          resultInExclusion.push(criterion.linkedCriteria);
+        }*/
+      //      });
+
+      resultInExclusion.push(criterionArray);
+    });
+
+    return forkJoin(observableBatch);
   }
 
+  private innerCriterion(
+    structuredQueryCriterionInnerArray: StructuredQueryCriterion[]
+  ): Observable<Criterion[]> {
+    const observableBatch = [];
+    structuredQueryCriterionInnerArray.forEach((structuredQueryCriterion) => {
+      observableBatch.push(
+        this.createCriterionFromStructuredQueryCriterion(structuredQueryCriterion)
+      );
+      /*criterionArray.push(criterion);
+      if (criterion.linkedCriteria.length > 0) {
+        resultInExclusion.push(criterion.linkedCriteria);
+      }*/
+    });
+    return forkJoin(observableBatch);
+  }
   /**
    * @todo Work in progress
    */
@@ -74,25 +134,55 @@ export class StructuredQuery2UIQueryTranslatorService {
     return invalidCriteriaSet;
   }
 
-  private createCriterionFromStructuredQueryCriterion(structuredQueryCriterion: StructuredQueryCriterion): Criterion {
-    const criterion: Criterion = this.createCriterionService.createCriterionFromTermCode(structuredQueryCriterion.termCodes, structuredQueryCriterion.context);
-    criterion.attributeFilters = [...this.getAttributeFilters(structuredQueryCriterion, criterion), ...criterion.attributeFilters];
-    criterion.timeRestriction = this.addTimeRestriction(structuredQueryCriterion.timeRestriction);
-    criterion.valueFilters = this.getValueFilters(structuredQueryCriterion);
+  private createCriterionFromStructuredQueryCriterion(
+    structuredQueryCriterion: StructuredQueryCriterion
+  ): Observable<Criterion> {
+    let criterion: Criterion;
+    const subject = new Subject<Criterion>();
+    this.createCriterionService
+      .createCriterionFromTermCode(
+        structuredQueryCriterion.termCodes,
+        structuredQueryCriterion.context
+      )
+      .subscribe((crit) => {
+        criterion = crit;
+        if (criterion.attributeFilters === undefined) {
+          criterion.attributeFilters = [];
+        }
+        criterion.attributeFilters = [
+          ...this.getAttributeFilters(structuredQueryCriterion, criterion),
+          ...criterion.attributeFilters,
+        ];
+        criterion.timeRestriction = this.addTimeRestriction(
+          structuredQueryCriterion.timeRestriction
+        );
+        criterion.valueFilters = this.getValueFilters(structuredQueryCriterion);
+        subject.next(criterion);
+        subject.complete();
+      });
 
-    return criterion;
+    return subject.asObservable();
   }
 
-  private getAttributeFilters(structuredCriterion: StructuredQueryCriterion, criterion: Criterion): AttributeFilter[] {
+  private getAttributeFilters(
+    structuredCriterion: StructuredQueryCriterion,
+    criterion: Criterion
+  ): AttributeFilter[] {
     const attributeFilters: AttributeFilter[] = [];
-    structuredCriterion.attributeFilters.forEach((structuredQueryAttributeFilter) => {
-      const attributeFilter: AttributeFilter = this.createAttributeFilter(structuredQueryAttributeFilter, criterion) as AttributeFilter;
+    structuredCriterion.attributeFilters?.forEach((structuredQueryAttributeFilter) => {
+      const attributeFilter: AttributeFilter = this.createAttributeFilter(
+        structuredQueryAttributeFilter,
+        criterion
+      ) as AttributeFilter;
       attributeFilters.push(attributeFilter);
     });
     return attributeFilters;
   }
 
-  private createAttributeFilter(structuredQueryAttributeFilter: AbstractStructuredQueryFilters, criterion: Criterion) {
+  private createAttributeFilter(
+    structuredQueryAttributeFilter: AbstractStructuredQueryFilters,
+    criterion: Criterion
+  ) {
     const attributeFilter: AttributeFilter = new AttributeFilter();
     if (this.filter.isConcept(structuredQueryAttributeFilter.type)) {
       const conceptFilter = structuredQueryAttributeFilter as ConceptAttributeFilter;
@@ -104,31 +194,40 @@ export class StructuredQuery2UIQueryTranslatorService {
       return this.createQuantityComparatorFilter(structuredQueryAttributeFilter, attributeFilter);
     }
     if (this.filter.isQuantityRange(structuredQueryAttributeFilter.type)) {
-      return this.createQuantityRangeFilter(structuredQueryAttributeFilter, attributeFilter) as AttributeFilter;
+      return this.createQuantityRangeFilter(
+        structuredQueryAttributeFilter,
+        attributeFilter
+      ) as AttributeFilter;
     }
     if (this.filter.isReference(structuredQueryAttributeFilter.type)) {
       const referenceFilter = structuredQueryAttributeFilter as ReferenceFilter;
       attributeFilter.type = FilterTypes.REFERENCE;
       referenceFilter.criteria.map((structuredQueryCriterion) => {
-        criterion.linkedCriteria.push(this.createCriterionFromStructuredQueryCriterion(structuredQueryCriterion));
+        // criterion.linkedCriteria.push(this.createCriterionFromStructuredQueryCriterion(structuredQueryCriterion));
       });
     }
     return attributeFilter;
   }
 
-  private createQuantityComparatorFilter(structuredQueryAttributeFilter, abstractFilter: AbstractAttributeFilters): AbstractAttributeFilters {
+  private createQuantityComparatorFilter(
+    structuredQueryAttributeFilter,
+    abstractFilter: AbstractAttributeFilters
+  ): AbstractAttributeFilters {
     abstractFilter.type = FilterTypes.QUANTITY_COMPARATOR;
-    abstractFilter.comparator = structuredQueryAttributeFilter.quantityComparatorFilter.comparator;
-    abstractFilter.unit = structuredQueryAttributeFilter.quantityComparatorFilter.unit;
-    abstractFilter.value = structuredQueryAttributeFilter.quantityComparatorFilter.value;
+    abstractFilter.comparator = structuredQueryAttributeFilter.comparator;
+    abstractFilter.unit = structuredQueryAttributeFilter.unit;
+    abstractFilter.value = structuredQueryAttributeFilter.value;
     return abstractFilter;
   }
 
-  private createQuantityRangeFilter(structuredQueryAttributeFilter, abstractFilter: AbstractAttributeFilters): AbstractAttributeFilters {
+  private createQuantityRangeFilter(
+    structuredQueryAttributeFilter,
+    abstractFilter: AbstractAttributeFilters
+  ): AbstractAttributeFilters {
     abstractFilter.type = FilterTypes.QUANTITY_RANGE;
-    abstractFilter.max = structuredQueryAttributeFilter.quantityRangeFilter.maxValue;
-    abstractFilter.min = structuredQueryAttributeFilter.quantityRangeFilter.minValue;
-    abstractFilter.unit = structuredQueryAttributeFilter.quantityRangeFilter.unit;
+    abstractFilter.maxValue = structuredQueryAttributeFilter.maxValue;
+    abstractFilter.minValue = structuredQueryAttributeFilter.minValue;
+    abstractFilter.unit = structuredQueryAttributeFilter.unit;
     return abstractFilter;
   }
   /**
@@ -139,11 +238,15 @@ export class StructuredQuery2UIQueryTranslatorService {
    */
   private getValueFilters(structuredCriterion: StructuredQueryCriterion): ValueFilter[] {
     const valueFiltersResult: ValueFilter[] = [];
-    valueFiltersResult.push(this.createValueFilter(structuredCriterion.valueFilter));
+    if (structuredCriterion.valueFilter) {
+      valueFiltersResult.push(this.createValueFilter(structuredCriterion.valueFilter));
+    }
     return valueFiltersResult;
   }
 
-  private createValueFilter(structuredQueryValueFilter: AbstractStructuredQueryFilters): ValueFilter {
+  private createValueFilter(
+    structuredQueryValueFilter: AbstractStructuredQueryFilters
+  ): ValueFilter {
     const valueFilterResult: ValueFilter = new ValueFilter();
     if (this.filter.isConcept(structuredQueryValueFilter.type)) {
       const conceptFilter = structuredQueryValueFilter as ConceptValueFilter;
@@ -152,10 +255,16 @@ export class StructuredQuery2UIQueryTranslatorService {
       return valueFilterResult;
     }
     if (this.filter.isQuantityComparator(structuredQueryValueFilter.type)) {
-      return this.createQuantityComparatorFilter(structuredQueryValueFilter, valueFilterResult) as ValueFilter;
+      return this.createQuantityComparatorFilter(
+        structuredQueryValueFilter,
+        valueFilterResult
+      ) as ValueFilter;
     }
     if (this.filter.isQuantityRange(structuredQueryValueFilter.type)) {
-      return this.createQuantityRangeFilter(structuredQueryValueFilter, valueFilterResult) as ValueFilter;
+      return this.createQuantityRangeFilter(
+        structuredQueryValueFilter,
+        valueFilterResult
+      ) as ValueFilter;
     }
   }
 

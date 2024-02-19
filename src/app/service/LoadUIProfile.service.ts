@@ -15,8 +15,7 @@ import { FilterTypes } from '../model/FilterTypes';
   providedIn: 'root',
 })
 export class LoadUIProfileService {
-  private backend: BackendService;
-  constructor(private filter: FilterTypesService) {}
+  constructor(private backend: BackendService, private filter: FilterTypesService) {}
 
   public getUIProfile(criterionHash: string): Observable<UIProfile> {
     const profilesObservable = this.requestUIProfile(criterionHash);

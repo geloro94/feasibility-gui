@@ -44,7 +44,8 @@ export class SaveDialogComponent implements OnInit, OnDestroy {
   downloadQuery: boolean = false
 
   ngOnInit(): void {
-    this.query = this.queryProviderService.query()
+    //TODO query deactivated, because of version difference
+    //this.query = this.queryProviderService.query()
     this.hasQuerySend === false ? (this.letQuerySave = true) : (this.letQuerySave = false)
     this.saveWithQuery = this.hasQuerySend
   }
@@ -58,9 +59,10 @@ export class SaveDialogComponent implements OnInit, OnDestroy {
       this.fileSaverService.save(fileData, this.filename + '.json')
     } else {
       this.subscriptionResult?.unsubscribe()
-      this.subscriptionResult = this.backend.saveQuery(this.query, this.title, this.comment, this.saveWithQuery).subscribe((response) => {
-        console.log(response)
-      })
+      //TODO query deactivated, because of version difference
+      //this.subscriptionResult = this.backend.saveQuery(this.query, this.title, this.comment, this.saveWithQuery).subscribe((response) => {
+      //  console.log(response)
+      //})
     }
     this.dialogRef.close()
     // this.router.navigate(['/querybuilder/overview'])
@@ -88,6 +90,9 @@ export class SaveDialogComponent implements OnInit, OnDestroy {
   }
 
   isEmpty(): void {
-    this.saveButtonDisabled = !((this.downloadQuery && this.filename !== '') || (!this.downloadQuery && this.title !== ''))
+    this.saveButtonDisabled = !(
+      (this.downloadQuery && this.filename !== '') ||
+      (!this.downloadQuery && this.title !== '')
+    )
   }
 }

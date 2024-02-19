@@ -1,5 +1,7 @@
 import { Injectable } from '@angular/core';
 import { TerminologyCode } from '../../model/terminology/Terminology';
+import { BackendService } from '../../modules/querybuilder/service/backend.service';
+import { v3 as uuidv3 } from 'uuid';
 
 @Injectable({
   providedIn: 'root',
@@ -17,6 +19,6 @@ export class CriterionHashService {
       termCode.system +
       termCode.code +
       termcodeVersion;
-    return hashCode;
+    return uuidv3(hashCode, BackendService.BACKEND_UUID_NAMESPACE);
   }
 }
