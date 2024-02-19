@@ -17,7 +17,7 @@ import { StructuredQueryTemplate } from '../model/StructuredQuery/StructuredQuer
 import { TerminologyCode } from '../model/terminology/Terminology';
 import { TimeRestriction } from '../model/FeasibilityQuery/TimeRestriction';
 import { ValueFilter } from '../model/FeasibilityQuery/Criterion/AttributeFilter/ValueFilter';
-import { Observable, of, Subject, forkJoin, combineLatest, merge, mergeAll, first } from 'rxjs';
+import { Observable, Subject, forkJoin, of } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
@@ -32,15 +32,20 @@ export class StructuredQuery2UIQueryTranslatorService {
     const invalidCriteria = [];
     const subject = new Subject<Query>();
     const inclusion = sqquery.inclusionCriteria ? sqquery.inclusionCriteria : [];
+    const exclusion = sqquery.exclusionCriteria ? sqquery.exclusionCriteria : [];
     this.translateSQtoUICriteria(inclusion, invalidCriteria).subscribe((inclusionQuery) => {
-      console.log('ImportedQuery');
+      console.log('ImportedQuery-IN');
       console.log(inclusionQuery);
       uiquery.groups[0].inclusionCriteria = inclusionQuery;
-      subject.next(uiquery);
-      subject.complete();
+      this.translateSQtoUICriteria(exclusion, invalidCriteria).subscribe((exclusionQuery) => {
+        console.log('ImportedQuery-EX');
+        console.log(exclusionQuery);
+        uiquery.groups[0].exclusionCriteria = exclusionQuery;
+        subject.next(uiquery);
+        subject.complete();
+      });
     });
-    const exclusion = sqquery.exclusionCriteria ? sqquery.exclusionCriteria : [];
-    //uiquery.groups[0].exclusionCriteria = this.translateSQtoUICriteria(exclusion, invalidCriteria);
+
     //uiquery.consent = this.hasConsentAndIfSoDeleteIt(sqquery);
     //uiquery = this.rePosition(uiquery);
     return subject.asObservable();
@@ -50,16 +55,22 @@ export class StructuredQuery2UIQueryTranslatorService {
     const invalidCriteria = sqquery.invalidTerms;
     const subject = new Subject<Query>();
     const inclusion = sqquery.content.inclusionCriteria ? sqquery.content.inclusionCriteria : [];
+    const exclusion = sqquery.content.exclusionCriteria ? sqquery.content.exclusionCriteria : [];
     this.translateSQtoUICriteria(inclusion, invalidCriteria).subscribe((inclusionQuery) => {
-      console.log('LoadedQuery');
+      console.log('LoadedQuery-IN');
       console.log(inclusionQuery);
       uiquery.groups[0].inclusionCriteria = inclusionQuery;
-      subject.next(uiquery);
-      subject.complete();
+
+      //TODO: find a better way for joining in- and exclusion instead of nested subscription
+      this.translateSQtoUICriteria(exclusion, invalidCriteria).subscribe((exclusionQuery) => {
+        console.log('LoadedQuery-EX');
+        console.log(exclusionQuery);
+        uiquery.groups[0].exclusionCriteria = exclusionQuery;
+        subject.next(uiquery);
+        subject.complete();
+      });
     });
 
-    const exclusion = sqquery.content.exclusionCriteria ? sqquery.content.exclusionCriteria : [];
-    //uiquery.groups[0].exclusionCriteria = this.translateSQtoUICriteria(exclusion, invalidCriteria);
     //uiquery.consent = this.hasConsentAndIfSoDeleteIt(sqquery.content);
     //uiquery = this.rePosition(uiquery);
     return subject.asObservable();
@@ -105,7 +116,7 @@ export class StructuredQuery2UIQueryTranslatorService {
       resultInExclusion.push(criterionArray);
     });
 
-    return forkJoin(observableBatch);
+    return observableBatch.length > 0 ? forkJoin(observableBatch) : of([]);
   }
 
   private innerCriterion(
@@ -121,7 +132,7 @@ export class StructuredQuery2UIQueryTranslatorService {
         resultInExclusion.push(criterion.linkedCriteria);
       }*/
     });
-    return forkJoin(observableBatch);
+    return observableBatch.length > 0 ? forkJoin(observableBatch) : of([]);
   }
   /**
    * @todo Work in progress
