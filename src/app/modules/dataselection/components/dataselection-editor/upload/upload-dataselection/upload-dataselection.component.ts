@@ -45,7 +45,7 @@ export class UploadDataselectionComponent implements AfterViewChecked {
   doImport(): void {
     //TODO: switch to new Translator
     this.query = this.apiTranslator.translateImportedDsToUIQuery(
-      QueryProviderService.createDefaultQuery(),
+      QueryProviderService.createDefaultQuery() as QueryOld,
       this.importQuery
     ) as unknown as Query;
     this.queryProviderService.store(this.query);
