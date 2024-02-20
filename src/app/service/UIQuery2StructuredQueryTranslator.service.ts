@@ -59,6 +59,7 @@ export class UIQuery2StructuredQueryTranslatorService {
 
   private translateExclusionCriteria(group: Group): StructuredQueryCriterion[][] | undefined {
     const exclusionCriteria = ObjectHelper.clone(group.exclusionCriteria);
+    console.log(exclusionCriteria);
     if (exclusionCriteria.length > 0) {
       return this.translateCriterionGroup(exclusionCriteria);
     } else {
@@ -74,7 +75,7 @@ export class UIQuery2StructuredQueryTranslatorService {
         structuredQueryCriterion.push(innerArray);
       }
     });
-    return structuredQueryCriterion;
+    return structuredQueryCriterion.length > 0 ? structuredQueryCriterion : undefined;
   }
 
   private translateInnerArray(criterionArray: Criterion[]): StructuredQueryCriterion[] {
@@ -130,17 +131,17 @@ export class UIQuery2StructuredQueryTranslatorService {
     const translatedFilters: AbstractStructuredQueryFilters[] = [];
     criterion.attributeFilters.forEach((attributeFilter) => {
       const type = attributeFilter.type;
-      if (this.filter.isConcept(type)) {
+      if (this.filter.isConcept(type) && attributeFilter.selectedConcepts?.length > 0) {
         translatedFilters.push(this.attributeConceptFilter(attributeFilter));
       }
-      if (this.filter.isReference(type)) {
+      if (this.filter.isReference(type) && criterion.linkedCriteria?.length > 0) {
         translatedFilters.push(this.setReferences(criterion.linkedCriteria, attributeFilter));
       }
       if (this.filter.isQuantity(type)) {
         translatedFilters.push(this.quantityFilters(attributeFilter));
       }
     });
-    return translatedFilters;
+    return translatedFilters.length > 0 ? translatedFilters : undefined;
   }
 
   private createStructuredQueryValueFilters(
@@ -364,11 +365,17 @@ export class UIQuery2StructuredQueryTranslatorService {
   private getConsent(): StructuredQueryCriterion[] {
     return [
       {
+        context: {
+          code: 'Einwilligung',
+          display: 'Einwilligung',
+          system: 'fdpg.mii.cds',
+          version: '1.0.0',
+        },
         termCodes: [
           {
-            code: 'central-consent',
-            system: 'mii.abide',
-            display: 'MDAT wissenschaftlich nutzen - EU DSGVO Niveau',
+            code: '2.16.840.1.113883.3.1937.777.24.5.3.8',
+            display: 'MDAT wissenschaftlich nutzen EU DSGVO NIVEAU',
+            system: 'urn:oid:2.16.840.1.113883.3.1937.777.24.5.3',
           },
         ],
       },
