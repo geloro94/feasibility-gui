@@ -240,7 +240,8 @@ export class EditCriterionComponent implements OnInit, OnDestroy, AfterViewCheck
     if (this.isActionDisabled()) {
       return;
     }
-
+    console.log('edit-criterion');
+    console.log(this.query);
     this.moveBetweenGroups();
     this.moveReferenceCriteria();
     this.provider.store(this.query);

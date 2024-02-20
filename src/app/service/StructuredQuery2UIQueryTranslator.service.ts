@@ -18,6 +18,8 @@ import { TerminologyCode } from '../model/terminology/Terminology';
 import { TimeRestriction } from '../model/FeasibilityQuery/TimeRestriction';
 import { ValueFilter } from '../model/FeasibilityQuery/Criterion/AttributeFilter/ValueFilter';
 import { Observable, Subject, forkJoin, of } from 'rxjs';
+import { ObjectHelper } from '../modules/querybuilder/controller/ObjectHelper';
+import { AttributeDefinition } from '../model/terminology/AttributeDefinitions/AttributeDefinition';
 
 @Injectable({
   providedIn: 'root',
@@ -36,18 +38,20 @@ export class StructuredQuery2UIQueryTranslatorService {
     this.translateSQtoUICriteria(inclusion, invalidCriteria).subscribe((inclusionQuery) => {
       console.log('ImportedQuery-IN');
       console.log(inclusionQuery);
-      uiquery.groups[0].inclusionCriteria = inclusionQuery;
+      uiquery.groups[0].inclusionCriteria = this.addReferenceCriteria(inclusionQuery);
+
+      //TODO: find a better way for joining in- and exclusion instead of nested subscription
       this.translateSQtoUICriteria(exclusion, invalidCriteria).subscribe((exclusionQuery) => {
         console.log('ImportedQuery-EX');
         console.log(exclusionQuery);
-        uiquery.groups[0].exclusionCriteria = exclusionQuery;
-        subject.next(uiquery);
+        uiquery.groups[0].exclusionCriteria = this.addReferenceCriteria(exclusionQuery);
+        subject.next(this.rePosition(uiquery));
         subject.complete();
       });
     });
 
     //uiquery.consent = this.hasConsentAndIfSoDeleteIt(sqquery);
-    //uiquery = this.rePosition(uiquery);
+
     return subject.asObservable();
   }
 
@@ -59,20 +63,20 @@ export class StructuredQuery2UIQueryTranslatorService {
     this.translateSQtoUICriteria(inclusion, invalidCriteria).subscribe((inclusionQuery) => {
       console.log('LoadedQuery-IN');
       console.log(inclusionQuery);
-      uiquery.groups[0].inclusionCriteria = inclusionQuery;
+      uiquery.groups[0].inclusionCriteria = this.addReferenceCriteria(inclusionQuery);
 
       //TODO: find a better way for joining in- and exclusion instead of nested subscription
       this.translateSQtoUICriteria(exclusion, invalidCriteria).subscribe((exclusionQuery) => {
         console.log('LoadedQuery-EX');
         console.log(exclusionQuery);
-        uiquery.groups[0].exclusionCriteria = exclusionQuery;
-        subject.next(uiquery);
+        uiquery.groups[0].exclusionCriteria = this.addReferenceCriteria(exclusionQuery);
+        subject.next(this.rePosition(uiquery));
         subject.complete();
       });
     });
 
     //uiquery.consent = this.hasConsentAndIfSoDeleteIt(sqquery.content);
-    //uiquery = this.rePosition(uiquery);
+
     return subject.asObservable();
   }
 
@@ -127,13 +131,10 @@ export class StructuredQuery2UIQueryTranslatorService {
       observableBatch.push(
         this.createCriterionFromStructuredQueryCriterion(structuredQueryCriterion)
       );
-      /*criterionArray.push(criterion);
-      if (criterion.linkedCriteria.length > 0) {
-        resultInExclusion.push(criterion.linkedCriteria);
-      }*/
     });
     return observableBatch.length > 0 ? forkJoin(observableBatch) : of([]);
   }
+
   /**
    * @todo Work in progress
    */
@@ -160,10 +161,43 @@ export class StructuredQuery2UIQueryTranslatorService {
         if (criterion.attributeFilters === undefined) {
           criterion.attributeFilters = [];
         }
-        criterion.attributeFilters = [
-          ...this.getAttributeFilters(structuredQueryCriterion, criterion),
-          ...criterion.attributeFilters,
-        ];
+        const structuredQueryAttribute = this.getAttributeFilters(
+          structuredQueryCriterion,
+          criterion
+        );
+        console.log('getAttributeFilters');
+        console.log(structuredQueryCriterion);
+        console.log(ObjectHelper.clone(criterion));
+        console.log(ObjectHelper.clone(structuredQueryAttribute));
+        //TODO: outsource this in a separate function:
+        structuredQueryAttribute.forEach((attribute) => {
+          const find = criterion.attributeFilters.find(
+            (attr) => attribute.attributeCode.code === attr.attributeDefinition.attributeCode.code
+          );
+          console.log('find');
+          console.log(attribute);
+          console.log(find);
+
+          if (find.type === 'reference') {
+            find.attributeDefinition.selectableConcepts =
+              attribute.attributeDefinition.selectableConcepts;
+            find.attributeDefinition.optional = attribute.attributeDefinition.optional;
+          }
+          if (find.type === 'concept') {
+            if (attribute.selectedConcepts) {
+              find.selectedConcepts = attribute.selectedConcepts;
+            }
+          }
+          if (find.type === 'quantity-comparator' || find.type === 'quantity-range') {
+            find.precision = attribute.precision;
+            find.unit = attribute.unit;
+            find.maxValue = attribute.maxValue;
+            find.minValue = attribute.minValue;
+            find.value = attribute.value;
+            find.comparator = attribute.comparator;
+          }
+        });
+
         criterion.timeRestriction = this.addTimeRestriction(
           structuredQueryCriterion.timeRestriction
         );
@@ -212,9 +246,21 @@ export class StructuredQuery2UIQueryTranslatorService {
     }
     if (this.filter.isReference(structuredQueryAttributeFilter.type)) {
       const referenceFilter = structuredQueryAttributeFilter as ReferenceFilter;
+      attributeFilter.attributeCode = referenceFilter.attributeCode;
       attributeFilter.type = FilterTypes.REFERENCE;
-      referenceFilter.criteria.map((structuredQueryCriterion) => {
-        // criterion.linkedCriteria.push(this.createCriterionFromStructuredQueryCriterion(structuredQueryCriterion));
+      console.log('referenceFilter');
+      console.log(referenceFilter);
+      referenceFilter.criteria.forEach((refCrit) => {
+        const referenceCriteria = this.createCriterionService.createReferenceCriterionFromTermCode(
+          refCrit.termCodes,
+          refCrit.context
+        );
+        criterion.linkedCriteria.push(referenceCriteria);
+        console.log('referenceAttribute');
+        console.log(attributeFilter);
+        attributeFilter.attributeDefinition = new AttributeDefinition();
+        attributeFilter.attributeDefinition.selectableConcepts.push(refCrit.termCodes[0]);
+        attributeFilter.attributeDefinition.optional = true;
       });
     }
     return attributeFilter;
@@ -241,6 +287,7 @@ export class StructuredQuery2UIQueryTranslatorService {
     abstractFilter.unit = structuredQueryAttributeFilter.unit;
     return abstractFilter;
   }
+
   /**
    * @todo We keep ValueFilters as an Array despite being only one element inside the array
    * @todo we need to test if the declaration with 'as' is assigning all requiered fields
@@ -282,5 +329,59 @@ export class StructuredQuery2UIQueryTranslatorService {
   private addTimeRestriction(timeRestriction: AbstractTimeRestriction): TimeRestriction {
     const resultTimeRestriction = new TimeRestriction();
     return resultTimeRestriction;
+  }
+
+  private addReferenceCriteria(inexclusion: Criterion[][]): Criterion[][] {
+    inexclusion.forEach((outerCrit) => {
+      outerCrit.forEach((innerCrit) => {
+        if (innerCrit.linkedCriteria.length > 0) {
+          innerCrit.linkedCriteria.forEach((crit) => {
+            inexclusion.unshift([crit]);
+          });
+        }
+      });
+    });
+    return inexclusion;
+  }
+
+  private rePosition(query: Query): Query {
+    for (const inex of ['inclusion', 'exclusion']) {
+      query.groups[0][inex + 'Criteria'].forEach((disj, i) => {
+        disj.forEach((conj, j) => {
+          conj.position.row = i;
+          conj.position.column = j;
+          conj.position.critType = inex;
+          if (conj.isLinked) {
+            this.setPositionForRefCrit(query, conj.uniqueID, i, j, inex);
+          }
+        });
+      });
+    }
+    return query;
+  }
+
+  private setPositionForRefCrit(
+    query: Query,
+    uid: string,
+    row: number,
+    column: number,
+    critType: string
+  ): Query {
+    for (const inex of ['inclusion', 'exclusion']) {
+      query.groups[0][inex + 'Criteria'].forEach((disj) => {
+        disj.forEach((conj) => {
+          if (conj.linkedCriteria?.length > 0) {
+            conj.linkedCriteria.forEach((linkedCrit) => {
+              if (linkedCrit.uniqueID === uid) {
+                linkedCrit.position.row = row;
+                linkedCrit.position.column = column;
+                linkedCrit.position.critType = critType;
+              }
+            });
+          }
+        });
+      });
+    }
+    return query;
   }
 }
