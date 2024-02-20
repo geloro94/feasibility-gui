@@ -13,7 +13,7 @@ import { AttributeFilter } from 'src/app/model/FeasibilityQuery/Criterion/Attrib
 import { TimeRestriction } from 'src/app/model/FeasibilityQuery/TimeRestriction';
 import { FeatureService } from '../Feature.service';
 import { LoadUIProfileService } from '../LoadUIProfile.service';
-import { Observable, of, Subject } from 'rxjs';
+import { Observable, Subject } from 'rxjs';
 import { ObjectHelper } from '../../modules/querybuilder/controller/ObjectHelper';
 import { CritGroupPosition } from '../../modules/querybuilder/controller/CritGroupArranger';
 

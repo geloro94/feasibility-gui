@@ -1,8 +1,8 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { CritType, Group } from '../../../../model/api/query/group';
-import { Criterion } from '../../../../model/api/query/criterion';
+//import { CritType, Group } from '../../../../model/api/query/group';
+//import { Criterion } from '../../../../model/api/query/criterion';
 import { CritGroupArranger } from '../../../../controller/CritGroupArranger';
-import { Query } from '../../../../model/api/query/query';
+//import { Query } from '../../../../model/api/query/query';
 import { ObjectHelper } from '../../../../controller/ObjectHelper';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
@@ -11,6 +11,9 @@ import { GroupFactory } from '../../../../controller/GroupFactory';
 import { Subscription } from 'rxjs';
 import { TranslateService } from '@ngx-translate/core';
 import { FeatureService } from '../../../../../../service/Feature.service';
+import { Criterion } from '../../../../../../model/FeasibilityQuery/Criterion/Criterion';
+import { CritType, Group } from '../../../../../../model/FeasibilityQuery/Group';
+import { Query } from '../../../../../../model/FeasibilityQuery/Query';
 
 @Component({
   selector: 'num-display-group',
@@ -51,7 +54,12 @@ export class DisplayGroupComponent implements OnInit {
   subscriptionTranslation: Subscription;
   subscriptionDialog: Subscription;
 
-  constructor(public snackBar: MatSnackBar, public dialog: MatDialog, private translation: TranslateService, public featureService: FeatureService) {}
+  constructor(
+    public snackBar: MatSnackBar,
+    public dialog: MatDialog,
+    private translation: TranslateService,
+    public featureService: FeatureService
+  ) {}
 
   ngOnInit(): void {}
 
@@ -118,9 +126,11 @@ export class DisplayGroupComponent implements OnInit {
 
   showHintNotDeletedLinkedParentGroup(): void {
     this.subscriptionTranslation?.unsubscribe();
-    this.subscriptionTranslation = this.translation.get('QUERYBUILDER.DISPLAY.GROUPS.HINT_NOT_DELETABLE_LINKED_GROUP').subscribe((text) => {
-      this.snackBar.open(text, '', { duration: 2000 });
-    });
+    this.subscriptionTranslation = this.translation
+      .get('QUERYBUILDER.DISPLAY.GROUPS.HINT_NOT_DELETABLE_LINKED_GROUP')
+      .subscribe((text) => {
+        this.snackBar.open(text, '', { duration: 2000 });
+      });
   }
 
   isLinked(): boolean {
@@ -148,6 +158,8 @@ export class DisplayGroupComponent implements OnInit {
     };
 
     const dialogRef = this.dialog.open(EditGroupConnectionComponent, dialogConfig);
-    this.subscriptionDialog = dialogRef.afterClosed().subscribe((query) => this.storeQuery.emit(query));
+    this.subscriptionDialog = dialogRef
+      .afterClosed()
+      .subscribe((query) => this.storeQuery.emit(query));
   }
 }

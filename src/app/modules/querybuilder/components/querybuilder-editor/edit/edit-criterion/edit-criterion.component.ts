@@ -10,20 +10,25 @@ import {
   QueryList,
   ViewChildren,
 } from '@angular/core';
-import { Criterion } from '../../../../model/api/query/criterion';
+//import { Criterion } from '../../../../model/api/query/criterion';
+import { Criterion } from 'src/app/model/FeasibilityQuery/Criterion/Criterion';
 import { EditValueFilterComponent } from '../edit-value-filter/edit-value-filter.component';
-import { OperatorOptions, ValueFilter } from '../../../../model/api/query/valueFilter';
+//import { OperatorOptions, ValueFilter } from '../../../../model/api/query/valueFilter';
 import { FeatureService } from '../../../../../../service/Feature.service';
-import { Query } from '../../../../model/api/query/query';
+import { Query as QueryOld } from '../../../../model/api/query/query';
 import { CritGroupArranger, CritGroupPosition } from '../../../../controller/CritGroupArranger';
 import { ObjectHelper } from '../../../../controller/ObjectHelper';
 import { Subscription } from 'rxjs';
 import { BackendService } from '../../../../service/backend.service';
 import { TimeRestriction, TimeRestrictionType } from '../../../../model/api/query/timerestriction';
 import { TermEntry2CriterionTranslator } from 'src/app/modules/querybuilder/controller/TermEntry2CriterionTranslator';
-import { TerminologyCode } from '../../../../model/api/terminology/terminology';
+//import { TerminologyCode } from '../../../../model/api/terminology/terminology';
+import { TerminologyCode } from 'src/app/model/terminology/Terminology';
 import { QueryProviderService } from '../../../../service/query-provider.service';
-
+import { Query } from 'src/app/model/FeasibilityQuery/Query';
+import { ValueFilter } from 'src/app/model/FeasibilityQuery/Criterion/AttributeFilter/ValueFilter';
+import { FilterTypes } from '../../../../../../model/FilterTypes';
+import { AttributeFilter } from '../../../../../../model/FeasibilityQuery/Criterion/AttributeFilter/AttributeFilter';
 @Component({
   selector: 'num-edit-criterion',
   templateUrl: './edit-criterion.component.html',
@@ -205,7 +210,7 @@ export class EditCriterionComponent implements OnInit, OnDestroy, AfterViewCheck
           .subscribe((allowedCriteriaList) => {
             attrFilter.attributeDefinition.selectableConcepts = [];
             if (allowedCriteriaList.length > 0) {
-              attrFilter.type = OperatorOptions.REFERENCE;
+              attrFilter.type = FilterTypes.REFERENCE;
               allowedCriteriaList.forEach((critHash) => {
                 this.findCriterionByHash(critHash).forEach((crit) => {
                   if (!this.isCriterionLinked(crit.uniqueID)) {
@@ -275,7 +280,9 @@ export class EditCriterionComponent implements OnInit, OnDestroy, AfterViewCheck
       return [];
     }
   }
-  getAttributeFilters(): ValueFilter[] {
+
+  //TODO: überprüfen der AttributeFilter-Klasse
+  getAttributeFilters(): AttributeFilter[] {
     if (this.criterion.attributeFilters) {
       if (!this.featureService.useFeatureMultipleValueDefinitions()) {
         return this.criterion.attributeFilters.length === 0

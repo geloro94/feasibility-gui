@@ -1,12 +1,14 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { Query } from '../../../../model/api/query/query';
+//import { Query } from '../../../../model/api/query/query';
 import { CritGroupArranger } from '../../../../controller/CritGroupArranger';
-import { Group } from '../../../../model/api/query/group';
+//import { Group } from '../../../../model/api/query/group';
 import { FeatureService } from '../../../../../../service/Feature.service';
 import { ObjectHelper } from '../../../../controller/ObjectHelper';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { TranslateService } from '@ngx-translate/core';
 import { Subscription } from 'rxjs';
+import { Query } from '../../../../../../model/FeasibilityQuery/Query';
+import { Group } from '../../../../../../model/FeasibilityQuery/Group';
 
 @Component({
   selector: 'num-display-query',
@@ -20,7 +22,11 @@ export class DisplayQueryComponent implements OnInit {
   @Input()
   searchType: string;
 
-  constructor(public featureService: FeatureService, private snackBar: MatSnackBar, private translation: TranslateService) {}
+  constructor(
+    public featureService: FeatureService,
+    private snackBar: MatSnackBar,
+    private translation: TranslateService
+  ) {}
 
   @Output()
   storeQuery = new EventEmitter<Query>();
@@ -33,7 +39,11 @@ export class DisplayQueryComponent implements OnInit {
     if ($event.addMode === 'position') {
       this.query.groups = CritGroupArranger.moveCriterion(this.query.groups, $event.from, $event.to);
     } else if ($event.addMode === 'end') {
-      this.query.groups = CritGroupArranger.moveCriterionToEndOfGroup(this.query.groups, $event.from, $event.to);
+      this.query.groups = CritGroupArranger.moveCriterionToEndOfGroup(
+        this.query.groups,
+        $event.from,
+        $event.to
+      );
     }
 
     this.doStoreQuery(this.query);
@@ -96,9 +106,11 @@ export class DisplayQueryComponent implements OnInit {
 
   private showHintNotMoved(): void {
     this.subscriptionTranslation?.unsubscribe();
-    this.subscriptionTranslation = this.translation.get('QUERYBUILDER.DISPLAY.GROUPS.HINT_NOT_MOVED').subscribe((text) => {
-      this.snackBar.open(text, '', { duration: 2000 });
-    });
+    this.subscriptionTranslation = this.translation
+      .get('QUERYBUILDER.DISPLAY.GROUPS.HINT_NOT_MOVED')
+      .subscribe((text) => {
+        this.snackBar.open(text, '', { duration: 2000 });
+      });
   }
 
   findIndexOfNextGroupWithoutConnectedParent(a: number): number {

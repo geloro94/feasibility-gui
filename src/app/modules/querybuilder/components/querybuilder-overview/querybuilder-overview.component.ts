@@ -110,20 +110,17 @@ export class QuerybuilderOverviewComponent implements OnInit, OnDestroy, AfterVi
       this.importQuery
     );*/
     this.newTranslator
-      .translateImportedSQtoUIQuery(
-        QueryProviderService.createDefaultQuery() as unknown as Query,
-        this.importQuery
-      )
+      .translateImportedSQtoUIQuery(QueryProviderService.createDefaultQuery(), this.importQuery)
       .subscribe((query) => {
         this.query = query;
-        this.queryProviderService.store(this.query as unknown as QueryOld);
+        this.queryProviderService.store(this.query);
         this.router.navigate(['/querybuilder/editor'], { state: { preventReset: true } });
       });
   }
   loadTemplate(id: number, singleQuery: Query): void {
     if (this.feature.mockLoadnSave()) {
       this.query = singleQuery;
-      this.queryProviderService.store(this.query as unknown as QueryOld);
+      this.queryProviderService.store(this.query);
       this.router.navigate(['/querybuilder/editor'], { state: { preventReset: true } });
     } else {
       this.singleTemplateSubscription = this.backend.loadTemplate(id).subscribe((query) => {
@@ -132,13 +129,10 @@ export class QuerybuilderOverviewComponent implements OnInit, OnDestroy, AfterVi
           query
         );*/
         this.newTranslator
-          .translateSQtoUIQuery(
-            QueryProviderService.createDefaultQuery() as unknown as Query,
-            query
-          )
+          .translateSQtoUIQuery(QueryProviderService.createDefaultQuery(), query)
           .subscribe((newQuery) => {
             this.query = newQuery;
-            this.queryProviderService.store(this.query as unknown as QueryOld);
+            this.queryProviderService.store(this.query);
             this.router.navigate(['/querybuilder/editor'], { state: { preventReset: true } });
           });
       });
@@ -151,7 +145,7 @@ export class QuerybuilderOverviewComponent implements OnInit, OnDestroy, AfterVi
         QueryProviderService.createDefaultQuery(),
         query
       );*/
-      this.queryProviderService.store(this.query as unknown as QueryOld);
+      this.queryProviderService.store(this.query);
       this.router.navigate(['/querybuilder/editor'], {
         state: { preventReset: true, loadedResult: query.results },
       });

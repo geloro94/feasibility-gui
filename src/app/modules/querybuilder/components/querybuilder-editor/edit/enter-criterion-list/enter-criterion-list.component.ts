@@ -1,12 +1,16 @@
 import { Component, Inject, OnDestroy, OnInit } from '@angular/core';
-import { TerminologyEntry } from '../../../../model/api/terminology/terminology';
+//import { TerminologyEntry } from '../../../../model/api/terminology/terminology';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
-import { Criterion } from '../../../../model/api/query/criterion';
+//import { Criterion } from '../../../../model/api/query/criterion';
 import { TermEntry2CriterionTranslator } from '../../../../controller/TermEntry2CriterionTranslator';
-import { CritType } from '../../../../model/api/query/group';
-import { Query } from '../../../../model/api/query/query';
+//import { CritType } from '../../../../model/api/query/group';
+import { Query as QueryOld } from '../../../../model/api/query/query';
 import { QueryProviderService } from '../../../../service/query-provider.service';
 import { FeatureService } from '../../../../../../service/Feature.service';
+import { Criterion } from '../../../../../../model/FeasibilityQuery/Criterion/Criterion';
+import { Query } from '../../../../../../model/FeasibilityQuery/Query';
+import { CritType } from '../../../../../../model/FeasibilityQuery/Group';
+import { TerminologyEntry } from '../../../../../../model/terminology/Terminology';
 
 export class EnterCriterionListComponentData {
   groupIndex: number;
@@ -41,7 +45,10 @@ export class EnterCriterionListComponent implements OnInit, OnDestroy {
     public provider: QueryProviderService,
     public featureService: FeatureService
   ) {
-    this.translator = new TermEntry2CriterionTranslator(this.featureService.useFeatureTimeRestriction(), this.featureService.getQueryVersion());
+    this.translator = new TermEntry2CriterionTranslator(
+      this.featureService.useFeatureTimeRestriction(),
+      this.featureService.getQueryVersion()
+    );
     this.criterionList = data.termEntryList.map((termEntry) => this.translator.translate(termEntry));
     this.critType = data.critType;
     this.groupIndex = data.groupIndex;
@@ -79,7 +86,9 @@ export class EnterCriterionListComponent implements OnInit, OnDestroy {
   }
 
   registerAllAddible(event: { groupId: number; isaddible: boolean }, criterion: Criterion): void {
-    const element = this.criterionAddibleList.find((criterionTemp) => criterionTemp.criterion.display === criterion.display);
+    const element = this.criterionAddibleList.find(
+      (criterionTemp) => criterionTemp.criterion.display === criterion.display
+    );
     element.isAddible = event.isaddible;
     element.groupID = event.groupId;
 
@@ -101,7 +110,9 @@ export class EnterCriterionListComponent implements OnInit, OnDestroy {
 
   doDiscard(criterion: Criterion): void {
     const index = this.criterionList.findIndex((critrionTemp) => critrionTemp === criterion);
-    const index2 = this.criterionAddibleList.findIndex((critrionTemp) => critrionTemp.criterion === criterion);
+    const index2 = this.criterionAddibleList.findIndex(
+      (critrionTemp) => critrionTemp.criterion === criterion
+    );
 
     this.criterionList.splice(index, 1);
     this.criterionAddibleList.splice(index2, 1);

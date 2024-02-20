@@ -6,26 +6,26 @@ export abstract class AbstractAttributeFilters {
   display: string;
 
   // QUANTITY_COMPARATOR & QUANTITY_RANGE
-  unit: QuantityUnit = null;
+  unit?: QuantityUnit = null;
 
-  precision: number = null;
+  precision?: number = null;
 
-  min: number = null;
+  min?: number = null;
 
-  max: number = null;
+  max?: number = null;
 
   optional = false;
 
   // QUANTITY_COMPARATOR
-  value: number = null;
-  comparator: Comparator = Comparator.NONE;
+  value?: number = null;
+  comparator?: Comparator = Comparator.NONE;
 
   // QUANTITY_RANGE
-  minValue: number = null;
-  maxValue: number = null;
+  minValue?: number = null;
+  maxValue?: number = null;
 
   // CONCEPT
-  selectedConcepts: TerminologyCode[] = [];
+  selectedConcepts?: TerminologyCode[] = [];
 }
 
 export class QuantityUnit {
