@@ -15,11 +15,12 @@ import { StructuredQuery } from '../model/StructuredQuery/StructuredQuery';
 import { StructuredQueryCriterion } from '../model/StructuredQuery/Criterion/StructuredQueryCriterion';
 import { StructuredQueryTemplate } from '../model/StructuredQuery/StructuredQueryTemplate';
 import { TerminologyCode } from '../model/terminology/Terminology';
-import { TimeRestriction } from '../model/FeasibilityQuery/TimeRestriction';
+import { TimeRestriction, TimeRestrictionType } from '../model/FeasibilityQuery/TimeRestriction';
 import { ValueFilter } from '../model/FeasibilityQuery/Criterion/AttributeFilter/ValueFilter';
-import { Observable, Subject, forkJoin, of } from 'rxjs';
+import { forkJoin, Observable, of, Subject } from 'rxjs';
 import { ObjectHelper } from '../modules/querybuilder/controller/ObjectHelper';
 import { AttributeDefinition } from '../model/terminology/AttributeDefinitions/AttributeDefinition';
+import { BeforeFilter } from '../model/StructuredQuery/Criterion/AttributeFilters/QueryFilters/TimeRestriction/BeforeFilter';
 
 @Injectable({
   providedIn: 'root',
@@ -328,6 +329,23 @@ export class StructuredQuery2UIQueryTranslatorService {
 
   private addTimeRestriction(timeRestriction: AbstractTimeRestriction): TimeRestriction {
     const resultTimeRestriction = new TimeRestriction();
+    console.log('timerestriction');
+    console.log(timeRestriction);
+    console.log(timeRestriction instanceof BeforeFilter);
+    if (timeRestriction) {
+      if (timeRestriction.beforeDate && timeRestriction.afterDate) {
+        if (timeRestriction.beforeDate === timeRestriction.afterDate) {
+          resultTimeRestriction.tvpe = TimeRestrictionType.AT;
+          resultTimeRestriction.minDate = new Date(timeRestriction.beforeDate);
+        } else {
+        }
+      }
+      if (timeRestriction.beforeDate && !timeRestriction.afterDate) {
+        resultTimeRestriction.tvpe = TimeRestrictionType.BEFORE;
+        resultTimeRestriction.minDate = new Date(timeRestriction.beforeDate);
+      }
+    }
+    //resultTimeRestriction.tvpe = timeRestriction.type
     return resultTimeRestriction;
   }
 
