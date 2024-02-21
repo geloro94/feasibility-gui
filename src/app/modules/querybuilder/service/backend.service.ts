@@ -11,7 +11,6 @@ import { QueryResult } from '../model/api/result/QueryResult';
 import { QueryResultRateLimit } from 'src/app/model/result/QueryResultRateLimit';
 import { CategoryEntry, TerminologyEntry } from 'src/app/model/terminology/Terminology';
 import { UIQuery2StructuredQueryTranslatorService } from 'src/app/service/UIQuery2StructuredQueryTranslator.service';
-//import { Query } from 'src/app/model/FeasibilityQuery/Query'
 
 @Injectable({
   providedIn: 'root',

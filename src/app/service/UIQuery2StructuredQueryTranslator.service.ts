@@ -1,8 +1,3 @@
-import {
-  AbstractAttributeFilters,
-  Comparator,
-  QuantityUnit,
-} from '../model/FeasibilityQuery/Criterion/AttributeFilter/AbstractAttributeFilters';
 import { AbstractStructuredQueryFilters } from '../model/StructuredQuery/Criterion/AttributeFilters/QueryFilters/AbstractStructuredQueryFilters';
 import { AbstractTimeRestriction } from '../model/StructuredQuery/Criterion/AttributeFilters/QueryFilters/TimeRestriction/AbstractTimeRestriction';
 import { AfterFilter } from '../model/StructuredQuery/Criterion/AttributeFilters/QueryFilters/TimeRestriction/AfterFilter';
@@ -16,19 +11,19 @@ import { Criterion } from '../model/FeasibilityQuery/Criterion/Criterion';
 import { FeatureService } from './Feature.service';
 import { FilterTypes } from '../model/FilterTypes';
 import { FilterTypesService } from './FilterTypes.service';
+import { Group } from '../model/FeasibilityQuery/Group';
 import { Injectable } from '@angular/core';
 import { ObjectHelper } from '../modules/querybuilder/controller/ObjectHelper';
 import { QuantityComparatorFilter } from '../model/StructuredQuery/Criterion/AttributeFilters/QueryFilters/QuantityFilter/QuantityComparatorFilter';
 import { QuantityRangeFilter } from '../model/StructuredQuery/Criterion/AttributeFilters/QueryFilters/QuantityFilter/QuantityRangeFilter';
 import { Query } from '../model/FeasibilityQuery/Query';
+import { ReferenceFilter } from '../model/StructuredQuery/Criterion/AttributeFilters/QueryFilters/ReferenceFilter/ReferenceFilter';
 import { StructuredQuery } from '../model/StructuredQuery/StructuredQuery';
-import { StructuredQueryAttributeFilters } from '../model/StructuredQuery/Criterion/AttributeFilters/StructuredQueryAttributeFilters';
 import { StructuredQueryCriterion } from '../model/StructuredQuery/Criterion/StructuredQueryCriterion';
 import { TerminologyCode } from '../model/terminology/Terminology';
 import { TimeRestrictionType } from '../model/FeasibilityQuery/TimeRestriction';
 import { ValueFilter } from '../model/FeasibilityQuery/Criterion/AttributeFilter/ValueFilter';
-import { Group } from '../model/FeasibilityQuery/Group';
-import { ReferenceFilter } from '../model/StructuredQuery/Criterion/AttributeFilters/QueryFilters/ReferenceFilter/ReferenceFilter';
+import { AbstractAttributeFilters } from '../model/FeasibilityQuery/Criterion/AttributeFilter/AbstractAttributeFilters';
 
 @Injectable({
   providedIn: 'root',

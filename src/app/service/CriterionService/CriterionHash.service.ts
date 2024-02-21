@@ -1,6 +1,6 @@
+import { BackendService } from '../../modules/querybuilder/service/backend.service';
 import { Injectable } from '@angular/core';
 import { TerminologyCode } from '../../model/terminology/Terminology';
-import { BackendService } from '../../modules/querybuilder/service/backend.service';
 import { v3 as uuidv3 } from 'uuid';
 
 @Injectable({

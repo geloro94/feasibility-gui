@@ -1,21 +1,21 @@
+import { AttributeFilter } from 'src/app/model/FeasibilityQuery/Criterion/AttributeFilter/AttributeFilter';
 import { Criterion } from 'src/app/model/FeasibilityQuery/Criterion/Criterion';
 import { CriterionHashService } from './CriterionHash.service';
+import { CritGroupPosition } from '../../modules/querybuilder/controller/CritGroupArranger';
+import { FeatureService } from '../Feature.service';
 import { Injectable } from '@angular/core';
+import { LoadUIProfileService } from '../LoadUIProfile.service';
+import { ObjectHelper } from '../../modules/querybuilder/controller/ObjectHelper';
+import { Observable, Subject } from 'rxjs';
 import { TerminologyCode, TerminologyEntry } from 'src/app/model/terminology/Terminology';
-import { v4 as uuidv4 } from 'uuid';
+import { TimeRestriction } from 'src/app/model/FeasibilityQuery/TimeRestriction';
 import { UIProfile } from 'src/app/model/terminology/UIProfile';
+import { v4 as uuidv4 } from 'uuid';
+import { ValueFilter } from 'src/app/model/FeasibilityQuery/Criterion/AttributeFilter/ValueFilter';
 import {
   AttributeDefinition,
   ValueDefinition,
 } from 'src/app/model/terminology/AttributeDefinitions/AttributeDefinition';
-import { ValueFilter } from 'src/app/model/FeasibilityQuery/Criterion/AttributeFilter/ValueFilter';
-import { AttributeFilter } from 'src/app/model/FeasibilityQuery/Criterion/AttributeFilter/AttributeFilter';
-import { TimeRestriction } from 'src/app/model/FeasibilityQuery/TimeRestriction';
-import { FeatureService } from '../Feature.service';
-import { LoadUIProfileService } from '../LoadUIProfile.service';
-import { Observable, Subject } from 'rxjs';
-import { ObjectHelper } from '../../modules/querybuilder/controller/ObjectHelper';
-import { CritGroupPosition } from '../../modules/querybuilder/controller/CritGroupArranger';
 
 @Injectable({
   providedIn: 'root',

@@ -1,10 +1,10 @@
-/* eslint-disable @typescript-eslint/member-ordering */
-import { Component, OnInit } from '@angular/core';
-import { OAuthService } from 'angular-oauth2-oidc';
 import { AppConfigService } from '../../../../config/app-config.service';
+import { Component, OnInit } from '@angular/core';
 import { FeatureService } from '../../../../service/Feature.service';
-import { TranslateService } from '@ngx-translate/core';
 import { IUserProfile } from '../../../../shared/models/user/user-profile.interface';
+import { OAuthService } from 'angular-oauth2-oidc';
+import { TranslateService } from '@ngx-translate/core';
+/* eslint-disable @typescript-eslint/member-ordering */
 
 @Component({
   selector: 'num-dashboard',
@@ -12,7 +12,12 @@ import { IUserProfile } from '../../../../shared/models/user/user-profile.interf
   styleUrls: ['./dashboard.component.scss'],
 })
 export class DashboardComponent implements OnInit {
-  constructor(private appConfig: AppConfigService, private oauthService: OAuthService, private featureService: FeatureService, public translate: TranslateService) {}
+  constructor(
+    private appConfig: AppConfigService,
+    private oauthService: OAuthService,
+    private featureService: FeatureService,
+    public translate: TranslateService
+  ) {}
 
   config = this.appConfig.config;
   authTest: string;
@@ -26,8 +31,6 @@ export class DashboardComponent implements OnInit {
     this.stylesheet = this.featureService.getStylesheet();
     this.displayInfoMessage = this.featureService.showInfoPage();
   }
-
-  newQuery(): void {}
 
   async init(): Promise<void> {
     const isLoggedIn = this.oauthService.hasValidAccessToken();

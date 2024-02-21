@@ -1,6 +1,6 @@
-import { Injectable } from '@angular/core';
-import { FilterTypes } from '../model/FilterTypes';
 import { Comparator } from '../model/FeasibilityQuery/Criterion/AttributeFilter/AbstractAttributeFilters';
+import { FilterTypes } from '../model/FilterTypes';
+import { Injectable } from '@angular/core';
 
 @Injectable({
   providedIn: 'root',

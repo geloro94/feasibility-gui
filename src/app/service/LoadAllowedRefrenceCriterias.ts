@@ -1,9 +1,9 @@
-import { Injectable } from '@angular/core';
-import { Observable, map } from 'rxjs';
+import { AttributeFilter } from '../model/FeasibilityQuery/Criterion/AttributeFilter/AttributeFilter';
 import { BackendService } from '../modules/querybuilder/service/backend.service';
 import { Criterion } from '../model/FeasibilityQuery/Criterion/Criterion';
-import { OperatorOptions } from '../model/FeasibilityQuery/Criterion/AttributeFilter/AbstractAttributeFilters';
-import { AttributeFilter } from '../model/FeasibilityQuery/Criterion/AttributeFilter/AttributeFilter';
+import { FilterTypes } from '../model/FilterTypes';
+import { Injectable } from '@angular/core';
+import { map, Observable } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
@@ -44,11 +44,13 @@ export class LoadAllowedCriteriasService {
 
   private getCriteriaSetUrl(): string {
     const attributeFilters = this.criterion.attributeFilters;
-    const criteriaSetUrl = attributeFilters.map((attributeFilter) => this.criteriaSetUrlrl(attributeFilter));
+    const criteriaSetUrl = attributeFilters.map((attributeFilter) =>
+      this.criteriaSetUrl(attributeFilter)
+    );
     return criteriaSetUrl[0];
   }
 
-  private criteriaSetUrlrl(filter: AttributeFilter): string {
+  private criteriaSetUrl(filter: AttributeFilter): string {
     const filterType = filter.type;
     if (this.isReference(filterType)) {
       return filter.attributeDefinition.referenceCriteriaSet;
@@ -56,14 +58,12 @@ export class LoadAllowedCriteriasService {
     return;
   }
 
-  private isReference(filterType: OperatorOptions): boolean {
-    return filterType === OperatorOptions.REFERENCE ? true : false;
+  private isReference(filterType: FilterTypes): boolean {
+    return filterType === FilterTypes.REFERENCE ? true : false;
   }
 
   public compareResponse(response: Observable<string[]>): Observable<Criterion[]> {
-    return response.pipe(
-      map((hashList) => this.compareWithCriterionHashList(hashList))
-    );
+    return response.pipe(map((hashList) => this.compareWithCriterionHashList(hashList)));
   }
 
   private compareWithCriterionHashList(hashList: Array<string>): Array<Criterion> {

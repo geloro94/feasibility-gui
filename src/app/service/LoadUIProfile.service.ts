@@ -1,15 +1,15 @@
-import { Injectable } from '@angular/core';
+import { AbstractAttributeDefinitions } from '../model/terminology/AttributeDefinitions/AbstractAttributeDefinitions';
+import { AttributeFilter } from '../model/FeasibilityQuery/Criterion/AttributeFilter/AttributeFilter';
 import { BackendService } from '../modules/querybuilder/service/backend.service';
+import { FilterTypes } from '../model/FilterTypes';
+import { FilterTypesService } from './FilterTypes.service';
+import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { UIProfile } from '../model/terminology/UIProfile';
 import {
   AttributeDefinition,
   ValueDefinition,
 } from '../model/terminology/AttributeDefinitions/AttributeDefinition';
-import { AbstractAttributeDefinitions } from '../model/terminology/AttributeDefinitions/AbstractAttributeDefinitions';
-import { AttributeFilter } from '../model/FeasibilityQuery/Criterion/AttributeFilter/AttributeFilter';
-import { FilterTypesService } from './FilterTypes.service';
-import { FilterTypes } from '../model/FilterTypes';
 
 @Injectable({
   providedIn: 'root',

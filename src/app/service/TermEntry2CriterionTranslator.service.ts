@@ -1,20 +1,20 @@
-import { Injectable } from '@angular/core';
-import { TerminologyCode, TerminologyEntry } from '../model/terminology/Terminology';
+import { AttributeFilter } from '../model/FeasibilityQuery/Criterion/AttributeFilter/AttributeFilter';
 import { BackendService } from '../modules/querybuilder/service/backend.service';
+import { Criterion } from '../model/FeasibilityQuery/Criterion/Criterion';
+import { CriterionHashService } from './CriterionService/CriterionHash.service';
+import { FeatureService } from './Feature.service';
+import { Injectable } from '@angular/core';
+import { LoadUIProfileService } from './LoadUIProfile.service';
+import { TerminologyCode, TerminologyEntry } from '../model/terminology/Terminology';
+import { TimeRestriction } from '../model/FeasibilityQuery/TimeRestriction';
+import { UIProfile } from '../model/terminology/UIProfile';
 import { v3 as uuidv3 } from 'uuid';
 import { v4 as uuidv4 } from 'uuid';
-import { LoadUIProfileService } from './LoadUIProfile.service';
-import { UIProfile } from '../model/terminology/UIProfile';
+import { ValueFilter } from '../model/FeasibilityQuery/Criterion/AttributeFilter/ValueFilter';
 import {
   AttributeDefinition,
   ValueDefinition,
 } from '../model/terminology/AttributeDefinitions/AttributeDefinition';
-import { FeatureService } from './Feature.service';
-import { ValueFilter } from '../model/FeasibilityQuery/Criterion/AttributeFilter/ValueFilter';
-import { AttributeFilter } from '../model/FeasibilityQuery/Criterion/AttributeFilter/AttributeFilter';
-import { TimeRestriction } from '../model/FeasibilityQuery/TimeRestriction';
-import { Criterion } from '../model/FeasibilityQuery/Criterion/Criterion';
-import { CriterionHashService } from './CriterionService/CriterionHash.service';
 @Injectable({
   providedIn: 'root',
 })

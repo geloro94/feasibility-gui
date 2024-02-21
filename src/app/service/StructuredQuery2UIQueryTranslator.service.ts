@@ -1,14 +1,18 @@
 import { AbstractAttributeFilters } from '../model/FeasibilityQuery/Criterion/AttributeFilter/AbstractAttributeFilters';
 import { AbstractStructuredQueryFilters } from '../model/StructuredQuery/Criterion/AttributeFilters/QueryFilters/AbstractStructuredQueryFilters';
 import { AbstractTimeRestriction } from '../model/StructuredQuery/Criterion/AttributeFilters/QueryFilters/TimeRestriction/AbstractTimeRestriction';
+import { AttributeDefinition } from '../model/terminology/AttributeDefinitions/AttributeDefinition';
 import { AttributeFilter } from '../model/FeasibilityQuery/Criterion/AttributeFilter/AttributeFilter';
+import { BeforeFilter } from '../model/StructuredQuery/Criterion/AttributeFilters/QueryFilters/TimeRestriction/BeforeFilter';
 import { ConceptAttributeFilter } from '../model/StructuredQuery/Criterion/AttributeFilters/QueryFilters/ConceptFilter/ConceptAttributeFilter';
 import { ConceptValueFilter } from '../model/StructuredQuery/Criterion/AttributeFilters/QueryFilters/ConceptFilter/ConceptValueFilter';
 import { CreateCriterionService } from './CriterionService/CreateCriterion.service';
 import { Criterion } from '../model/FeasibilityQuery/Criterion/Criterion';
 import { FilterTypes } from '../model/FilterTypes';
 import { FilterTypesService } from './FilterTypes.service';
+import { forkJoin, Observable, of, Subject } from 'rxjs';
 import { Injectable } from '@angular/core';
+import { ObjectHelper } from '../modules/querybuilder/controller/ObjectHelper';
 import { Query } from '../model/FeasibilityQuery/Query';
 import { ReferenceFilter } from '../model/StructuredQuery/Criterion/AttributeFilters/QueryFilters/ReferenceFilter/ReferenceFilter';
 import { StructuredQuery } from '../model/StructuredQuery/StructuredQuery';
@@ -17,10 +21,6 @@ import { StructuredQueryTemplate } from '../model/StructuredQuery/StructuredQuer
 import { TerminologyCode } from '../model/terminology/Terminology';
 import { TimeRestriction, TimeRestrictionType } from '../model/FeasibilityQuery/TimeRestriction';
 import { ValueFilter } from '../model/FeasibilityQuery/Criterion/AttributeFilter/ValueFilter';
-import { forkJoin, Observable, of, Subject } from 'rxjs';
-import { ObjectHelper } from '../modules/querybuilder/controller/ObjectHelper';
-import { AttributeDefinition } from '../model/terminology/AttributeDefinitions/AttributeDefinition';
-import { BeforeFilter } from '../model/StructuredQuery/Criterion/AttributeFilters/QueryFilters/TimeRestriction/BeforeFilter';
 
 @Injectable({
   providedIn: 'root',

@@ -1,12 +1,10 @@
-/* eslint-disable @typescript-eslint/member-ordering */
-import { Inject, Injectable } from '@angular/core';
-import { Query as QueryOld } from '../model/api/query/query';
-import { Comparator, OperatorOptions } from '../model/api/query/valueFilter';
-import { LOCAL_STORAGE, StorageService } from 'ngx-webstorage-service';
 import { environment } from '../../../../environments/environment';
 import { GroupFactory } from '../controller/GroupFactory';
+import { Inject, Injectable } from '@angular/core';
+import { LOCAL_STORAGE, StorageService } from 'ngx-webstorage-service';
+import { Comparator } from 'src/app/model/FeasibilityQuery/Criterion/AttributeFilter/AbstractAttributeFilters';
 import { Query } from 'src/app/model/FeasibilityQuery/Query';
-import { FilterTypes } from '../../../model/FilterTypes';
+import { FilterTypes } from 'src/app/model/FilterTypes';
 @Injectable({
   providedIn: 'root',
 })

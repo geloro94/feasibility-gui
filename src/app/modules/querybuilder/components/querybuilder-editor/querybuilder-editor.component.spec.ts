@@ -30,15 +30,12 @@ import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { ResultSimpleComponent } from './result/result-simple/result-simple.component';
 import { BackendService } from '../../service/backend.service';
 import { Observable, of } from 'rxjs';
-import { QueryResult } from '../../model/api/result/QueryResult';
-import { QueryResponse } from '../../model/api/result/QueryResponse';
-import { Query } from '../../model/api/query/query';
-import { Group } from '../../model/api/query/group';
 import { RouterTestingModule } from '@angular/router/testing';
 import { OAuthStorage } from 'angular-oauth2-oidc';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { FeatureService } from 'src/app/service/Feature.service';
+import { Query } from '../../model/api/query/query';
 
 describe('QuerybuilderEditorComponent', () => {
   let component: QuerybuilderEditorComponent;
@@ -129,8 +126,6 @@ describe('QuerybuilderEditorComponent', () => {
 
   it('should call storage service', () => {
     spyOn(component.queryProviderService, 'store');
-
-    const query = QueryProviderService.createTestQuery();
 
     component.storeQuery(query);
 
