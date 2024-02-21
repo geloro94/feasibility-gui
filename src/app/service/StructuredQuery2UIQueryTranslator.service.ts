@@ -329,23 +329,26 @@ export class StructuredQuery2UIQueryTranslatorService {
 
   private addTimeRestriction(timeRestriction: AbstractTimeRestriction): TimeRestriction {
     const resultTimeRestriction = new TimeRestriction();
-    console.log('timerestriction');
-    console.log(timeRestriction);
-    console.log(timeRestriction instanceof BeforeFilter);
     if (timeRestriction) {
       if (timeRestriction.beforeDate && timeRestriction.afterDate) {
         if (timeRestriction.beforeDate === timeRestriction.afterDate) {
           resultTimeRestriction.tvpe = TimeRestrictionType.AT;
           resultTimeRestriction.minDate = new Date(timeRestriction.beforeDate);
         } else {
+          resultTimeRestriction.tvpe = TimeRestrictionType.BETWEEN;
+          resultTimeRestriction.minDate = new Date(timeRestriction.afterDate);
+          resultTimeRestriction.maxDate = new Date(timeRestriction.beforeDate);
         }
       }
       if (timeRestriction.beforeDate && !timeRestriction.afterDate) {
         resultTimeRestriction.tvpe = TimeRestrictionType.BEFORE;
         resultTimeRestriction.minDate = new Date(timeRestriction.beforeDate);
       }
+      if (!timeRestriction.beforeDate && timeRestriction.afterDate) {
+        resultTimeRestriction.tvpe = TimeRestrictionType.AFTER;
+        resultTimeRestriction.minDate = new Date(timeRestriction.afterDate);
+      }
     }
-    //resultTimeRestriction.tvpe = timeRestriction.type
     return resultTimeRestriction;
   }
 
