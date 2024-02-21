@@ -23,11 +23,11 @@ export class TermEntry2CriterionTranslatorService {
 
   criterion: Criterion;
 
-  constructor(
-    private featureService: FeatureService,
-    private UiProfileService: LoadUIProfileService,
-    private criterionHashService: CriterionHashService
-  ) {
+  private UiProfileService: LoadUIProfileService;
+
+  private criterionHashService: CriterionHashService;
+
+  constructor(private featureService: FeatureService) {
     this.criterion = new Criterion();
   }
 

@@ -1,14 +1,14 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-//import { Query } from '../../../../model/api/query/query';
 import { CritGroupArranger } from '../../../../controller/CritGroupArranger';
-//import { Group } from '../../../../model/api/query/group';
-import { FeatureService } from '../../../../../../service/Feature.service';
-import { ObjectHelper } from '../../../../controller/ObjectHelper';
-import { MatSnackBar } from '@angular/material/snack-bar';
-import { TranslateService } from '@ngx-translate/core';
-import { Subscription } from 'rxjs';
-import { Query } from '../../../../../../model/FeasibilityQuery/Query';
+import { FeatureService } from 'src/app/service/Feature.service';
 import { Group } from '../../../../../../model/FeasibilityQuery/Group';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { ObjectHelper } from '../../../../controller/ObjectHelper';
+import { Query } from '../../../../../../model/FeasibilityQuery/Query';
+import { Subscription } from 'rxjs';
+import { TranslateService } from '@ngx-translate/core';
+//import { Query } from '../../../../model/api/query/query';
+//import { Group } from '../../../../model/api/query/group';
 
 @Component({
   selector: 'num-display-query',
