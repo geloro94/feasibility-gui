@@ -27,7 +27,6 @@ import { DisplayValueFilterComponent } from './display/display-value-filter/disp
 import { EditTimeRestrictionComponent } from './edit/edit-time-restriction/edit-time-restriction.component';
 import { DisplayTimeRestrictionComponent } from './display/display-time-restriction/display-time-restriction.component';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
-import { FeatureService } from '../../../../service/feature.service';
 import { ResultSimpleComponent } from './result/result-simple/result-simple.component';
 import { BackendService } from '../../service/backend.service';
 import { Observable, of } from 'rxjs';
@@ -39,6 +38,7 @@ import { RouterTestingModule } from '@angular/router/testing';
 import { OAuthStorage } from 'angular-oauth2-oidc';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { FeatureService } from 'src/app/service/Feature.service';
 
 describe('QuerybuilderEditorComponent', () => {
   let component: QuerybuilderEditorComponent;

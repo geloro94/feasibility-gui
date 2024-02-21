@@ -1,9 +1,9 @@
-import { Component, EventEmitter, Inject, OnInit, Output } from '@angular/core';
-import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
-import { QueryResult } from '../../../../model/api/result/QueryResult';
-import { interval, Observable, Subscription, timer } from 'rxjs';
 import { BackendService } from '../../../../service/backend.service';
-import { FeatureService } from '../../../../../../service/Feature.service';
+import { Component, EventEmitter, Inject, OnInit, Output } from '@angular/core';
+import { FeatureService } from 'src/app/service/Feature.service';
+import { Observable, Subscription } from 'rxjs';
+import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
+import { QueryResult } from 'src/app/model/result/QueryResult';
 import { SnackbarService } from 'src/app/core/components/snack-bar/snack-bar.component';
 
 export class ResultDetailsDialogComponentData {
@@ -53,31 +53,33 @@ export class ResultDetailsDialogComponent implements OnInit {
   }
 
   getDetailedResult(url: string): void {
-    this.resultSubscription = this.backend.getDetailedResult(url, this.data.gottenDetailedResult).subscribe(
-      (result) => {
-        this.resultStatus = '200';
-        if (result.issues !== undefined) {
-          this.resultStatus = result.issues[0].code;
-          this.snackbar.displayErrorMessage(this.snackbar.errorCodes[this.resultStatus]);
-        } else {
-          this.sortResult(result);
+    this.resultSubscription = this.backend
+      .getDetailedResult(url, this.data.gottenDetailedResult)
+      .subscribe(
+        (result) => {
+          this.resultStatus = '200';
+          if (result.issues !== undefined) {
+            this.resultStatus = result.issues[0].code;
+            this.snackbar.displayErrorMessage(this.snackbar.errorCodes[this.resultStatus]);
+          } else {
+            this.sortResult(result);
+          }
+          this.resultGotten.emit(true);
+        },
+        (error) => {
+          if (error.status === 404) {
+            this.resultStatus = '404';
+            this.snackbar.displayErrorMessage(this.snackbar.errorCodes['404']);
+          }
+          if (error.status === 429) {
+            this.resultStatus = '429';
+            this.snackbar.displayErrorMessage(this.snackbar.errorCodes['FEAS-10002']);
+          }
+        },
+        () => {
+          console.log('done');
         }
-        this.resultGotten.emit(true);
-      },
-      (error) => {
-        if (error.status === 404) {
-          this.resultStatus = '404';
-          this.snackbar.displayErrorMessage(this.snackbar.errorCodes['404']);
-        }
-        if (error.status === 429) {
-          this.resultStatus = '429';
-          this.snackbar.displayErrorMessage(this.snackbar.errorCodes['FEAS-10002']);
-        }
-      },
-      () => {
-        console.log('done');
-      }
-    );
+      );
   }
   sortResult(resultTemp): void {
     this.result = resultTemp;

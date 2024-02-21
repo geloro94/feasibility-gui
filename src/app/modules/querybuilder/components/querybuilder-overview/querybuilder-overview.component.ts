@@ -1,17 +1,14 @@
-import { AfterViewChecked, ChangeDetectorRef, Component, OnInit, OnDestroy } from '@angular/core';
-import { QueryProviderService } from '../../service/query-provider.service';
-import { HttpClient } from '@angular/common/http';
-import { Query as QueryOld } from '../../model/api/query/query';
-import { Router } from '@angular/router';
+import { AfterViewChecked, ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
 import { BackendService } from '../../service/backend.service';
-import { Subscription } from 'rxjs';
-import { FeatureService } from '../../../../service/Feature.service';
-import { ApiTranslator } from '../../controller/ApiTranslator';
 import { FeatureProviderService } from '../../service/feature-provider.service';
+import { FeatureService } from '../../../../service/Feature.service';
 import { IAppConfig } from '../../../../config/app-config.model';
 import { Query } from 'src/app/model/FeasibilityQuery/Query';
-import { StructuredQuery2UIQueryTranslatorService } from '../../../../service/StructuredQuery2UIQueryTranslator.service';
+import { QueryProviderService } from '../../service/query-provider.service';
+import { Router } from '@angular/router';
 import { StructuredQuery } from '../../../../model/StructuredQuery/StructuredQuery';
+import { StructuredQuery2UIQueryTranslatorService } from '../../../../service/StructuredQuery2UIQueryTranslator.service';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'num-querybuilder-overview',
@@ -26,13 +23,11 @@ export class QuerybuilderOverviewComponent implements OnInit, OnDestroy, AfterVi
 
   constructor(
     public queryProviderService: QueryProviderService,
-    private httpClient: HttpClient,
     private router: Router,
     private backend: BackendService,
     private feature: FeatureService,
     public featureProviderService: FeatureProviderService,
     private changeDetector: ChangeDetectorRef,
-    private apiTranslator: ApiTranslator,
     private newTranslator: StructuredQuery2UIQueryTranslatorService
   ) {}
 

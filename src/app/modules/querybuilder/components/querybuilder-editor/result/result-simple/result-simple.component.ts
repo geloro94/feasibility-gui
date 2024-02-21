@@ -1,12 +1,13 @@
-import { Component, Input, OnDestroy, OnInit, Output, EventEmitter } from '@angular/core';
-import { QueryResult } from '../../../../model/api/result/QueryResult';
-import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
-import { ResultDetailsDialogComponentData, ResultDetailsDialogComponent } from '../result-details-dialog/result-details-dialog.component';
-import { Observable, Subscription } from 'rxjs';
 import { BackendService } from '../../../../service/backend.service';
+import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
 import { FeatureService } from '../../../../../../service/Feature.service';
-import { BooleanArraySupportOption } from 'prettier';
-import { QueryResultRateLimit } from 'src/app/modules/querybuilder/model/api/result/QueryResultRateLimit';
+import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
+import { Observable, Subscription } from 'rxjs';
+import {
+  ResultDetailsDialogComponent,
+  ResultDetailsDialogComponentData,
+} from '../result-details-dialog/result-details-dialog.component';
+import { QueryResult } from 'src/app/model/result/QueryResult';
 
 @Component({
   selector: 'num-result-simple',
@@ -45,7 +46,11 @@ export class ResultSimpleComponent implements OnInit, OnDestroy {
   pollingTime: number;
   interval;
 
-  constructor(public dialog: MatDialog, public backend: BackendService, private featureService: FeatureService) {
+  constructor(
+    public dialog: MatDialog,
+    public backend: BackendService,
+    private featureService: FeatureService
+  ) {
     this.clickEventsubscription?.unsubscribe();
     this.clickEventsubscription = this.featureService.getClickEvent().subscribe((pollingTime) => {
       clearInterval(this.interval);

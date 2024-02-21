@@ -1,14 +1,14 @@
+import { ApiTranslator } from '../../../../controller/ApiTranslator';
+import { BackendService } from '../../../../service/backend.service';
+import { Component, Inject, OnDestroy, OnInit } from '@angular/core';
+import { FileSaverService } from 'ngx-filesaver';
+import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
+import { MatRadioChange } from '@angular/material/radio';
+import { Query } from 'src/app/model/FeasibilityQuery/Query';
+import { QueryProviderService } from '../../../../service/query-provider.service';
+import { Subscription } from 'rxjs';
+import { UIQuery2StructuredQueryTranslatorService } from 'src/app/service/UIQuery2StructuredQueryTranslator.service';
 /* eslint-disable */
-import { Component, Inject, OnDestroy, OnInit } from '@angular/core'
-import { QueryProviderService } from '../../../../service/query-provider.service'
-import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog'
-import { BackendService } from '../../../../service/backend.service'
-import { Subscription } from 'rxjs'
-import { MatRadioChange } from '@angular/material/radio'
-import { FileSaverService } from 'ngx-filesaver'
-import { ApiTranslator } from '../../../../controller/ApiTranslator'
-import { UIQuery2StructuredQueryTranslatorService } from 'src/app/service/UIQuery2StructuredQueryTranslator.service'
-import { Query } from 'src/app/model/FeasibilityQuery/Query'
 
 export class SaveDialogComponentData {
   hasQuerySend: boolean | string
@@ -45,7 +45,7 @@ export class SaveDialogComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     //TODO query deactivated, because of version difference
-    //this.query = this.queryProviderService.query()
+    this.query = this.queryProviderService.query()
     this.hasQuerySend === false ? (this.letQuerySave = true) : (this.letQuerySave = false)
     this.saveWithQuery = this.hasQuerySend
   }
@@ -60,9 +60,11 @@ export class SaveDialogComponent implements OnInit, OnDestroy {
     } else {
       this.subscriptionResult?.unsubscribe()
       //TODO query deactivated, because of version difference
-      //this.subscriptionResult = this.backend.saveQuery(this.query, this.title, this.comment, this.saveWithQuery).subscribe((response) => {
-      //  console.log(response)
-      //})
+      this.subscriptionResult = this.backend
+        .saveQuery(this.query, this.title, this.comment, this.saveWithQuery)
+        .subscribe((response) => {
+          //  console.log(response)
+        })
     }
     this.dialogRef.close()
     // this.router.navigate(['/querybuilder/overview'])

@@ -201,8 +201,8 @@ export class EditValueFilterComponent implements OnInit, AfterViewInit {
     const criterionForLinking = this.getSelectedCriterion(temp);
 
     if (
-      this.attributeFilter.attributeDefinition?.type === FilterTypes.CONCEPT ||
-      this.valueFilter.valueDefinition?.type === FilterTypes.CONCEPT
+      this.attributeFilter?.attributeDefinition?.type === FilterTypes.CONCEPT ||
+      this.valueFilter?.valueDefinition?.type === FilterTypes.CONCEPT
     ) {
       if (this.selectedConceptsAsJson.has(conceptAsJson)) {
         this.selectedConceptsAsJson.delete(conceptAsJson);
@@ -215,7 +215,7 @@ export class EditValueFilterComponent implements OnInit, AfterViewInit {
         this.abstractAttributeFilter.selectedConcepts.push(JSON.parse(conceptAsJsonTemp));
       });
     }
-    if (this.attributeFilter.attributeDefinition?.type === FilterTypes.REFERENCE) {
+    if (this.attributeFilter?.attributeDefinition?.type === FilterTypes.REFERENCE) {
       if (this.selectedReferenceAsJson.has(conceptAsJson)) {
         this.selectedReferenceAsJson.delete(conceptAsJson);
         if (criterionForLinking) {
