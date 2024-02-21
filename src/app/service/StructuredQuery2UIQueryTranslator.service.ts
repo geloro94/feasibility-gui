@@ -37,14 +37,10 @@ export class StructuredQuery2UIQueryTranslatorService {
     const inclusion = sqquery.inclusionCriteria ? sqquery.inclusionCriteria : [];
     const exclusion = sqquery.exclusionCriteria ? sqquery.exclusionCriteria : [];
     this.translateSQtoUICriteria(inclusion, invalidCriteria).subscribe((inclusionQuery) => {
-      console.log('ImportedQuery-IN');
-      console.log(inclusionQuery);
       uiquery.groups[0].inclusionCriteria = this.addReferenceCriteria(inclusionQuery);
 
       //TODO: find a better way for joining in- and exclusion instead of nested subscription
       this.translateSQtoUICriteria(exclusion, invalidCriteria).subscribe((exclusionQuery) => {
-        console.log('ImportedQuery-EX');
-        console.log(exclusionQuery);
         uiquery.groups[0].exclusionCriteria = this.addReferenceCriteria(exclusionQuery);
         subject.next(this.rePosition(uiquery));
         subject.complete();
@@ -62,14 +58,10 @@ export class StructuredQuery2UIQueryTranslatorService {
     const inclusion = sqquery.content.inclusionCriteria ? sqquery.content.inclusionCriteria : [];
     const exclusion = sqquery.content.exclusionCriteria ? sqquery.content.exclusionCriteria : [];
     this.translateSQtoUICriteria(inclusion, invalidCriteria).subscribe((inclusionQuery) => {
-      console.log('LoadedQuery-IN');
-      console.log(inclusionQuery);
       uiquery.groups[0].inclusionCriteria = this.addReferenceCriteria(inclusionQuery);
 
       //TODO: find a better way for joining in- and exclusion instead of nested subscription
       this.translateSQtoUICriteria(exclusion, invalidCriteria).subscribe((exclusionQuery) => {
-        console.log('LoadedQuery-EX');
-        console.log(exclusionQuery);
         uiquery.groups[0].exclusionCriteria = this.addReferenceCriteria(exclusionQuery);
         subject.next(this.rePosition(uiquery));
         subject.complete();
@@ -166,19 +158,11 @@ export class StructuredQuery2UIQueryTranslatorService {
           structuredQueryCriterion,
           criterion
         );
-        console.log('getAttributeFilters');
-        console.log(structuredQueryCriterion);
-        console.log(ObjectHelper.clone(criterion));
-        console.log(ObjectHelper.clone(structuredQueryAttribute));
         //TODO: outsource this in a separate function:
         structuredQueryAttribute.forEach((attribute) => {
           const find = criterion.attributeFilters.find(
             (attr) => attribute.attributeCode.code === attr.attributeDefinition.attributeCode.code
           );
-          console.log('find');
-          console.log(attribute);
-          console.log(find);
-
           if (find.type === 'reference') {
             find.attributeDefinition.selectableConcepts =
               attribute.attributeDefinition.selectableConcepts;
@@ -249,16 +233,12 @@ export class StructuredQuery2UIQueryTranslatorService {
       const referenceFilter = structuredQueryAttributeFilter as ReferenceFilter;
       attributeFilter.attributeCode = referenceFilter.attributeCode;
       attributeFilter.type = FilterTypes.REFERENCE;
-      console.log('referenceFilter');
-      console.log(referenceFilter);
       referenceFilter.criteria.forEach((refCrit) => {
         const referenceCriteria = this.createCriterionService.createReferenceCriterionFromTermCode(
           refCrit.termCodes,
           refCrit.context
         );
         criterion.linkedCriteria.push(referenceCriteria);
-        console.log('referenceAttribute');
-        console.log(attributeFilter);
         attributeFilter.attributeDefinition = new AttributeDefinition();
         attributeFilter.attributeDefinition.selectableConcepts.push(refCrit.termCodes[0]);
         attributeFilter.attributeDefinition.optional = true;

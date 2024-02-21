@@ -34,13 +34,7 @@ export class CreateCriterionService {
     const criterion: Criterion = new Criterion();
     const hash = this.criterionHashService.createHash(context, termCodes[0]);
     const subject = new Subject<Criterion>();
-    console.log('criterion');
-    console.log(ObjectHelper.clone(criterion));
     this.applyUIProfileToCriterion(hash).subscribe((critFromProfile) => {
-      console.log('assign');
-      console.log(critFromProfile);
-      console.log(Object.assign(criterion, critFromProfile));
-
       Object.assign(criterion, critFromProfile);
       criterion.context = context;
       criterion.criterionHash = hash;
@@ -48,8 +42,6 @@ export class CreateCriterionService {
       criterion.termCodes = this.copyTermCodes(termCodes);
       criterion.uniqueID = uuidv4();
       criterion.position = new CritGroupPosition();
-      console.log('final');
-      console.log(ObjectHelper.clone(criterion));
       subject.next(criterion);
     });
     //return of(criterion);
@@ -108,6 +100,7 @@ export class CreateCriterionService {
     });
     return subject.asObservable();
   }
+
   private addUIProfileElementsToCriterion(profile: UIProfile): Criterion {
     const criterion: Criterion = new Criterion();
     criterion.attributeFilters = this.getAttributeFilters(profile.attributeDefinitions);
@@ -122,7 +115,7 @@ export class CreateCriterionService {
       valueFilter.maxValue = valueDefinition.max;
       valueFilter.minValue = valueDefinition.min;
       valueFilter.precision = valueDefinition.precision;
-      valueFilter.optional = valueDefinition.optional;
+      valueFilter.optional = valueDefinition?.optional;
       valueFilter.type = this.UiProfileService.setDefinitionType(valueDefinition.type);
       valueFilter.valueDefinition = this.UiProfileService.extractValueDefinition(valueDefinition);
     }

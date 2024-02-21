@@ -6,7 +6,6 @@ import { EditValueFilterComponent } from '../edit-value-filter/edit-value-filter
 import { FeatureService } from '../../../../../../service/Feature.service';
 import { FilterTypes } from '../../../../../../model/FilterTypes';
 import { ObjectHelper } from '../../../../controller/ObjectHelper';
-import { Query as QueryOld } from '../../../../model/api/query/query';
 import { Query } from 'src/app/model/FeasibilityQuery/Query';
 import { QueryProviderService } from '../../../../service/query-provider.service';
 import { Subscription } from 'rxjs';
@@ -29,9 +28,6 @@ import {
   TimeRestriction,
   TimeRestrictionType,
 } from 'src/app/model/FeasibilityQuery/TimeRestriction';
-//import { Criterion } from '../../../../model/api/query/criterion';
-//import { OperatorOptions, ValueFilter } from '../../../../model/api/query/valueFilter';
-//import { TerminologyCode } from '../../../../model/api/terminology/terminology';
 @Component({
   selector: 'num-edit-criterion',
   templateUrl: './edit-criterion.component.html',
@@ -98,8 +94,6 @@ export class EditCriterionComponent implements OnInit, OnDestroy, AfterViewCheck
     this.showGroups = this.query.groups.length > 1;
     this.createListOfQueryCriteriaAndHashes();
     this.loadUIProfile();
-    console.log('edit');
-    console.log(this.criterion);
   }
 
   ngOnDestroy(): void {
@@ -248,8 +242,6 @@ export class EditCriterionComponent implements OnInit, OnDestroy, AfterViewCheck
     if (this.isActionDisabled()) {
       return;
     }
-    console.log('edit-criterion');
-    console.log(this.query);
     this.moveBetweenGroups();
     this.moveReferenceCriteria();
     this.provider.store(this.query);

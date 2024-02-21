@@ -54,7 +54,6 @@ export class UIQuery2StructuredQueryTranslatorService {
 
   private translateExclusionCriteria(group: Group): StructuredQueryCriterion[][] | undefined {
     const exclusionCriteria = ObjectHelper.clone(group.exclusionCriteria);
-    console.log(exclusionCriteria);
     if (exclusionCriteria.length > 0) {
       return this.translateCriterionGroup(exclusionCriteria);
     } else {
@@ -274,7 +273,6 @@ export class UIQuery2StructuredQueryTranslatorService {
     attributeFilter: AttributeFilter
   ): ReferenceFilter {
     const translatedRefrenceFilter: ReferenceFilter = new ReferenceFilter();
-    console.log(attributeFilter);
     translatedRefrenceFilter.attributeCode = this.assignAttributeCode(
       attributeFilter.attributeDefinition.attributeCode
     );
