@@ -10,7 +10,7 @@ import { Query } from 'src/app/model/FeasibilityQuery/Query';
 import { QueryProviderService } from '../../../../service/query-provider.service';
 import { Subscription } from 'rxjs';
 import { TermEntry2CriterionTranslator } from 'src/app/modules/querybuilder/controller/TermEntry2CriterionTranslator';
-import { TerminologyCode } from 'src/app/model/terminology/Terminology';
+import { TerminologyCode, TerminologyEntry } from 'src/app/model/terminology/Terminology';
 import { ValueFilter } from 'src/app/model/FeasibilityQuery/Criterion/AttributeFilter/ValueFilter';
 import {
   AfterViewChecked,
@@ -28,6 +28,10 @@ import {
   TimeRestriction,
   TimeRestrictionType,
 } from 'src/app/model/FeasibilityQuery/TimeRestriction';
+import { LoadUIProfileService } from 'src/app/service/LoadUIProfile.service';
+import { TermEntry2CriterionTranslatorService } from 'src/app/service/TermEntry2CriterionTranslator.service';
+import { CreateCriterionService } from 'src/app/service/CriterionService/CreateCriterion.service';
+import { CriterionHashService } from 'src/app/service/CriterionService/CriterionHash.service';
 @Component({
   selector: 'num-edit-criterion',
   templateUrl: './edit-criterion.component.html',
@@ -62,9 +66,13 @@ export class EditCriterionComponent implements OnInit, OnDestroy, AfterViewCheck
 
   actionDisabled = true;
 
+  singleReference: Criterion;
+
   selectedGroupId: number;
 
   showGroups: boolean;
+
+  attributeFilters: Array<AttributeFilter> = [];
 
   private subscriptionCritProfile: Subscription;
 
@@ -73,6 +81,10 @@ export class EditCriterionComponent implements OnInit, OnDestroy, AfterViewCheck
   private readonly translator;
 
   constructor(
+    public termEntryService: TermEntry2CriterionTranslatorService,
+    public loadUIProfileService: LoadUIProfileService,
+    public createCriterionService: CreateCriterionService,
+    public criterionHashService: CriterionHashService,
     public featureService: FeatureService,
     private changeDetector: ChangeDetectorRef,
     public provider: QueryProviderService,
@@ -85,6 +97,7 @@ export class EditCriterionComponent implements OnInit, OnDestroy, AfterViewCheck
   }
 
   ngOnInit(): void {
+    //this.ifLinkedAddSelectableConcepts()
     if (this.position) {
       this.selectedGroupId = this.position.groupId;
     } else {
@@ -98,6 +111,7 @@ export class EditCriterionComponent implements OnInit, OnDestroy, AfterViewCheck
 
   ngOnDestroy(): void {
     this.subscriptionCritProfile?.unsubscribe();
+    //this.findSingleRefrenceInQueryList()
   }
 
   ngAfterViewChecked(): void {
@@ -114,21 +128,6 @@ export class EditCriterionComponent implements OnInit, OnDestroy, AfterViewCheck
         });
       });
     }
-  }
-  getTermcodeParameters(): string {
-    const termCode = this.criterion.termCodes[0];
-    const termCodeVersion = termCode.version ? '&version=' + termCode.version : '';
-    return 'code=' + termCode.code + '&system=' + termCode.system + termCodeVersion;
-  }
-
-  getContextParameters(): string {
-    const context = this.criterion.context;
-    const contextVersion = context.version ? '&context_version=' + context.version : '';
-    return '&context_system=' + context.system + '&context_code=' + context.code + contextVersion;
-  }
-
-  getRequestParameters(): string {
-    return this.getTermcodeParameters() + this.getContextParameters();
   }
 
   initCriterion(profile): void {
@@ -150,7 +149,8 @@ export class EditCriterionComponent implements OnInit, OnDestroy, AfterViewCheck
       .subscribe((profile) => {
         if (
           this.criterion.valueFilters.length === 0 &&
-          this.criterion.attributeFilters.length === 0
+          this.criterion.attributeFilters.length === 0 &&
+          this.criterion.linkedCriteria.length < 0
         ) {
           this.initCriterion(profile);
         }
@@ -203,12 +203,107 @@ export class EditCriterionComponent implements OnInit, OnDestroy, AfterViewCheck
             }
           });
         }
-
+        /*this.criterion.attributeFilters.map((attributeFilter) => {
+          if(attributeFilter.attributeDefinition.referenceOnlyOnce ===  true) {
+            this.getSingleReference(attributeFilter.attributeDefinition.singleReference)
+          }
+        })*/
         this.loadAllowedCriteria();
+        this.getAttributeFilters();
       });
   }
 
+  /*getSingleReference(termEntry: TerminologyEntry) {
+   const hashCode = this.criterionHashService.createHash(termEntry.context, termEntry.termCodes[0])
+   if(!this.queryCriteriaHashes.includes(hashCode)) {
+    this.singleReference = this.termEntryService.translateTermEntry(termEntry)
+    this.query.groups[0].inclusionCriteria.push([this.singleReference])
+    this.queryCriteriaHashes.push(hashCode)
+    this.loadAllowedCriteria()
+    this.findSingleRefrenceInQueryList(false)
+    }
+  }
+
+  findSingleRefrenceInQueryList(deleteReference: boolean = true) {
+    if(this.criterion.linkedCriteria.length <= 0 && deleteReference) {
+      const index = this.query.groups[0].inclusionCriteria.findIndex(criteria => criteria.includes(this.singleReference));
+      if (index !== -1) {
+        this.query.groups[0].inclusionCriteria.splice(index, 1)
+        this.provider.store(this.query);
+      }
+    } else {
+      this.criterion.attributeFilters.forEach(((attributefilter) => {
+        if(attributefilter.attributeDefinition.type === FilterTypes.REFERENCE
+          &&
+          this.criterion.linkedCriteria[0]?.context.display === attributefilter.attributeDefinition.attributeCode.display)  {
+          const termCode = this.criterion.linkedCriteria[0]?.termCodes[0];
+          if (!attributefilter.selectedConcepts.includes(termCode)) {
+              attributefilter.selectedConcepts.push(termCode);
+              attributefilter.attributeDefinition.selectableConcepts.push(termCode)
+          }
+        }
+      }))
+    }
+  }*/
+
+  /*ifLinkedAddSelectableConcepts() {
+    if(this.criterion.linkedCriteria.length > 0) {
+      this.criterion.attributeFilters.forEach((attributeFilter) => {
+        if(attributeFilter.attributeDefinition.type === FilterTypes.REFERENCE
+          &&
+          this.criterion.linkedCriteria[0]?.context.display === attributeFilter.attributeDefinition.attributeCode.display)  {
+          const termCode = this.criterion.linkedCriteria[0]?.termCodes[0];
+          if (!attributeFilter.selectedConcepts.includes(termCode)) {
+            attributeFilter.selectedConcepts.push(termCode);
+            attributeFilter.attributeDefinition.selectableConcepts.push(termCode)
+          }
+          console.log(this.criterion)
+        }
+      })
+    }
+  }*/
+
   loadAllowedCriteria(): void {
+    this.criterion.attributeFilters.forEach((attrFilter) => {
+      const refValSet = attrFilter.attributeDefinition.referenceCriteriaSet;
+      if (refValSet) {
+        this.subscriptionCritProfile = this.backend
+          .getAllowedReferencedCriteria(refValSet, this.queryCriteriaHashes)
+          .subscribe((allowedCriteriaList) => {
+            attrFilter.attributeDefinition.selectableConcepts = [];
+            if (allowedCriteriaList.length > 0) {
+              attrFilter.type = FilterTypes.REFERENCE;
+              const uniqueTerms = this.getUniqueTerms(allowedCriteriaList);
+              attrFilter.attributeDefinition.selectableConcepts = uniqueTerms;
+            }
+          });
+      }
+    });
+  }
+
+  getUniqueTerms(allowedCriteriaList: string[]): TerminologyCode[] {
+    const uniqueTerms = new Set<TerminologyCode>();
+    allowedCriteriaList.forEach((critHash) => {
+      this.findCriterionByHash(critHash).forEach((crit) => {
+        if (!this.isCriterionLinked(crit.uniqueID)) {
+          const termCodeUid: TerminologyCode = crit.termCodes[0];
+          termCodeUid.uid = crit.uniqueID;
+          uniqueTerms.add(termCodeUid);
+        }
+      });
+    });
+
+    // Deep copy each TerminologyCode object
+    const deepCopiedTerms: TerminologyCode[] = [];
+    uniqueTerms.forEach((term) => {
+      const copiedTerm: TerminologyCode = { ...term }; // Perform deep copy
+      deepCopiedTerms.push(copiedTerm);
+    });
+
+    return deepCopiedTerms;
+  }
+
+  loadAllowedCriteria2(): void {
     this.criterion.attributeFilters.forEach((attrFilter) => {
       const refValSet = attrFilter.attributeDefinition.referenceCriteriaSet;
       if (refValSet) {
@@ -253,6 +348,7 @@ export class EditCriterionComponent implements OnInit, OnDestroy, AfterViewCheck
     }
     this.moveBetweenGroups();
     this.moveReferenceCriteria();
+    //this.findSingleRefrenceInQueryList()
     this.provider.store(this.query);
     this.save.emit({ groupId: this.selectedGroupId });
   }
@@ -285,23 +381,16 @@ export class EditCriterionComponent implements OnInit, OnDestroy, AfterViewCheck
     }
   }
 
-  //TODO: überprüfen der AttributeFilter-Klasse
-  getAttributeFilters(): AttributeFilter[] {
-    if (this.criterion.attributeFilters) {
-      if (!this.featureService.useFeatureMultipleValueDefinitions()) {
-        return this.criterion.attributeFilters.length === 0
-          ? []
-          : [this.criterion.attributeFilters[0]];
+  getAttributeFilters() {
+    this.criterion.attributeFilters.map((attributeFilter) => {
+      if (attributeFilter.attributeDefinition.type !== FilterTypes.REFERENCE) {
+        this.attributeFilters.push(attributeFilter);
       }
-
-      return this.criterion.attributeFilters;
-    } else {
-      return [];
-    }
+    });
   }
 
   moveBetweenGroups(): void {
-    if (!this.position || this.position.groupId === this.selectedGroupId) {
+    if (!this.l || this.position.groupId === this.selectedGroupId) {
       return;
     }
 
