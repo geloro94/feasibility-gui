@@ -1,0 +1,21 @@
+<mat-card *ngFor="let criterion of criterionAttributeFilterReference">
+  <mat-card-header>
+    <mat-checkbox
+      [(ngModel)]="referenceChecked"
+      (click)="selectCheckboxForReference()"
+    ></mat-checkbox>
+    <h4>
+      {{ criterion.display }}
+      <em *ngFor="let termcode of criterion.termCodes">({{ termcode?.code }})</em>
+    </h4>
+  </mat-card-header>
+  <num-edit-value-definition
+    *ngFor="let attributeFilter of criterion.attributeFilters"
+    [abstractAttributeFilter]="attributeFilter"
+    [query]="query"
+    [filterType]="'attribute'"
+    [criterion]="criterion"
+    [optional]="attributeFilter.attributeDefinition.optional"
+  >
+  </num-edit-value-definition>
+</mat-card>
