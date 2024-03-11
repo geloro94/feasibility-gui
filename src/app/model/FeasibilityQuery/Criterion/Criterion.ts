@@ -15,7 +15,7 @@ export class Criterion {
   entity?: boolean = false;
   isInvalid?: boolean = false;
   isLinked?: boolean = false;
-  linkedCriteria?: Criterion[] = [];
+  linkedCriteria: Criterion[] = [];
   optional?: boolean = false;
   position?: CritGroupPosition;
   uniqueID?: string;
