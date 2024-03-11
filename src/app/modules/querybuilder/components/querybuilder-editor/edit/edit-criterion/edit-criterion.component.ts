@@ -390,7 +390,7 @@ export class EditCriterionComponent implements OnInit, OnDestroy, AfterViewCheck
   }
 
   moveBetweenGroups(): void {
-    if (!this.l || this.position.groupId === this.selectedGroupId) {
+    if (!this.position || this.position.groupId === this.selectedGroupId) {
       return;
     }
 
