@@ -6,37 +6,44 @@
     </h4>
   </mat-card-header>
   <mat-card-content>
-    <ng-container *ngIf="searchType === 'querybuilder'">
-      <num-edit-value-definition
-        *ngFor="let valueFilter of getValueFilters()"
-        [abstractAttributeFilter]="valueFilter"
-        [filterType]="'value'"
-        [query]="query"
-        [criterion]="criterion"
-        [optional]="valueFilter.valueDefinition?.optional"
-      >
-      </num-edit-value-definition>
-      <num-edit-value-definition
-        *ngFor="let attributeFilter of getAttributeFilters()"
-        [abstractAttributeFilter]="attributeFilter"
-        [filterType]="'attribute'"
-        [query]="query"
-        [criterion]="criterion"
-        [optional]="attributeFilter.attributeDefinition.optional"
-      >
-      </num-edit-value-definition>
-      <num-display-entities
-        *ngIf="criterion.entity"
-        [criterionEntity]="criterion"
-        [query]="query"
-      ></num-display-entities>
-    </ng-container>
-    <num-edit-time-restriction
-      *ngIf="featureService.useFeatureTimeRestriction()"
-      [timeRestriction]="criterion.timeRestriction"
-      (doResetTimeRestriction)="resetTimeRestriction()"
-    >
-    </num-edit-time-restriction>
+    <mat-tab-group>
+      <mat-tab label="Attribute">
+        <num-edit-value-definition
+          *ngFor="let valueFilter of getValueFilters()"
+          [abstractAttributeFilter]="valueFilter"
+          [filterType]="'value'"
+          [query]="query"
+          [criterion]="criterion"
+          [optional]="valueFilter.valueDefinition?.optional"
+        >
+        </num-edit-value-definition>
+        <num-edit-value-definition
+          *ngFor="let attributeFilter of attributeFilters"
+          [abstractAttributeFilter]="attributeFilter"
+          [filterType]="'attribute'"
+          [query]="query"
+          [criterion]="criterion"
+          [optional]="attributeFilter.attributeDefinition.optional"
+        >
+        </num-edit-value-definition>
+        <num-display-entities
+          *ngIf="criterion.entity"
+          [criterionEntity]="criterion"
+          [query]="query"
+        ></num-display-entities>
+      </mat-tab>
+      <mat-tab label="Referenzen">
+        <num-edit-reference [criterion]="criterion" [query]="query"></num-edit-reference>
+      </mat-tab>
+      <mat-tab label="Zeitraum">
+        <num-edit-time-restriction
+          *ngIf="featureService.useFeatureTimeRestriction()"
+          [timeRestriction]="criterion.timeRestriction"
+          (doResetTimeRestriction)="resetTimeRestriction()"
+        >
+        </num-edit-time-restriction>
+      </mat-tab>
+    </mat-tab-group>
   </mat-card-content>
   <mat-card-footer>
     <div fxLayout="row" fxLayoutAlign="center center">
