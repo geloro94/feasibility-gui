@@ -23,11 +23,11 @@ export class TermEntry2CriterionTranslatorService {
 
   criterion: Criterion;
 
-  private UiProfileService: LoadUIProfileService;
-
-  private criterionHashService: CriterionHashService;
-
-  constructor(private featureService: FeatureService) {
+  constructor(
+    private featureService: FeatureService,
+    private criterionHashService: CriterionHashService,
+    private UiProfileService: LoadUIProfileService
+  ) {
     this.criterion = new Criterion();
   }
 
@@ -49,15 +49,20 @@ export class TermEntry2CriterionTranslatorService {
     this.criterion.entity = this.termEntry.entity;
     this.criterion.optional = this.termEntry.optional;
     this.criterion.termCodes = this.copyTermCodes();
-    this.criterion.uniqueID = this.setuniqueID();
+    this.criterion.uniqueID = uuidv4(); //this.setuniqueID();
     this.criterion.criterionHash = this.createCriterionHash();
   }
 
+  /**
+   * old functions correct uuidv3(hashCode, BackendService.BACKEND_UUID_NAMESPACE);??
+   *
+   * @returns
+   */
   private createCriterionHash(): string {
     const termCode = this.criterion.termCodes[0];
     const context = this.termEntry.context;
     const hashCode = this.criterionHashService.createHash(context, termCode);
-    return uuidv3(hashCode, BackendService.BACKEND_UUID_NAMESPACE);
+    return hashCode;
   }
 
   private copyTermCodes(): TerminologyCode[] {
