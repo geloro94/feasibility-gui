@@ -1,21 +1,7 @@
 <!--suppress HtmlFormInputWithoutLabel -->
 <div *ngIf="timeRestriction" [@.disabled]="disableAnimation" class="container">
-  <!--<div>
-    <mat-radio-group [(ngModel)]="timeRestriction.tvpe" fxLayout="column">
-      <mat-radio-button [value]="optionEver">{{
-        'QUERYBUILDER.EDIT.TIMERESTRICTION.EVER' | translate
-      }}</mat-radio-button>
-      <mat-radio-button [value]="optionLatest">{{
-        'QUERYBUILDER.EDIT.TIMERESTRICTION.LATEST' | translate
-      }}</mat-radio-button>
-    </mat-radio-group>
-  </div>-->
-
-  <mat-expansion-panel togglePosition="before" [expanded]="false">
-    <mat-expansion-panel-header>
-      <mat-panel-title>
-        {{ 'QUERYBUILDER.EDIT.TIMERESTRICTION.TITLE' | translate }}
-      </mat-panel-title>
+  <mat-card togglePosition="before" [expanded]="false">
+    <mat-card-header>
       <num-button
         [type]="'primary'"
         (click)="resetDate() && !disableReset; $event.stopPropagation()"
@@ -24,7 +10,7 @@
       >
         {{ 'BUTTON.RESET' | translate }}
       </num-button>
-    </mat-expansion-panel-header>
+    </mat-card-header>
     <div>
       <mat-form-field appearance="outline" class="operator-part">
         <!--<mat-label>{{ 'QUERYBUILDER.EDIT.OPERATOR' | translate }}</mat-label>-->
@@ -66,5 +52,5 @@
         <mat-datepicker #dateEndPicker></mat-datepicker>
       </mat-form-field>
     </div>
-  </mat-expansion-panel>
+  </mat-card>
 </div>
