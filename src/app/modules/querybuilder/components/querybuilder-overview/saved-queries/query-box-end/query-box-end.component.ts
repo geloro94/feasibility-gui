@@ -4,6 +4,8 @@ import { QueryProviderService } from '../../../../service/query-provider.service
 import { Router } from '@angular/router';
 import { FeatureService } from '../../../../../../service/Feature.service';
 import { StructuredQuery2UIQueryTranslatorService } from '../../../../../../service/StructuredQuery2UIQueryTranslator.service';
+import { QueryService } from 'src/app/service/QueryService.service';
+import { StructuredQueryTemplate } from 'src/app/model/StructuredQuery/StructuredQueryTemplate';
 
 @Component({
   selector: 'num-query-box-end',
@@ -33,7 +35,8 @@ export class QueryBoxEndComponent implements OnInit {
     private queryProviderService: QueryProviderService,
     private apiTranslator: StructuredQuery2UIQueryTranslatorService,
     private router: Router,
-    private feature: FeatureService
+    private feature: FeatureService,
+    private queryService: QueryService
   ) {}
 
   ngOnInit() {}
@@ -98,12 +101,12 @@ export class QueryBoxEndComponent implements OnInit {
   }
 
   storeTemplateAndNavigate() {
-    this.queryProviderService.store(this.query);
+    this.queryService.setFeasibilityQuery(this.query);
     this.router.navigate(['/querybuilder/editor'], { state: { preventReset: true } });
   }
 
   storeQueryAndNavigate(singleQueryloadedResult) {
-    this.queryProviderService.store(this.query);
+    this.queryService.setFeasibilityQuery(this.query);
     this.router.navigate(['/querybuilder/editor'], {
       state: { preventReset: true, resultFromSavedQuery: singleQueryloadedResult?.toString() },
     });
