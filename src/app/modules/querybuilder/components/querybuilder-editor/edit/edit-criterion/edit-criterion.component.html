@@ -7,7 +7,7 @@
   </mat-card-header>
   <mat-card-content>
     <mat-tab-group>
-      <mat-tab label="Attribute">
+      <mat-tab label="ValueFilter">
         <num-edit-value-definition
           *ngFor="let valueFilter of getValueFilters()"
           [abstractAttributeFilter]="valueFilter"
@@ -17,6 +17,8 @@
           [optional]="valueFilter.valueDefinition?.optional"
         >
         </num-edit-value-definition>
+      </mat-tab>
+      <mat-tab label="Attribute">
         <num-edit-value-definition
           *ngFor="let attributeFilter of attributeFilters"
           [abstractAttributeFilter]="attributeFilter"
@@ -26,6 +28,7 @@
           [optional]="attributeFilter.attributeDefinition.optional"
         >
         </num-edit-value-definition>
+
         <num-display-entities
           *ngIf="criterion.entity"
           [criterionEntity]="criterion"
