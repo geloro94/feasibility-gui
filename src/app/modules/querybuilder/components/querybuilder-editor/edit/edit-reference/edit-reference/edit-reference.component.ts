@@ -63,13 +63,10 @@ export class EditReferenceComponent implements OnInit {
 
   selectCheckboxForReference() {
     if (this.referenceChecked) {
-      console.log(this.criterionAttributeFilterReference[0], 'Refrence');
       this.criterionAttributeFilterReference[0].position = new CritGroupPosition();
-      console.log(this.criterionAttributeFilterReference[0], 'Refrence mit position');
-
+      this.criterionAttributeFilterReference[0].isLinked = true;
       this.criterion.linkedCriteria.push(this.criterionAttributeFilterReference[0]);
       this.query.groups[0].inclusionCriteria.push([this.criterionAttributeFilterReference[0]]);
-      this.criterion.isLinked = true;
       this.criterion.position = new CritGroupPosition();
       this.criterion.entity = true;
       this.setSelectableConceptsForCriterion();
@@ -79,13 +76,16 @@ export class EditReferenceComponent implements OnInit {
   setSelectableConceptsForCriterion() {
     this.criterion.attributeFilters.forEach((attribureFilter) => {
       const attributeDefinition = attribureFilter.attributeDefinition;
-      if (attributeDefinition.type === FilterTypes.REFERENCE) {
+      if (
+        attributeDefinition.type === FilterTypes.REFERENCE &&
+        attribureFilter.attributeDefinition.referenceOnlyOnce
+      ) {
         const referenceTermCode: TerminologyCode =
           this.criterionAttributeFilterReference[0].termCodes[0];
         attribureFilter.attributeDefinition.selectableConcepts.push(referenceTermCode);
         this.query.groups[0].inclusionCriteria.push([this.criterion]);
         this.moveReferenceCriteria();
-        this.provider.store(this.query);
+        console.log(this.query);
       }
     });
   }

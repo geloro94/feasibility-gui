@@ -82,7 +82,6 @@ export class EditCriterionComponent implements OnInit, OnDestroy, AfterViewCheck
 
   constructor(
     public termEntryService: TermEntry2CriterionTranslatorService,
-    public loadUIProfileService: LoadUIProfileService,
     public createCriterionService: CreateCriterionService,
     public criterionHashService: CriterionHashService,
     public featureService: FeatureService,
@@ -143,7 +142,25 @@ export class EditCriterionComponent implements OnInit, OnDestroy, AfterViewCheck
     );
   }
 
-  loadUIProfile(): void {
+  loadUIProfile() {
+    this.createCriterionService
+      .createCriterionFromTermCode(this.criterion.termCodes, this.criterion.context)
+      .subscribe((criterion) => {
+        this.criterion.attributeFilters.map((attributeFilter) => {
+          if (
+            attributeFilter.attributeDefinition.type === FilterTypes.REFERENCE &&
+            attributeFilter.attributeDefinition.referenceOnlyOnce
+          ) {
+            this.criterion = criterion;
+            this.criterion.valueFilters = undefined;
+          }
+        });
+        this.getAttributeFilters();
+        this.loadAllowedCriteria();
+      });
+  }
+
+  loadUIProfile2(): void {
     this.subscriptionCritProfile = this.backend
       .getTerminologyProfile(this.criterion.criterionHash)
       .subscribe((profile) => {
@@ -253,6 +270,7 @@ export class EditCriterionComponent implements OnInit, OnDestroy, AfterViewCheck
     }
     this.moveBetweenGroups();
     this.moveReferenceCriteria();
+    console.log(this.query);
     this.provider.store(this.query);
     this.save.emit({ groupId: this.selectedGroupId });
   }
@@ -280,8 +298,6 @@ export class EditCriterionComponent implements OnInit, OnDestroy, AfterViewCheck
       }
 
       return this.criterion.valueFilters;
-    } else {
-      return [];
     }
   }
 
