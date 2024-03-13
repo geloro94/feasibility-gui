@@ -42,11 +42,11 @@ export class EditReferenceComponent implements OnInit {
 
   getCriterionHashesOfReference() {
     this.loadUIProfileService.getUIProfile(this.criterion.criterionHash).subscribe((uiProfile) => {
-      this.loadUiProfilesForCriterion(uiProfile);
+      this.loadUiProfileForCriterion(uiProfile);
     });
   }
 
-  loadUiProfilesForCriterion(uiProfile: UIProfile) {
+  loadUiProfileForCriterion(uiProfile: UIProfile) {
     const attributeFilters: Array<AttributeFilter> =
       this.loadUIProfileService.extractAttributeFilters(uiProfile.attributeDefinitions);
     attributeFilters.forEach((attributeFilter) => {
@@ -63,11 +63,15 @@ export class EditReferenceComponent implements OnInit {
 
   selectCheckboxForReference() {
     if (this.referenceChecked) {
+      console.log(this.criterionAttributeFilterReference[0], 'Refrence');
       this.criterionAttributeFilterReference[0].position = new CritGroupPosition();
+      console.log(this.criterionAttributeFilterReference[0], 'Refrence mit position');
+
       this.criterion.linkedCriteria.push(this.criterionAttributeFilterReference[0]);
       this.query.groups[0].inclusionCriteria.push([this.criterionAttributeFilterReference[0]]);
       this.criterion.isLinked = true;
       this.criterion.position = new CritGroupPosition();
+      this.criterion.entity = true;
       this.setSelectableConceptsForCriterion();
     }
   }
