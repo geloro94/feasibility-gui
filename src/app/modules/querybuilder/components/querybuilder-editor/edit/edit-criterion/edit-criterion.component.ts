@@ -218,46 +218,6 @@ export class EditCriterionComponent implements OnInit, OnDestroy, AfterViewCheck
             attrFilter.attributeDefinition.selectableConcepts = [];
             if (allowedCriteriaList.length > 0) {
               attrFilter.type = FilterTypes.REFERENCE;
-              const uniqueTerms = this.getUniqueTerms(allowedCriteriaList);
-              attrFilter.attributeDefinition.selectableConcepts = uniqueTerms;
-            }
-          });
-      }
-    });
-  }
-
-  getUniqueTerms(allowedCriteriaList: string[]): TerminologyCode[] {
-    const uniqueTerms = new Set<TerminologyCode>();
-    allowedCriteriaList.forEach((critHash) => {
-      this.findCriterionByHash(critHash).forEach((crit) => {
-        if (!this.isCriterionLinked(crit.uniqueID)) {
-          const termCodeUid: TerminologyCode = crit.termCodes[0];
-          termCodeUid.uid = crit.uniqueID;
-          uniqueTerms.add(termCodeUid);
-        }
-      });
-    });
-
-    // Deep copy each TerminologyCode object
-    const deepCopiedTerms: TerminologyCode[] = [];
-    uniqueTerms.forEach((term) => {
-      const copiedTerm: TerminologyCode = { ...term }; // Perform deep copy
-      deepCopiedTerms.push(copiedTerm);
-    });
-
-    return deepCopiedTerms;
-  }
-
-  loadAllowedCriteria2(): void {
-    this.criterion.attributeFilters.forEach((attrFilter) => {
-      const refValSet = attrFilter.attributeDefinition.referenceCriteriaSet;
-      if (refValSet) {
-        this.subscriptionCritProfile = this.backend
-          .getAllowedReferencedCriteria(refValSet, this.queryCriteriaHashes)
-          .subscribe((allowedCriteriaList) => {
-            attrFilter.attributeDefinition.selectableConcepts = [];
-            if (allowedCriteriaList.length > 0) {
-              attrFilter.type = FilterTypes.REFERENCE;
               allowedCriteriaList.forEach((critHash) => {
                 this.findCriterionByHash(critHash).forEach((crit) => {
                   if (!this.isCriterionLinked(crit.uniqueID)) {
