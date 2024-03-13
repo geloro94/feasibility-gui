@@ -203,65 +203,10 @@ export class EditCriterionComponent implements OnInit, OnDestroy, AfterViewCheck
             }
           });
         }
-        /*this.criterion.attributeFilters.map((attributeFilter) => {
-          if(attributeFilter.attributeDefinition.referenceOnlyOnce ===  true) {
-            this.getSingleReference(attributeFilter.attributeDefinition.singleReference)
-          }
-        })*/
         this.loadAllowedCriteria();
         this.getAttributeFilters();
       });
   }
-
-  /*getSingleReference(termEntry: TerminologyEntry) {
-   const hashCode = this.criterionHashService.createHash(termEntry.context, termEntry.termCodes[0])
-   if(!this.queryCriteriaHashes.includes(hashCode)) {
-    this.singleReference = this.termEntryService.translateTermEntry(termEntry)
-    this.query.groups[0].inclusionCriteria.push([this.singleReference])
-    this.queryCriteriaHashes.push(hashCode)
-    this.loadAllowedCriteria()
-    this.findSingleRefrenceInQueryList(false)
-    }
-  }
-
-  findSingleRefrenceInQueryList(deleteReference: boolean = true) {
-    if(this.criterion.linkedCriteria.length <= 0 && deleteReference) {
-      const index = this.query.groups[0].inclusionCriteria.findIndex(criteria => criteria.includes(this.singleReference));
-      if (index !== -1) {
-        this.query.groups[0].inclusionCriteria.splice(index, 1)
-        this.provider.store(this.query);
-      }
-    } else {
-      this.criterion.attributeFilters.forEach(((attributefilter) => {
-        if(attributefilter.attributeDefinition.type === FilterTypes.REFERENCE
-          &&
-          this.criterion.linkedCriteria[0]?.context.display === attributefilter.attributeDefinition.attributeCode.display)  {
-          const termCode = this.criterion.linkedCriteria[0]?.termCodes[0];
-          if (!attributefilter.selectedConcepts.includes(termCode)) {
-              attributefilter.selectedConcepts.push(termCode);
-              attributefilter.attributeDefinition.selectableConcepts.push(termCode)
-          }
-        }
-      }))
-    }
-  }*/
-
-  /*ifLinkedAddSelectableConcepts() {
-    if(this.criterion.linkedCriteria.length > 0) {
-      this.criterion.attributeFilters.forEach((attributeFilter) => {
-        if(attributeFilter.attributeDefinition.type === FilterTypes.REFERENCE
-          &&
-          this.criterion.linkedCriteria[0]?.context.display === attributeFilter.attributeDefinition.attributeCode.display)  {
-          const termCode = this.criterion.linkedCriteria[0]?.termCodes[0];
-          if (!attributeFilter.selectedConcepts.includes(termCode)) {
-            attributeFilter.selectedConcepts.push(termCode);
-            attributeFilter.attributeDefinition.selectableConcepts.push(termCode)
-          }
-          console.log(this.criterion)
-        }
-      })
-    }
-  }*/
 
   loadAllowedCriteria(): void {
     this.criterion.attributeFilters.forEach((attrFilter) => {
@@ -348,7 +293,6 @@ export class EditCriterionComponent implements OnInit, OnDestroy, AfterViewCheck
     }
     this.moveBetweenGroups();
     this.moveReferenceCriteria();
-    //this.findSingleRefrenceInQueryList()
     this.provider.store(this.query);
     this.save.emit({ groupId: this.selectedGroupId });
   }
