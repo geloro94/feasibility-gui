@@ -49,7 +49,7 @@ import { QueryBoxFrontComponent } from './components/querybuilder-overview/saved
 import { SavedQueriesComponent } from './components/querybuilder-overview/saved-queries/saved-queries.component';
 import { QueryBoxEndComponent } from './components/querybuilder-overview/saved-queries/query-box-end/query-box-end.component';
 import { SearchTreeTermEntryDataselectionComponent } from './components/querybuilder-editor/search/dataselection/search-tree-term-entry-dataselection/search-tree-term-entry-dataselection.component';
-import { EditReferenceComponent } from './components/querybuilder-editor/edit/edit-reference/edit-reference/edit-reference.component';
+import { EditReferenceComponent } from './components/querybuilder-editor/edit/edit-reference/edit-reference.component';
 
 export const FORMATS_GERMAN = {
   parse: {

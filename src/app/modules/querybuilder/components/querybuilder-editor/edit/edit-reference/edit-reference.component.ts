@@ -11,8 +11,7 @@ import {
   CritGroupPosition,
 } from 'src/app/modules/querybuilder/controller/CritGroupArranger';
 import { QueryProviderService } from 'src/app/modules/querybuilder/service/query-provider.service';
-import { LoadUIProfileService } from 'src/app/service/LoadUIProfile.service';
-import { TermEntry2CriterionTranslatorService } from 'src/app/service/TermEntry2CriterionTranslator.service';
+import { CreateCriterionService } from 'src/app/service/CriterionService/CreateCriterion.service';
 
 @Component({
   selector: 'num-edit-reference',
@@ -21,6 +20,9 @@ import { TermEntry2CriterionTranslatorService } from 'src/app/service/TermEntry2
 })
 export class EditReferenceComponent implements OnInit {
   @Input()
+  referenceAttributes: Array<AttributeFilter> = [];
+
+  @Input()
   criterion: Criterion;
 
   @Input()
@@ -28,66 +30,71 @@ export class EditReferenceComponent implements OnInit {
 
   referenceChecked = false;
 
-  criterionAttributeFilterReference: Criterion[] = [];
+  referenceCriterion: Criterion = new Criterion();
 
   constructor(
-    private termEntryService: TermEntry2CriterionTranslatorService,
-    private loadUIProfileService: LoadUIProfileService,
+    private createCriterionService: CreateCriterionService,
     public provider: QueryProviderService
   ) {}
 
   ngOnInit() {
-    this.getCriterionHashesOfReference();
-  }
-
-  getCriterionHashesOfReference() {
-    this.loadUIProfileService.getUIProfile(this.criterion.criterionHash).subscribe((uiProfile) => {
-      this.loadUiProfileForCriterion(uiProfile);
-    });
-  }
-
-  loadUiProfileForCriterion(uiProfile: UIProfile) {
-    const attributeFilters: Array<AttributeFilter> =
-      this.loadUIProfileService.extractAttributeFilters(uiProfile.attributeDefinitions);
-    attributeFilters.forEach((attributeFilter) => {
-      if (attributeFilter.attributeDefinition.referenceOnlyOnce === true) {
-        this.getReferenceAttributes(attributeFilter.attributeDefinition.singleReference);
-      }
-    });
-  }
-
-  getReferenceAttributes(termcode: TerminologyEntry) {
-    const referenceCriterion = this.termEntryService.translateTermEntry(termcode);
-    this.criterionAttributeFilterReference.push(referenceCriterion);
+    console.log(this.referenceAttributes);
+    this.referenceChecked = this.criterion.linkedCriteria.length > 0 ? true : false;
+    this.createCriterionFromSingleReference();
   }
 
   selectCheckboxForReference() {
     if (this.referenceChecked) {
-      this.criterionAttributeFilterReference[0].position = new CritGroupPosition();
-      this.criterionAttributeFilterReference[0].isLinked = true;
-      this.criterion.linkedCriteria.push(this.criterionAttributeFilterReference[0]);
-      this.query.groups[0].inclusionCriteria.push([this.criterionAttributeFilterReference[0]]);
-      this.criterion.position = new CritGroupPosition();
-      this.criterion.entity = true;
-      this.setSelectableConceptsForCriterion();
+      this.setReference();
+    } else {
+      this.deleteLinkedCriterion();
     }
   }
 
-  setSelectableConceptsForCriterion() {
+  createCriterionFromSingleReference() {
+    this.referenceAttributes.forEach((reference) => {
+      const referenceAttributeDefinition = reference.attributeDefinition;
+      if (referenceAttributeDefinition.referenceOnlyOnce) {
+        this.createCriterionService
+          .createCriterionFromTermCode(
+            referenceAttributeDefinition.singleReference.termCodes,
+            referenceAttributeDefinition.singleReference.context
+          )
+          .subscribe((refernceCriterion) => {
+            this.referenceCriterion = refernceCriterion;
+            this.referenceCriterion.termCodes[0] =
+              referenceAttributeDefinition.singleReference.termCodes[0];
+          });
+      }
+    });
+  }
+
+  setReference() {
+    this.referenceCriterion.isLinked = true;
+    this.referenceCriterion.position = new CritGroupPosition();
+    this.referenceCriterion.entity = true;
+    this.criterion.linkedCriteria.push(this.referenceCriterion);
+    this.query.groups[0].inclusionCriteria.push([this.referenceCriterion]);
+    this.setSelectableConceptsForCriterion(this.referenceCriterion.termCodes[0]);
+  }
+
+  setSelectableConceptsForCriterion(referenceAttributeTermCode: TerminologyCode) {
     this.criterion.attributeFilters.forEach((attribureFilter) => {
       const attributeDefinition = attribureFilter.attributeDefinition;
       if (
         attributeDefinition.type === FilterTypes.REFERENCE &&
         attribureFilter.attributeDefinition.referenceOnlyOnce
       ) {
-        const referenceTermCode: TerminologyCode =
-          this.criterionAttributeFilterReference[0].termCodes[0];
-        attribureFilter.attributeDefinition.selectableConcepts.push(referenceTermCode);
-        this.query.groups[0].inclusionCriteria.push([this.criterion]);
-        this.moveReferenceCriteria();
-        console.log(this.query);
+        attribureFilter.attributeDefinition.selectableConcepts.push(referenceAttributeTermCode);
       }
     });
+    this.moveReferenceCriteria();
+    this.query.groups[0].inclusionCriteria.push([this.criterion]);
+  }
+
+  deleteLinkedCriterion() {
+    this.criterion.linkedCriteria = [];
+    this.query.groups[0].inclusionCriteria.push([this.criterion]);
   }
 
   moveReferenceCriteria(): void {
