@@ -11,6 +11,8 @@ import { Criterion } from '../../../../../../model/FeasibilityQuery/Criterion/Cr
 import { Query } from '../../../../../../model/FeasibilityQuery/Query';
 import { CritType } from '../../../../../../model/FeasibilityQuery/Group';
 import { TerminologyEntry } from '../../../../../../model/terminology/Terminology';
+import { TermEntry2CriterionTranslatorService } from 'src/app/service/TermEntry2CriterionTranslator.service';
+import { CreateCriterionService } from 'src/app/service/CriterionService/CreateCriterion.service';
 
 export class EnterCriterionListComponentData {
   groupIndex: number;
@@ -37,19 +39,14 @@ export class EnterCriterionListComponent implements OnInit, OnDestroy {
     groupID: number
     isAddible: boolean
   }> = [];
-  private readonly translator;
 
   constructor(
     @Inject(MAT_DIALOG_DATA) public data: EnterCriterionListComponentData,
     private dialogRef: MatDialogRef<EnterCriterionListComponent, void>,
     public provider: QueryProviderService,
-    public featureService: FeatureService
+    public featureService: FeatureService,
+    private termEntryTranslator: CreateCriterionService
   ) {
-    this.translator = new TermEntry2CriterionTranslator(
-      this.featureService.useFeatureTimeRestriction(),
-      this.featureService.getQueryVersion()
-    );
-    this.criterionList = data.termEntryList.map((termEntry) => this.translator.translate(termEntry));
     this.critType = data.critType;
     this.groupIndex = data.groupIndex;
     this.query = data.query;
@@ -57,16 +54,20 @@ export class EnterCriterionListComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this.criterionList.forEach((curCriterion) => {
-      this.criterionAddibleList.push({
-        criterion: curCriterion,
-        groupID: undefined,
-        isAddible: undefined,
-      });
-    });
+    this.translateTermEntries();
   }
 
   ngOnDestroy(): void {}
+
+  translateTermEntries() {
+    this.data.termEntryList.forEach((termEntry) => {
+      this.termEntryTranslator
+        .createCriterionFromTermCode(termEntry.termCodes, termEntry.context)
+        .subscribe((criterion) => {
+          this.criterionList.push(criterion);
+        });
+    });
+  }
 
   doSave(event: { groupId: number }, criterion: Criterion): void {
     if (this.searchType === 'dataselection') {
@@ -89,23 +90,14 @@ export class EnterCriterionListComponent implements OnInit, OnDestroy {
     this.doDiscard(criterion);
   }
 
-  registerAllAddible(event: { groupId: number; isaddible: boolean }, criterion: Criterion): void {
-    const element = this.criterionAddibleList.find(
-      (criterionTemp) => criterionTemp.criterion.display === criterion.display
-    );
-    element.isAddible = event.isaddible;
-    element.groupID = event.groupId;
-
-    this.actionDisabled = this.getAddibleList().length < 1;
-  }
-
-  doSaveAll(): void {
-    this.getAddibleList().forEach((thisCriterium) => {
-      if (thisCriterium.isAddible) {
-        this.doSave({ groupId: thisCriterium.groupID }, thisCriterium.criterion);
-      }
-    });
-    this.actionDisabled = this.getAddibleList().length < 1;
+  doSaveAll() {
+    if (this.critType === 'inclusion') {
+      this.query.groups[0].inclusionCriteria.push(this.criterionList);
+    } else {
+      this.query.groups[0].exclusionCriteria.push(this.criterionList);
+    }
+    this.provider.store(this.query);
+    this.dialogRef.close();
   }
 
   getAddibleList(): Array<any> {
