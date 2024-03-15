@@ -7,9 +7,9 @@
   </mat-card-header>
   <mat-card-content>
     <mat-tab-group>
-      <mat-tab label="ValueFilter">
+      <mat-tab label="ValueFilter" *ngIf="valueFilters.length > 0">
         <num-edit-value-definition
-          *ngFor="let valueFilter of getValueFilters()"
+          *ngFor="let valueFilter; valueFilters"
           [abstractAttributeFilter]="valueFilter"
           [filterType]="'value'"
           [query]="query"
@@ -18,9 +18,9 @@
         >
         </num-edit-value-definition>
       </mat-tab>
-      <mat-tab label="Attribute">
+      <mat-tab label="Attribute" *ngIf="conceptAttributeFilters.length > 0">
         <num-edit-value-definition
-          *ngFor="let attributeFilter of attributeFilters"
+          *ngFor="let attributeFilter of conceptAttributeFilters"
           [abstractAttributeFilter]="attributeFilter"
           [filterType]="'attribute'"
           [query]="query"
@@ -28,15 +28,13 @@
           [optional]="attributeFilter.attributeDefinition.optional"
         >
         </num-edit-value-definition>
-
-        <num-display-entities
-          *ngIf="criterion.entity"
-          [criterionEntity]="criterion"
-          [query]="query"
-        ></num-display-entities>
       </mat-tab>
-      <mat-tab label="Referenzen">
-        <num-edit-reference [criterion]="criterion" [query]="query"></num-edit-reference>
+      <mat-tab label="Referenzen" *ngIf="referenceAttributeFilters.length > 0">
+        <num-edit-reference
+          [referenceAttributes]="referenceAttributeFilters"
+          [criterion]="criterion"
+          [query]="query"
+        ></num-edit-reference>
       </mat-tab>
       <mat-tab label="Zeitraum">
         <num-edit-time-restriction

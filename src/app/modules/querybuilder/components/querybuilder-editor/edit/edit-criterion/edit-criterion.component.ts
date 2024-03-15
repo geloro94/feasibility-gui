@@ -24,11 +24,7 @@ import {
   QueryList,
   ViewChildren,
 } from '@angular/core';
-import {
-  TimeRestriction,
-  TimeRestrictionType,
-} from 'src/app/model/FeasibilityQuery/TimeRestriction';
-import { LoadUIProfileService } from 'src/app/service/LoadUIProfile.service';
+import { TimeRestriction } from 'src/app/model/FeasibilityQuery/TimeRestriction';
 import { TermEntry2CriterionTranslatorService } from 'src/app/service/TermEntry2CriterionTranslator.service';
 import { CreateCriterionService } from 'src/app/service/CriterionService/CreateCriterion.service';
 import { CriterionHashService } from 'src/app/service/CriterionService/CriterionHash.service';
@@ -57,9 +53,6 @@ export class EditCriterionComponent implements OnInit, OnDestroy, AfterViewCheck
   save = new EventEmitter<{ groupId: number }>();
 
   @Output()
-  addible = new EventEmitter<{ groupId: number; isaddible: boolean }>();
-
-  @Output()
   discard = new EventEmitter<void>();
 
   @ViewChildren(EditValueFilterComponent) valueFilterComponents: QueryList<EditValueFilterComponent>;
@@ -72,7 +65,11 @@ export class EditCriterionComponent implements OnInit, OnDestroy, AfterViewCheck
 
   showGroups: boolean;
 
-  attributeFilters: Array<AttributeFilter> = [];
+  conceptAttributeFilters: Array<AttributeFilter> = [];
+
+  referenceAttributeFilters: Array<AttributeFilter> = [];
+
+  valueFilters: Array<ValueFilter> = [];
 
   private subscriptionCritProfile: Subscription;
 
@@ -96,7 +93,6 @@ export class EditCriterionComponent implements OnInit, OnDestroy, AfterViewCheck
   }
 
   ngOnInit(): void {
-    //this.ifLinkedAddSelectableConcepts()
     if (this.position) {
       this.selectedGroupId = this.position.groupId;
     } else {
@@ -105,12 +101,12 @@ export class EditCriterionComponent implements OnInit, OnDestroy, AfterViewCheck
 
     this.showGroups = this.query.groups.length > 1;
     this.createListOfQueryCriteriaAndHashes();
-    this.loadUIProfile();
+    this.getAttributeFilters();
+    this.getValueFilters();
   }
 
   ngOnDestroy(): void {
     this.subscriptionCritProfile?.unsubscribe();
-    //this.findSingleRefrenceInQueryList()
   }
 
   ngAfterViewChecked(): void {
@@ -129,100 +125,25 @@ export class EditCriterionComponent implements OnInit, OnDestroy, AfterViewCheck
     }
   }
 
-  initCriterion(profile): void {
-    let attrDefs = [];
-    if (profile.attributeDefinitions) {
-      attrDefs = profile.attributeDefinitions;
+  getValueFilters() {
+    if (this.criterion.valueFilters[0]?.valueDefinition !== null) {
+      if (!this.featureService.useFeatureMultipleValueDefinitions()) {
+        this.valueFilters[0] = this.criterion.valueFilters[0];
+      }
+      this.valueFilters = this.criterion.valueFilters;
     }
-
-    this.criterion = this.translator.addAttributeAndValueFilterToCrit(
-      this.criterion,
-      profile.valueDefinition,
-      attrDefs
-    );
   }
 
-  loadUIProfile() {
-    this.createCriterionService
-      .createCriterionFromTermCode(this.criterion.termCodes, this.criterion.context)
-      .subscribe((criterion) => {
-        this.criterion.attributeFilters.map((attributeFilter) => {
-          if (
-            attributeFilter.attributeDefinition.type === FilterTypes.REFERENCE &&
-            attributeFilter.attributeDefinition.referenceOnlyOnce
-          ) {
-            this.criterion = criterion;
-            this.criterion.valueFilters = undefined;
-          }
-        });
-        this.getAttributeFilters();
-        this.loadAllowedCriteria();
-      });
-  }
-
-  loadUIProfile2(): void {
-    this.subscriptionCritProfile = this.backend
-      .getTerminologyProfile(this.criterion.criterionHash)
-      .subscribe((profile) => {
-        if (
-          this.criterion.valueFilters.length === 0 &&
-          this.criterion.attributeFilters.length === 0 &&
-          this.criterion.linkedCriteria.length < 0
-        ) {
-          this.initCriterion(profile);
-        }
-
-        if (profile.timeRestrictionAllowed && !this.criterion.timeRestriction) {
-          this.criterion.timeRestriction = { tvpe: TimeRestrictionType.BETWEEN };
-        }
-
-        if (profile.valueDefinition?.type === 'concept') {
-          if (profile.valueDefinition?.selectableConcepts) {
-            this.criterion.valueFilters[0].valueDefinition = profile.valueDefinition;
-          }
-        }
-        if (profile.valueDefinition?.type === 'quantity') {
-          this.criterion.valueFilters[0].precision = profile.valueDefinition.precision;
-          if (profile.valueDefinition) {
-            this.criterion.valueFilters[0].valueDefinition = profile.valueDefinition;
-          }
-        }
-
-        if (profile.attributeDefinitions) {
-          profile.attributeDefinitions.forEach((attribute) => {
-            const find = this.criterion.attributeFilters?.find(
-              (attr) => attr.attributeDefinition.attributeCode.code === attribute.attributeCode.code
-            );
-            if (!find) {
-              const newFilter = new AttributeFilter();
-              newFilter.attributeDefinition = attribute;
-              newFilter.attributeDefinition.type = attribute.type;
-              newFilter.type = attribute.type;
-              this.criterion.attributeFilters?.push(newFilter);
-            } else {
-              find.attributeDefinition.optional = attribute.optional;
-              find.attributeDefinition.type = attribute.type;
-              if (attribute.type === 'reference') {
-                find.attributeDefinition.referenceCriteriaSet = attribute.referenceCriteriaSet;
-              }
-              if (attribute.type === 'concept') {
-                if (attribute.selectableConcepts) {
-                  find.attributeDefinition.selectableConcepts = attribute.selectableConcepts;
-                }
-              }
-              if (attribute.type === 'quantity') {
-                find.attributeDefinition.precision = attribute.precision;
-                find.attributeDefinition.allowedUnits = attribute.allowedUnits;
-                if (attribute.selectableConcepts) {
-                  find.attributeDefinition.selectableConcepts = attribute.selectableConcepts;
-                }
-              }
-            }
-          });
-        }
-        this.loadAllowedCriteria();
-        this.getAttributeFilters();
-      });
+  getAttributeFilters(): void {
+    this.criterion.attributeFilters.map((attributeFilter) => {
+      const attributeFilterType = attributeFilter.attributeDefinition.type;
+      if (attributeFilterType === FilterTypes.CONCEPT) {
+        this.conceptAttributeFilters.push(attributeFilter);
+      }
+      if (attributeFilterType === FilterTypes.REFERENCE) {
+        this.referenceAttributeFilters.push(attributeFilter);
+      }
+    });
   }
 
   loadAllowedCriteria(): void {
@@ -287,26 +208,7 @@ export class EditCriterionComponent implements OnInit, OnDestroy, AfterViewCheck
     const addibleTemp =
       !this.valueFilterComponents ||
       !!this.valueFilterComponents.find((filterComponent) => filterComponent.isActionDisabled());
-    this.addible.emit({ groupId: this.selectedGroupId, isaddible: !addibleTemp });
     return addibleTemp;
-  }
-
-  getValueFilters(): ValueFilter[] {
-    if (this.criterion.valueFilters) {
-      if (!this.featureService.useFeatureMultipleValueDefinitions()) {
-        return this.criterion.valueFilters.length === 0 ? [] : [this.criterion.valueFilters[0]];
-      }
-
-      return this.criterion.valueFilters;
-    }
-  }
-
-  getAttributeFilters() {
-    this.criterion.attributeFilters.map((attributeFilter) => {
-      if (attributeFilter.attributeDefinition.type !== FilterTypes.REFERENCE) {
-        this.attributeFilters.push(attributeFilter);
-      }
-    });
   }
 
   moveBetweenGroups(): void {
