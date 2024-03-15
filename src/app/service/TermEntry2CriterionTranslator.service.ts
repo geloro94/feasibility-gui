@@ -95,8 +95,12 @@ export class TermEntry2CriterionTranslatorService {
 
   private getValueFilters(valueDefinition: ValueDefinition): ValueFilter {
     const valueFilter = new ValueFilter();
-    valueFilter.maxValue = valueDefinition.max;
-    valueFilter.minValue = valueDefinition.min;
+    if (valueDefinition.max !== null) {
+      valueFilter.maxValue = valueDefinition.max;
+    }
+    if (valueDefinition.min !== null) {
+      valueFilter.minValue = valueDefinition.min;
+    }
     valueFilter.precision = valueDefinition.precision;
     valueFilter.optional = valueDefinition?.optional;
     valueFilter.type = this.UiProfileService.setDefinitionType(valueDefinition.type);
