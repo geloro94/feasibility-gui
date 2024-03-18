@@ -1,17 +1,15 @@
-import { Component, Input, OnInit } from '@angular/core';
-import { single } from 'rxjs';
 import { AttributeFilter } from 'src/app/model/FeasibilityQuery/Criterion/AttributeFilter/AttributeFilter';
+import { Component, Input, OnInit } from '@angular/core';
+import { CreateCriterionService } from 'src/app/service/CriterionService/CreateCriterion.service';
 import { Criterion } from 'src/app/model/FeasibilityQuery/Criterion/Criterion';
-import { Query } from 'src/app/model/FeasibilityQuery/Query';
 import { FilterTypes } from 'src/app/model/FilterTypes';
-import { TerminologyCode, TerminologyEntry } from 'src/app/model/terminology/Terminology';
-import { UIProfile } from 'src/app/model/terminology/UIProfile';
+import { Query } from 'src/app/model/FeasibilityQuery/Query';
+import { QueryProviderService } from 'src/app/modules/querybuilder/service/query-provider.service';
+import { TerminologyCode } from 'src/app/model/terminology/Terminology';
 import {
   CritGroupArranger,
   CritGroupPosition,
 } from 'src/app/modules/querybuilder/controller/CritGroupArranger';
-import { QueryProviderService } from 'src/app/modules/querybuilder/service/query-provider.service';
-import { CreateCriterionService } from 'src/app/service/CriterionService/CreateCriterion.service';
 
 @Component({
   selector: 'num-edit-reference',
@@ -30,7 +28,9 @@ export class EditReferenceComponent implements OnInit {
 
   referenceChecked = false;
 
-  referenceCriterion: Criterion = new Criterion();
+  singleReferenceCriterion: Criterion = new Criterion();
+
+  referenceCriterions: Array<Criterion> = [];
 
   constructor(
     private createCriterionService: CreateCriterionService,
@@ -38,12 +38,69 @@ export class EditReferenceComponent implements OnInit {
   ) {}
 
   ngOnInit() {
-    console.log(this.referenceAttributes);
     this.referenceChecked = this.criterion.linkedCriteria.length > 0 ? true : false;
     this.createCriterionFromSingleReference();
+    this.displayExistingReferenceCriterions();
   }
 
-  selectCheckboxForReference() {
+  createCriterionFromSingleReference() {
+    this.referenceAttributes.forEach((reference) => {
+      const referenceAttributeDefinition = reference.attributeDefinition;
+      if (referenceAttributeDefinition.referenceOnlyOnce) {
+        this.createCriterionFromReferenceTermcode(
+          referenceAttributeDefinition.singleReference.termCodes,
+          referenceAttributeDefinition.singleReference.context
+        );
+      }
+    });
+  }
+
+  createCriterionFromReferenceTermcode(
+    termCodes: Array<TerminologyCode>,
+    context: TerminologyCode
+  ): void {
+    this.createCriterionService
+      .createCriterionFromTermCode(termCodes, context)
+      .subscribe((refernceCriterion) => {
+        this.singleReferenceCriterion = refernceCriterion;
+        this.singleReferenceCriterion.termCodes[0] = termCodes[0];
+        this.referenceCriterions.push(this.singleReferenceCriterion);
+      });
+  }
+
+  displayExistingReferenceCriterions(): void {
+    this.criterion.attributeFilters.forEach((attributeFilter) => {
+      const selectableConcepts: Array<TerminologyCode> =
+        attributeFilter.attributeDefinition.selectableConcepts;
+      if (attributeFilter.type === FilterTypes.REFERENCE && selectableConcepts.length > 0) {
+        this.findReferenceCriterionInMap(selectableConcepts);
+      }
+    });
+  }
+
+  findReferenceCriterionInMap(selectableConcepts: TerminologyCode[]): void {
+    const uniqueIDs = this.createMapOfCriterions();
+    selectableConcepts.forEach((termCode) => {
+      if (uniqueIDs.has(termCode.uid)) {
+        const refernceCriterion: Criterion = uniqueIDs.get(termCode.uid);
+        this.referenceCriterions.push(refernceCriterion);
+      }
+    });
+  }
+
+  createMapOfCriterions(): Map<string, Criterion> {
+    const uniqueIDsMap = new Map<string, Criterion>();
+    for (const inex of ['inclusion', 'exclusion']) {
+      this.query.groups[0][inex + 'Criteria'].forEach((andGroup) => {
+        andGroup.forEach((criterion) => {
+          uniqueIDsMap.set(criterion.uniqueID, criterion);
+        });
+      });
+    }
+    return uniqueIDsMap;
+  }
+
+  selectCheckboxForReference(): void {
     if (this.referenceChecked) {
       this.setReference();
     } else {
@@ -51,31 +108,12 @@ export class EditReferenceComponent implements OnInit {
     }
   }
 
-  createCriterionFromSingleReference() {
-    this.referenceAttributes.forEach((reference) => {
-      const referenceAttributeDefinition = reference.attributeDefinition;
-      if (referenceAttributeDefinition.referenceOnlyOnce) {
-        this.createCriterionService
-          .createCriterionFromTermCode(
-            referenceAttributeDefinition.singleReference.termCodes,
-            referenceAttributeDefinition.singleReference.context
-          )
-          .subscribe((refernceCriterion) => {
-            this.referenceCriterion = refernceCriterion;
-            this.referenceCriterion.termCodes[0] =
-              referenceAttributeDefinition.singleReference.termCodes[0];
-          });
-      }
-    });
-  }
-
   setReference() {
-    this.referenceCriterion.isLinked = true;
-    this.referenceCriterion.position = new CritGroupPosition();
-    this.referenceCriterion.entity = true;
-    this.criterion.linkedCriteria.push(this.referenceCriterion);
-    this.query.groups[0].inclusionCriteria.push([this.referenceCriterion]);
-    this.setSelectableConceptsForCriterion(this.referenceCriterion.termCodes[0]);
+    this.singleReferenceCriterion.isLinked = true;
+    this.singleReferenceCriterion.position = new CritGroupPosition();
+    this.singleReferenceCriterion.entity = true;
+    this.criterion.linkedCriteria.push(this.singleReferenceCriterion);
+    this.setSelectableConceptsForCriterion(this.singleReferenceCriterion.termCodes[0]);
   }
 
   setSelectableConceptsForCriterion(referenceAttributeTermCode: TerminologyCode) {
@@ -83,18 +121,21 @@ export class EditReferenceComponent implements OnInit {
       const attributeDefinition = attribureFilter.attributeDefinition;
       if (
         attributeDefinition.type === FilterTypes.REFERENCE &&
-        attribureFilter.attributeDefinition.referenceOnlyOnce
+        attributeDefinition.referenceOnlyOnce
       ) {
-        attribureFilter.attributeDefinition.selectableConcepts.push(referenceAttributeTermCode);
+        attributeDefinition.selectableConcepts.push(referenceAttributeTermCode);
       }
     });
     this.moveReferenceCriteria();
-    this.query.groups[0].inclusionCriteria.push([this.criterion]);
   }
 
   deleteLinkedCriterion() {
+    this.criterion.linkedCriteria.forEach((linkedCriteria) => {
+      linkedCriteria.isLinked = false;
+      this.query.groups[0].inclusionCriteria.push([linkedCriteria]);
+    });
     this.criterion.linkedCriteria = [];
-    this.query.groups[0].inclusionCriteria.push([this.criterion]);
+    this.provider.store(this.query);
   }
 
   moveReferenceCriteria(): void {

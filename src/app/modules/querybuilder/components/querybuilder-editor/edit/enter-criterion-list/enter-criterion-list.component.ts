@@ -64,6 +64,7 @@ export class EnterCriterionListComponent implements OnInit, OnDestroy {
       this.termEntryTranslator
         .createCriterionFromTermCode(termEntry.termCodes, termEntry.context)
         .subscribe((criterion) => {
+          criterion.termCodes = termEntry.termCodes;
           this.criterionList.push(criterion);
         });
     });
