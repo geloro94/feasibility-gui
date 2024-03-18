@@ -1,21 +1,23 @@
-<mat-card *ngIf="referenceCriterion">
-  <mat-card-header>
-    <mat-checkbox
-      [(ngModel)]="referenceChecked"
-      (click)="selectCheckboxForReference()"
-    ></mat-checkbox>
-    <h4>
-      {{ referenceCriterion.display }}
-      <em *ngFor="let termcode of criterion.termCodes">({{ termcode?.code }})</em>
-    </h4>
-  </mat-card-header>
-  <num-edit-value-definition
-    *ngFor="let attributeFilter of referenceCriterion.attributeFilters"
-    [abstractAttributeFilter]="attributeFilter"
-    [query]="query"
-    [filterType]="'attribute'"
-    [criterion]="referenceCriterion"
-    [optional]="attributeFilter.attributeDefinition.optional"
-  >
-  </num-edit-value-definition>
-</mat-card>
+<div *ngIf="referenceCriterions.length > 0">
+  <mat-card *ngFor="let referenceCriterion of referenceCriterions">
+    <mat-card-header>
+      <mat-checkbox
+        [(ngModel)]="referenceChecked"
+        (click)="selectCheckboxForReference()"
+      ></mat-checkbox>
+      <h4>
+        {{ referenceCriterion.display }}
+        <em *ngFor="let termcode of criterion.termCodes">({{ termcode?.code }})</em>
+      </h4>
+    </mat-card-header>
+    <num-edit-value-definition
+      *ngFor="let attributeFilter of referenceCriterion.attributeFilters"
+      [abstractAttributeFilter]="attributeFilter"
+      [query]="query"
+      [filterType]="'attribute'"
+      [criterion]="referenceCriterion"
+      [optional]="attributeFilter.attributeDefinition.optional"
+    >
+    </num-edit-value-definition>
+  </mat-card>
+</div>
