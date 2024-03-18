@@ -123,6 +123,7 @@ export class EditCriterionComponent implements OnInit, OnDestroy, AfterViewCheck
         });
       });
     }
+    this.loadAllowedCriteria();
   }
 
   getValueFilters() {
