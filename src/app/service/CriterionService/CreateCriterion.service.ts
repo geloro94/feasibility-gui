@@ -44,6 +44,7 @@ export class CreateCriterionService {
       criterion.context = context;
       this.applyUIProfileToCriterion(hash).subscribe((critFromProfile) => {
         Object.assign(criterion, critFromProfile);
+        criterion.termCodes = this.copyTermCodes(termCodes);
         subject.next(criterion);
       });
     } else {
