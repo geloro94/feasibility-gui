@@ -100,9 +100,9 @@ export class EditCriterionComponent implements OnInit, OnDestroy, AfterViewCheck
     }
 
     this.showGroups = this.query.groups.length > 1;
-    this.createListOfQueryCriteriaAndHashes();
     this.getAttributeFilters();
     this.getValueFilters();
+    this.createListOfQueryCriteriaAndHashes();
   }
 
   ngOnDestroy(): void {
