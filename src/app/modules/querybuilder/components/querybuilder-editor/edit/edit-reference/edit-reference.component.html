@@ -1,21 +1,21 @@
-<div *ngIf="referenceCriterions.length > 0">
-  <mat-card *ngFor="let referenceCriterion of referenceCriterions">
+<div *ngFor="let singleReferenceCriterion of referenceCriterionsList">
+  <mat-card>
     <mat-card-header>
       <mat-checkbox
-        [(ngModel)]="referenceChecked"
-        (click)="selectCheckboxForReference()"
+        [checked]="singleReferenceCriterion.isLinked"
+        (click)="selectCheckboxForReference(singleReferenceCriterion)"
       ></mat-checkbox>
       <h4>
-        {{ referenceCriterion.display }}
+        {{ singleReferenceCriterion.display }}
         <em *ngFor="let termcode of criterion.termCodes">({{ termcode?.code }})</em>
       </h4>
     </mat-card-header>
     <num-edit-value-definition
-      *ngFor="let attributeFilter of referenceCriterion.attributeFilters"
+      *ngFor="let attributeFilter of singleReferenceCriterion.attributeFilters"
       [abstractAttributeFilter]="attributeFilter"
       [query]="query"
       [filterType]="'attribute'"
-      [criterion]="referenceCriterion"
+      [criterion]="criterion"
       [optional]="attributeFilter.attributeDefinition.optional"
     >
     </num-edit-value-definition>
