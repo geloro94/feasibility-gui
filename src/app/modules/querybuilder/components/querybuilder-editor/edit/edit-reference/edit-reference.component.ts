@@ -92,7 +92,7 @@ export class EditReferenceComponent implements OnInit {
       const exists = this.referenceCriterionsList.some(
         (item) => item.criterionHash === existingReference.criterionHash
       );
-      if (!exists) {
+      if (!exists && !existingReference.isLinked) {
         // If it doesn't exist, add it to the list
         this.referenceCriterionsList.push(existingReference);
       }
@@ -117,31 +117,47 @@ export class EditReferenceComponent implements OnInit {
     singleReferenceCriterion.position = new CritGroupPosition();
     singleReferenceCriterion.entity = true;
     this.criterion.linkedCriteria.push(singleReferenceCriterion);
-    this.query.groups[0].inclusionCriteria.push([singleReferenceCriterion]);
-    this.setSelectableConceptsForCriterion(singleReferenceCriterion.termCodes[0]);
+    //this.query.groups[0].inclusionCriteria.push([singleReferenceCriterion]);
+    this.setSelectableConceptsForCriterion(singleReferenceCriterion.context);
   }
 
   setSelectableConceptsForCriterion(referenceAttributeTermCode: TerminologyCode) {
     this.criterion.attributeFilters.forEach((attribureFilter) => {
-      const attributeDefinition = attribureFilter.attributeDefinition;
       if (
-        attributeDefinition.type === FilterTypes.REFERENCE &&
-        attribureFilter.attributeDefinition.referencedOnlyOnce
+        attribureFilter.type === FilterTypes.REFERENCE &&
+        attribureFilter.attributeCode.display === referenceAttributeTermCode.display
       ) {
-        attribureFilter.attributeDefinition.selectableConcepts.push(referenceAttributeTermCode);
+        attribureFilter.selectedConcepts.push(referenceAttributeTermCode);
       }
     });
-    console.log(this.criterion);
     this.moveReferenceCriteria();
   }
 
-  deleteLinkedCriterion(singleReferenceCriterion) {
+  deleteLinkedCriterion(singleReferenceCriterion: Criterion) {
     this.criterion.linkedCriteria.forEach((criteria, index) => {
       if (criteria.isLinked && criteria.uniqueID === singleReferenceCriterion.uniqueID) {
         criteria.isLinked = false;
         this.criterion.linkedCriteria.splice(index, 1);
+        this.deselectAndRemoveConceptForCriterion(singleReferenceCriterion.context);
       }
     });
+  }
+
+  deselectAndRemoveConceptForCriterion(referenceAttributeTermCode: TerminologyCode) {
+    this.criterion.attributeFilters.forEach((attributeFilter) => {
+      if (
+        attributeFilter.type === FilterTypes.REFERENCE &&
+        attributeFilter.attributeCode.display === referenceAttributeTermCode.display
+      ) {
+        const index = attributeFilter.selectedConcepts.findIndex(
+          (concept) => concept.display === referenceAttributeTermCode.display
+        );
+        if (index !== -1) {
+          attributeFilter.selectedConcepts.splice(index, 1); // Remove the concept at index
+        }
+      }
+    });
+    this.moveReferenceCriteria();
   }
 
   moveReferenceCriteria(): void {
