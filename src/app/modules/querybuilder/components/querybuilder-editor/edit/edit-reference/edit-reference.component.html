@@ -19,5 +19,10 @@
       [optional]="attributeFilter.attributeDefinition.optional"
     >
     </num-edit-value-definition>
+    <num-edit-time-restriction
+      [timeRestriction]="singleReferenceCriterion.timeRestriction"
+      (doResetTimeRestriction)="resetTimeRestriction()"
+    >
+    </num-edit-time-restriction>
   </mat-card>
 </div>
