@@ -3,6 +3,7 @@ import { single } from 'rxjs';
 import { AttributeFilter } from 'src/app/model/FeasibilityQuery/Criterion/AttributeFilter/AttributeFilter';
 import { Criterion } from 'src/app/model/FeasibilityQuery/Criterion/Criterion';
 import { Query } from 'src/app/model/FeasibilityQuery/Query';
+import { TimeRestriction } from 'src/app/model/FeasibilityQuery/TimeRestriction';
 import { FilterTypes } from 'src/app/model/FilterTypes';
 import { TerminologyCode, TerminologyEntry } from 'src/app/model/terminology/Terminology';
 import { UIProfile } from 'src/app/model/terminology/UIProfile';
@@ -28,6 +29,9 @@ export class EditReferenceComponent implements OnInit {
   @Input()
   query: Query;
 
+  @Input()
+  preExistingReferenceCriterions: Array<Criterion> = [];
+
   referenceChecked = false;
 
   referenceCriterionsList: Array<Criterion> = [];
@@ -50,39 +54,62 @@ export class EditReferenceComponent implements OnInit {
     }
   }
 
-  compareToLinkedCriteria(referenceCriterion: Criterion) {
+  compareToLinkedCriteria() {
     this.criterion.linkedCriteria.forEach((criteria) => {
-      if (criteria.criterionHash === referenceCriterion.criterionHash) {
-        this.referenceCriterionsList.push(criteria);
+      const existingIndex = this.referenceCriterionsList.findIndex(
+        (item) => item.criterionHash === criteria.criterionHash
+      );
+      if (existingIndex !== -1) {
+        // If the criterion already exists in referenceCriterionsList, replace it
+        this.referenceCriterionsList[existingIndex] = criteria;
       } else {
-        const exists = this.referenceCriterionsList.some(
-          (item) => item.criterionHash === referenceCriterion.criterionHash
-        );
-        if (!exists) {
-          this.referenceCriterionsList.push(referenceCriterion);
-        }
+        // If the criterion doesn't exist, add it to the list
+        this.referenceCriterionsList.push(criteria);
       }
     });
   }
 
   createCriterionFromSingleReference() {
-    this.referenceCriterionsList = [];
-    this.referenceAttributes.forEach((reference) => {
+    const filteredAttributes = this.filterReferencedOnlyOnceAttributes();
+    filteredAttributes.forEach((reference) => {
       const referenceAttributeDefinition = reference.attributeDefinition;
-      if (referenceAttributeDefinition.referencedOnlyOnce) {
-        const singleReference = referenceAttributeDefinition.singleReference;
-        this.createCriterionService
-          .createCriterionFromTermCode(singleReference.termCodes, singleReference.context)
-          .subscribe((referenceCriterion) => {
-            if (this.criterion.linkedCriteria.length > 0) {
-              this.compareToLinkedCriteria(referenceCriterion);
-            } else {
-              this.referenceCriterionsList.push(referenceCriterion);
-            }
-            console.log(this.referenceCriterionsList);
-          });
+      const singleReference = referenceAttributeDefinition.singleReference;
+      this.createCriterionService
+        .createCriterionFromTermCode(singleReference.termCodes, singleReference.context)
+        .subscribe((referenceCriterion) => {
+          this.referenceCriterionsList.push(referenceCriterion);
+          if (this.referenceCriterionsList.length === filteredAttributes.length) {
+            this.compareToLinkedCriteria();
+            this.setReferenceCriterionsFromPreExistingReferenceCriterions();
+          }
+        });
+    });
+  }
+
+  setReferenceCriterionsFromPreExistingReferenceCriterions() {
+    this.preExistingReferenceCriterions.forEach((existingReference) => {
+      // Check if the existing reference criterion already exists in the list
+      const exists = this.referenceCriterionsList.some(
+        (item) => item.criterionHash === existingReference.criterionHash
+      );
+      if (!exists) {
+        // If it doesn't exist, add it to the list
+        this.referenceCriterionsList.push(existingReference);
       }
     });
+  }
+
+  /**
+   * Get all Attributes which have the boolean 'referencedOnlyOnce' set
+   *
+   * @returns
+   */
+  filterReferencedOnlyOnceAttributes() {
+    const filteredAttributes = this.referenceAttributes.filter((reference) => {
+      const referenceAttributeDefinition = reference.attributeDefinition;
+      return referenceAttributeDefinition.referencedOnlyOnce;
+    });
+    return filteredAttributes;
   }
 
   setReference(singleReferenceCriterion?: Criterion) {
@@ -90,7 +117,6 @@ export class EditReferenceComponent implements OnInit {
     singleReferenceCriterion.position = new CritGroupPosition();
     singleReferenceCriterion.entity = true;
     this.criterion.linkedCriteria.push(singleReferenceCriterion);
-    console.log(this.criterion);
     this.query.groups[0].inclusionCriteria.push([singleReferenceCriterion]);
     this.setSelectableConceptsForCriterion(singleReferenceCriterion.termCodes[0]);
   }
@@ -161,5 +187,9 @@ export class EditReferenceComponent implements OnInit {
         });
       });
     }
+  }
+
+  resetTimeRestriction() {
+    this.criterion.timeRestriction = new TimeRestriction();
   }
 }
