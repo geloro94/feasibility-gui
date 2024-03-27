@@ -1,5 +1,5 @@
-<div *ngFor="let singleReferenceCriterion of referenceCriterionsList">
-  <mat-card>
+<div *ngIf="referenceCriterionsList.length > 0">
+  <mat-card *ngFor="let singleReferenceCriterion of referenceCriterionsList">
     <mat-card-header>
       <mat-checkbox
         [checked]="singleReferenceCriterion.isLinked"
@@ -19,6 +19,7 @@
       [optional]="attributeFilter.attributeDefinition.optional"
     >
     </num-edit-value-definition>
+
     <num-edit-time-restriction
       [timeRestriction]="singleReferenceCriterion.timeRestriction"
       (doResetTimeRestriction)="resetTimeRestriction()"
