@@ -13,7 +13,7 @@
         <num-button
           [type]="'primary'"
           fxLayoutAlign="end"
-          (click)="resetFilter(); $event.stopPropagation()"
+          (click)="onResetButtonClick($event)"
           [isDisabled]="resetButtonDisabled()"
         >
           {{ 'BUTTON.RESET' | translate }}
@@ -164,7 +164,9 @@
         <mat-form-field
           appearance="outline"
           *ngIf="
-            abstractAttributeFilter?.unit && (abstractAttributeFilter?.comparator !== 'none' || abstractAttributeFilter?.type === 'quantity-range')
+            abstractAttributeFilter?.unit &&
+            (abstractAttributeFilter?.comparator !== 'none' ||
+              abstractAttributeFilter?.type === 'quantity-range')
           "
           class="unit-part"
         >

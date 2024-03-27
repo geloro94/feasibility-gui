@@ -337,11 +337,16 @@ export class EditValueFilterComponent implements OnInit, AfterViewInit {
     }
     if (
       this.selectedConceptsAsJson.size > 0 &&
-      (this.valueFilter.valueDefinition.type === FilterTypes.CONCEPT ||
+      (this.valueFilter?.valueDefinition?.type === FilterTypes.CONCEPT ||
         this.attributeFilter?.attributeDefinition?.type === FilterTypes.CONCEPT)
     ) {
       this.doSelectAllCheckboxes();
     }
+  }
+
+  onResetButtonClick(event: MouseEvent) {
+    event.stopPropagation();
+    this.resetFilter();
   }
 
   resetButtonDisabled() {
