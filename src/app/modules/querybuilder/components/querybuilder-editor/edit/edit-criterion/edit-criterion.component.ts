@@ -71,6 +71,8 @@ export class EditCriterionComponent implements OnInit, OnDestroy, AfterViewCheck
 
   valueFilters: Array<ValueFilter> = [];
 
+  preExistingReferenceCriterions: Array<Criterion> = [];
+
   private subscriptionCritProfile: Subscription;
 
   queryCriterionList: Array<Criterion> = [];
@@ -100,9 +102,9 @@ export class EditCriterionComponent implements OnInit, OnDestroy, AfterViewCheck
     }
 
     this.showGroups = this.query.groups.length > 1;
+    this.createListOfQueryCriteriaAndHashes();
     this.getAttributeFilters();
     this.getValueFilters();
-    this.createListOfQueryCriteriaAndHashes();
   }
 
   ngOnDestroy(): void {
@@ -136,7 +138,7 @@ export class EditCriterionComponent implements OnInit, OnDestroy, AfterViewCheck
   }
 
   getAttributeFilters(): void {
-    this.criterion.attributeFilters.map((attributeFilter) => {
+    this.criterion.attributeFilters?.map((attributeFilter) => {
       const attributeFilterType = attributeFilter.attributeDefinition.type;
       if (attributeFilterType === FilterTypes.CONCEPT) {
         this.conceptAttributeFilters.push(attributeFilter);
@@ -148,7 +150,7 @@ export class EditCriterionComponent implements OnInit, OnDestroy, AfterViewCheck
   }
 
   loadAllowedCriteria(): void {
-    this.criterion.attributeFilters.forEach((attrFilter) => {
+    this.criterion.attributeFilters?.forEach((attrFilter) => {
       const refValSet = attrFilter.attributeDefinition.referenceCriteriaSet;
       if (refValSet) {
         this.subscriptionCritProfile = this.backend
@@ -163,6 +165,7 @@ export class EditCriterionComponent implements OnInit, OnDestroy, AfterViewCheck
                     const termCodeUid: TerminologyCode = crit.termCodes[0];
                     termCodeUid.uid = crit.uniqueID;
                     attrFilter.attributeDefinition.selectableConcepts.push(termCodeUid);
+                    this.preExistingReferenceCriterions.push(crit);
                   }
                 });
               });
@@ -170,6 +173,7 @@ export class EditCriterionComponent implements OnInit, OnDestroy, AfterViewCheck
           });
       }
     });
+    console.log(this.criterion);
   }
 
   findCriterionByHash(hash: string): Criterion[] {

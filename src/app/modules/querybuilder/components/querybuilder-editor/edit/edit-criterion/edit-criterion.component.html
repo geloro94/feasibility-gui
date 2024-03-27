@@ -32,6 +32,7 @@
       <mat-tab label="Referenzen" *ngIf="referenceAttributeFilters.length > 0">
         <num-edit-reference
           [referenceAttributes]="referenceAttributeFilters"
+          [preExistingReferenceCriterions]="preExistingReferenceCriterions"
           [criterion]="criterion"
           [query]="query"
         ></num-edit-reference>
