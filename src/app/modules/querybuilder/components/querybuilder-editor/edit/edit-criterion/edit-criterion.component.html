@@ -7,7 +7,10 @@
   </mat-card-header>
   <mat-card-content>
     <mat-tab-group>
-      <mat-tab label="ValueFilter" *ngIf="valueFilters.length > 0">
+      <mat-tab
+        label="{{ 'QUERYBUILDER.EDIT.VALUE_FILTER' | translate }}"
+        *ngIf="valueFilters.length > 0"
+      >
         <num-edit-value-definition
           *ngFor="let valueFilter; valueFilters"
           [abstractAttributeFilter]="valueFilter"
@@ -18,7 +21,10 @@
         >
         </num-edit-value-definition>
       </mat-tab>
-      <mat-tab label="Attribute" *ngIf="conceptAttributeFilters.length > 0">
+      <mat-tab
+        label="{{ 'QUERYBUILDER.EDIT.ATTRIBUTE' | translate }}"
+        *ngIf="conceptAttributeFilters.length > 0"
+      >
         <num-edit-value-definition
           *ngFor="let attributeFilter of conceptAttributeFilters"
           [abstractAttributeFilter]="attributeFilter"
@@ -29,7 +35,10 @@
         >
         </num-edit-value-definition>
       </mat-tab>
-      <mat-tab label="Referenzen" *ngIf="referenceAttributeFilters.length > 0">
+      <mat-tab
+        label="{{ 'QUERYBUILDER.EDIT.REFERENCE' | translate }}"
+        *ngIf="referenceAttributeFilters.length > 0"
+      >
         <num-edit-reference
           [referenceAttributes]="referenceAttributeFilters"
           [preExistingReferenceCriterions]="preExistingReferenceCriterions"
@@ -37,7 +46,7 @@
           [query]="query"
         ></num-edit-reference>
       </mat-tab>
-      <mat-tab label="Zeitraum">
+      <mat-tab label="{{ 'QUERYBUILDER.EDIT.TIMERESTRICTION.TITLE' | translate }}">
         <num-edit-time-restriction
           *ngIf="featureService.useFeatureTimeRestriction()"
           [timeRestriction]="criterion.timeRestriction"
