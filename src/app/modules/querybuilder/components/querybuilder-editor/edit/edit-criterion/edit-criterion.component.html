@@ -11,7 +11,7 @@
       *ngIf="valueFilters.length > 0"
     >
       <num-edit-value-definition
-        *ngFor="let valueFilter; valueFilters"
+        *ngFor="let valueFilter of valueFilters"
         [abstractAttributeFilter]="valueFilter"
         [filterType]="'value'"
         [query]="query"
