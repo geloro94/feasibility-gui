@@ -173,7 +173,6 @@ export class EditCriterionComponent implements OnInit, OnDestroy, AfterViewCheck
           });
       }
     });
-    console.log(this.criterion);
   }
 
   findCriterionByHash(hash: string): Criterion[] {

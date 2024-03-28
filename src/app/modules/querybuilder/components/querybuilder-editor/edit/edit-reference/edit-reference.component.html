@@ -1,29 +1,29 @@
-<div *ngIf="referenceCriterionsList.length > 0">
-  <mat-card *ngFor="let singleReferenceCriterion of referenceCriterionsList">
-    <mat-card-header>
+<mat-expansion-panel *ngFor="let singleReferenceCriterion of referenceCriterionsList">
+  <mat-expansion-panel-header>
+    <mat-panel-title fxFlex="5">
       <mat-checkbox
         [checked]="singleReferenceCriterion.isLinked"
-        (click)="selectCheckboxForReference(singleReferenceCriterion)"
+        (click)="selectCheckboxForReference(singleReferenceCriterion); $event.stopPropagation()"
       ></mat-checkbox>
-      <h4>
-        {{ singleReferenceCriterion.display }}
-        <em *ngFor="let termcode of criterion.termCodes">({{ termcode?.code }})</em>
-      </h4>
-    </mat-card-header>
-    <num-edit-value-definition
-      *ngFor="let attributeFilter of singleReferenceCriterion.attributeFilters"
-      [abstractAttributeFilter]="attributeFilter"
-      [query]="query"
-      [filterType]="'attribute'"
-      [criterion]="criterion"
-      [optional]="attributeFilter.attributeDefinition.optional"
-    >
-    </num-edit-value-definition>
+    </mat-panel-title>
+    <mat-panel-title>
+      {{ singleReferenceCriterion.display }}
+      <em *ngFor="let termcode of criterion.termCodes">({{ termcode?.code }})</em>
+    </mat-panel-title>
+  </mat-expansion-panel-header>
+  <num-edit-value-definition
+    *ngFor="let attributeFilter of singleReferenceCriterion.attributeFilters"
+    [abstractAttributeFilter]="attributeFilter"
+    [query]="query"
+    [filterType]="'attribute'"
+    [criterion]="criterion"
+    [optional]="attributeFilter.attributeDefinition.optional"
+  >
+  </num-edit-value-definition>
 
-    <num-edit-time-restriction
-      [timeRestriction]="singleReferenceCriterion.timeRestriction"
-      (doResetTimeRestriction)="resetTimeRestriction()"
-    >
-    </num-edit-time-restriction>
-  </mat-card>
-</div>
+  <num-edit-time-restriction
+    [timeRestriction]="singleReferenceCriterion.timeRestriction"
+    (doResetTimeRestriction)="resetTimeRestriction()"
+  >
+  </num-edit-time-restriction>
+</mat-expansion-panel>
