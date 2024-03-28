@@ -117,7 +117,6 @@ export class EditReferenceComponent implements OnInit {
     singleReferenceCriterion.position = new CritGroupPosition();
     singleReferenceCriterion.entity = true;
     this.criterion.linkedCriteria.push(singleReferenceCriterion);
-    //this.query.groups[0].inclusionCriteria.push([singleReferenceCriterion]);
     this.setSelectableConceptsForCriterion(singleReferenceCriterion.context);
   }
 
