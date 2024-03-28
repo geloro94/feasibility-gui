@@ -129,7 +129,10 @@ export class EditCriterionComponent implements OnInit, OnDestroy, AfterViewCheck
   }
 
   getValueFilters() {
-    if (this.criterion.valueFilters[0]?.valueDefinition !== null) {
+    if (
+      this.criterion.valueFilters[0]?.valueDefinition !== null &&
+      this.criterion.valueFilters[0]?.valueDefinition.selectableConcepts.length > 0
+    ) {
       if (!this.featureService.useFeatureMultipleValueDefinitions()) {
         this.valueFilters[0] = this.criterion.valueFilters[0];
       }
@@ -143,7 +146,18 @@ export class EditCriterionComponent implements OnInit, OnDestroy, AfterViewCheck
       if (attributeFilterType === FilterTypes.CONCEPT) {
         this.conceptAttributeFilters.push(attributeFilter);
       }
-      if (attributeFilterType === FilterTypes.REFERENCE) {
+      if (
+        attributeFilterType === FilterTypes.REFERENCE &&
+        attributeFilter.attributeDefinition.selectableConcepts.length > 0 &&
+        !attributeFilter.attributeDefinition.referencedOnlyOnce
+      ) {
+        this.referenceAttributeFilters.push(attributeFilter);
+      }
+
+      if (
+        attributeFilterType === FilterTypes.REFERENCE &&
+        attributeFilter.attributeDefinition.referencedOnlyOnce
+      ) {
         this.referenceAttributeFilters.push(attributeFilter);
       }
     });
