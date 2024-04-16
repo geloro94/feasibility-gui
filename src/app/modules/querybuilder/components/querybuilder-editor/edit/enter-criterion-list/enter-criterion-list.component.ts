@@ -13,6 +13,7 @@ import { CritType } from '../../../../../../model/FeasibilityQuery/Group';
 import { TerminologyEntry } from '../../../../../../model/terminology/Terminology';
 import { TermEntry2CriterionTranslatorService } from 'src/app/service/TermEntry2CriterionTranslator.service';
 import { CreateCriterionService } from 'src/app/service/CriterionService/CreateCriterion.service';
+import { QueryService } from 'src/app/service/QueryService.service';
 
 export class EnterCriterionListComponentData {
   groupIndex: number;
@@ -34,6 +35,7 @@ export class EnterCriterionListComponent implements OnInit, OnDestroy {
   query: Query;
   searchType: string;
   actionDisabled = true;
+  optionalCriteria: Array<Criterion> = [];
   criterionAddibleList: Array<{
     criterion: Criterion
     groupID: number
@@ -45,7 +47,8 @@ export class EnterCriterionListComponent implements OnInit, OnDestroy {
     private dialogRef: MatDialogRef<EnterCriterionListComponent, void>,
     public provider: QueryProviderService,
     public featureService: FeatureService,
-    private termEntryTranslator: CreateCriterionService
+    private termEntryTranslator: CreateCriterionService,
+    private queryService: QueryService
   ) {
     this.critType = data.critType;
     this.groupIndex = data.groupIndex;
@@ -66,6 +69,7 @@ export class EnterCriterionListComponent implements OnInit, OnDestroy {
         .subscribe((criterion) => {
           criterion.termCodes = termEntry.termCodes;
           this.criterionList.push(criterion);
+          this.createNonOptionalListOfCriterions(criterion);
         });
     });
   }
@@ -75,34 +79,28 @@ export class EnterCriterionListComponent implements OnInit, OnDestroy {
       criterion.requiredDataSelection = false;
     }
 
-    const index = this.query.groups.findIndex((group) => group.id === event.groupId);
-
-    if (index < 0) {
-      return;
-    }
-
     if (this.critType === 'inclusion') {
-      this.query.groups[index].inclusionCriteria.push([criterion]);
+      this.query.groups[0].inclusionCriteria.push([criterion]);
     } else {
-      this.query.groups[index].exclusionCriteria.push([criterion]);
+      this.query.groups[0].exclusionCriteria.push([criterion]);
     }
-
     this.provider.store(this.query);
-    this.doDiscard(criterion);
   }
 
   doSaveAll() {
-    if (this.critType === 'inclusion') {
-      this.query.groups[0].inclusionCriteria.push(this.criterionList);
-    } else {
-      this.query.groups[0].exclusionCriteria.push(this.criterionList);
-    }
-    this.provider.store(this.query);
-    this.dialogRef.close();
-  }
+    if (this.optionalCriteria.length === 0) {
+      this.actionDisabled = false;
+      let index = this.criterionList.length - 1; // Start from the last index
 
-  getAddibleList(): Array<any> {
-    return this.criterionAddibleList.filter((list) => list.isAddible);
+      while (index >= 0) {
+        const criterion = this.criterionList[index];
+        this.doSave({ groupId: 0 }, criterion);
+        this.criterionList.splice(index, 1); // Remove the processed criterion
+        index--; // Move to the previous index
+      }
+
+      this.doDiscardAll();
+    }
   }
 
   doDiscard(criterion: Criterion): void {
@@ -120,5 +118,36 @@ export class EnterCriterionListComponent implements OnInit, OnDestroy {
 
   doDiscardAll(): void {
     this.dialogRef.close();
+  }
+
+  createNonOptionalListOfCriterions(criterion: Criterion) {
+    criterion.attributeFilters?.forEach((attributeFilter) => {
+      if (!attributeFilter.attributeDefinition.optional) {
+        this.optionalCriteria.push(criterion);
+      }
+    });
+    criterion.valueFilters?.forEach((valueFilter) => {
+      if (
+        !valueFilter.valueDefinition?.optional &&
+        valueFilter.valueDefinition?.selectableConcepts.length > 0
+      ) {
+        this.optionalCriteria.push(criterion);
+      }
+    });
+    this.setSaveAllBollean();
+  }
+
+  setSaveAllBollean() {
+    console.log(this.optionalCriteria);
+    if (this.optionalCriteria.length === 0) {
+      this.actionDisabled = false;
+    }
+  }
+
+  compareNonOptionalListWithFeasibilityQuery() {
+    this.queryService.getCriterionMap().subscribe((map) => {
+      this.optionalCriteria = this.optionalCriteria.filter((criterion) => !map.has(criterion.criterionHash));
+    });
+    this.setSaveAllBollean();
   }
 }

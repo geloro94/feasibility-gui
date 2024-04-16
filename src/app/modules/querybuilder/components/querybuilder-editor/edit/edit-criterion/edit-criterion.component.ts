@@ -28,6 +28,7 @@ import { TimeRestriction } from 'src/app/model/FeasibilityQuery/TimeRestriction'
 import { TermEntry2CriterionTranslatorService } from 'src/app/service/TermEntry2CriterionTranslator.service';
 import { CreateCriterionService } from 'src/app/service/CriterionService/CreateCriterion.service';
 import { CriterionHashService } from 'src/app/service/CriterionService/CriterionHash.service';
+import { QueryService } from 'src/app/service/QueryService.service';
 @Component({
   selector: 'num-edit-criterion',
   templateUrl: './edit-criterion.component.html',
@@ -77,6 +78,7 @@ export class EditCriterionComponent implements OnInit, OnDestroy, AfterViewCheck
 
   queryCriterionList: Array<Criterion> = [];
   queryCriteriaHashes: Array<string> = [];
+  optionalCriteria: Array<Criterion> = [];
   private readonly translator;
 
   constructor(
@@ -86,7 +88,8 @@ export class EditCriterionComponent implements OnInit, OnDestroy, AfterViewCheck
     public featureService: FeatureService,
     private changeDetector: ChangeDetectorRef,
     public provider: QueryProviderService,
-    private backend: BackendService
+    private backend: BackendService,
+    private queryService: QueryService
   ) {
     this.translator = new TermEntry2CriterionTranslator(
       this.featureService.useFeatureTimeRestriction(),
@@ -104,7 +107,6 @@ export class EditCriterionComponent implements OnInit, OnDestroy, AfterViewCheck
     this.showGroups = this.query.groups.length > 1;
     this.createListOfQueryCriteriaAndHashes();
     this.getAttributeFilters();
-    this.getValueFilters();
   }
 
   ngOnDestroy(): void {
@@ -209,8 +211,8 @@ export class EditCriterionComponent implements OnInit, OnDestroy, AfterViewCheck
     }
     this.moveBetweenGroups();
     this.moveReferenceCriteria();
-    console.log(this.query);
     this.provider.store(this.query);
+    this.queryService.setFeasibilityQuery(this.query);
     this.save.emit({ groupId: this.selectedGroupId });
   }
 
