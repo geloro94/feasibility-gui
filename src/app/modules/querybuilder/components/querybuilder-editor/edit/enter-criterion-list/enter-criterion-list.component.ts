@@ -85,6 +85,7 @@ export class EnterCriterionListComponent implements OnInit, OnDestroy {
       this.query.groups[0].exclusionCriteria.push([criterion]);
     }
     this.provider.store(this.query);
+    this.doDiscardAll();
   }
 
   doSaveAll() {
@@ -146,7 +147,9 @@ export class EnterCriterionListComponent implements OnInit, OnDestroy {
 
   compareNonOptionalListWithFeasibilityQuery() {
     this.queryService.getCriterionMap().subscribe((map) => {
-      this.optionalCriteria = this.optionalCriteria.filter((criterion) => !map.has(criterion.criterionHash));
+      this.optionalCriteria = this.optionalCriteria.filter(
+        (criterion) => !map.has(criterion.criterionHash)
+      );
     });
     this.setSaveAllBollean();
   }
