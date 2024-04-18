@@ -133,8 +133,9 @@ export class EditCriterionComponent implements OnInit, OnDestroy, AfterViewCheck
 
   getValueFilters() {
     if (
-      this.criterion.valueFilters[0]?.valueDefinition !== null &&
-      this.criterion.valueFilters[0]?.valueDefinition.selectableConcepts.length > 0
+      (this.criterion.valueFilters[0]?.valueDefinition !== null &&
+        this.criterion.valueFilters[0]?.valueDefinition.selectableConcepts.length > 0) ||
+      this.criterion.valueFilters[0]?.valueDefinition.allowedUnits
     ) {
       if (!this.featureService.useFeatureMultipleValueDefinitions()) {
         this.valueFilters[0] = this.criterion.valueFilters[0];
