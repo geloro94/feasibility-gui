@@ -65,6 +65,7 @@ export class EditValueFilterComponent implements OnInit, AfterViewInit {
       this.attributeFilter = this.abstractAttributeFilter as AttributeFilter;
     } else {
       this.valueFilter = this.abstractAttributeFilter as ValueFilter;
+      this.valueFilter.unit = this.valueFilter.valueDefinition.allowedUnits[0];
     }
     this.abstractAttributeFilter?.selectedConcepts?.forEach((concept) => {
       // bring the object into the right order for stringify
