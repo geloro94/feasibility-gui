@@ -63,6 +63,7 @@ export class EditValueFilterComponent implements OnInit, AfterViewInit {
   ngOnInit(): void {
     if (this.filterType === 'attribute') {
       this.attributeFilter = this.abstractAttributeFilter as AttributeFilter;
+      this.attributeFilter.unit = this.attributeFilter.attributeDefinition.allowedUnits[0];
     } else {
       this.valueFilter = this.abstractAttributeFilter as ValueFilter;
       this.valueFilter.unit = this.valueFilter.valueDefinition.allowedUnits[0];
